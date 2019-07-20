@@ -1,4 +1,5 @@
-print("Addon loaded... PersonalRollLoot "..GetAddOnMetadata("PersonalRollLoot", "Version"))
+PersonalRollLoot = LibStub("AceAddon-3.0"):NewAddon("PersonalRollLoot")
+
 
 -- namespace
 local _, ns = ...;
@@ -31,35 +32,70 @@ local CLASS_MONK = 10
 local CLASS_DRUID = 11
 local CLASS_DEMON_HUNTER = 12
 
+local CLASS_ROLES = {
+  [CLASS_WARRIOR] = {
+    [ROLE_MELEE_DPS] = true,
+    [ROLE_TANK] = true
+  },
+  [CLASS_PALADIN] = {
+    [ROLE_HEALER] = true,
+    [ROLE_MELEE_DPS] = true,
+    [ROLE_TANK] = true
+  },
+  [CLASS_HUNTER] = {
+    [ROLE_RANGED_DPS] = true
+  },
+  [CLASS_ROGUE] = {
+    [ROLE_MELEE_DPS] = true
+  },
+  [CLASS_PRIEST] = {
+    [ROLE_CASTER_DPS] = true,
+    [ROLE_HEALER] = true
+  },
+  [CLASS_SHAMAN] = {
+    [ROLE_CASTER_DPS] = true,
+    [ROLE_HEALER] = true,
+    [ROLE_MELEE_DPS] = true
+  },
+  [CLASS_MAGE] = {
+    [ROLE_CASTER_DPS] = true
+  },
+  [CLASS_WARLOCK] = {
+    [ROLE_CASTER_DPS] = true
+  },
+  [CLASS_DRUID] = {
+    [ROLE_CASTER_DPS] = true,
+    [ROLE_HEALER] = true,
+    [ROLE_MELEE_DPS] = true,
+    [ROLE_TANK] = true
+  }
+}
+
+local RAID_MOLTEN_CORE = "Molten Core"
+local RAID_BLACKWING_LAIR = "Blackwing Lair"
+
 local ITEM_LIST = {
   [16795] = { 
     itemId = 16795,
     name = "Arcanist Crown",
     roles = { [ROLE_CASTER_DPS] = true },
-    classes = { [CLASS_MAGE] = true }
+    classes = { [CLASS_MAGE] = true },
+    raids = { RAID_MOLTEN_CORE }
   },
   [16807] = {
     itemId = 16807,
     name = "Felheart Shoulder Pads",
     roles = { [ROLE_CASTER_DPS] = true },
-    classes = { [CLASS_WARLOCK] = true }
+    classes = { [CLASS_WARLOCK] = true },
+    raids = { RAID_MOLTEN_CORE }
   },
   [17063] = {
     itemId = 17063,
     name = "Band of Accuria",
     roles = { [ROLE_MELEE_DPS] = true, [ROLE_RANGED_DPS] = true, [ROLE_TANK] = true },
-    classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true }
+    classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
+    raids = { RAID_MOLTEN_CORE }
   }
-}
-
-local RAID_LIST = {
-  ["Molten Core"] = { "Molten Core",
-    { [16795] = true,
-      [16807] = true,
-      [17063] = true
-    }
-  },
-  ["Blackwing Lair"] = { "Blackwing Lair", {} }
 }
 
 -- saved variables
@@ -109,6 +145,17 @@ local function getRole(arg)
   return role
 end
 
+local function getRolesForClass(class)
+  local classRoles = {}
+  if (CLASS_ROLES[class]) then
+    -- copy the roles
+    for role,_ in pairs(CLASS_ROLES[class]) do
+      classRoles[role] = true
+    end
+  end
+  return classRoles
+end
+
 local function getItem(arg)
   if (not arg) then error("> No item id or name specified.", 0) end
   local itemId = tonumber(arg) -- will be nil if not a number
@@ -139,13 +186,14 @@ local COMMANDS = {
     -- add the player to our database
     local _,class,classIndex = UnitClass(name)
 
-    PLAYER_LIST[name] = {
+    local player = {
       ["name"] = name,
       ["realm"] = realm,
       ["class"] = class,
-      ["roles"] = {},
+      ["roles"] = getRolesForClass(classIndex),
       ["need-list"] = createNeedList(classIndex)
     }
+    PLAYER_LIST[name] = player
     print("> Added player '"..name.."-"..realm.."', "..class..".")
   end,
 
@@ -231,6 +279,10 @@ local COMMANDS = {
   end
 }
 
+-- ------------------------------------------------------- --
+-- register the slash commands and call the command table  --
+-- ------------------------------------------------------- --
+--local toggleUI
 SLASH_PersonalRollLoot1 = "/prl"
 SLASH_PersonalRollLoot2 = "/personal"
 SlashCmdList["PersonalRollLoot"] = function(s)
@@ -240,6 +292,12 @@ SlashCmdList["PersonalRollLoot"] = function(s)
   if c then
     local status, err = pcall(c, args)
     if (not status) then print(err) end
+  else
+    -- no command specified, open the UI
+--    toggleUI()
   end
   PersonalRollLootDB.PLAYER_LIST = PLAYER_LIST
 end
+
+
+print("Addon loaded... PersonalRollLoot "..GetAddOnMetadata("PersonalRollLoot", "Version"))
