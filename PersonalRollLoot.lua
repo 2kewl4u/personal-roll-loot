@@ -1,4 +1,5 @@
-print("Addon loaded... PersonalRollLoot "..GetAddOnMetadata("PersonalRollLoot", "Version"))
+PersonalRollLoot = LibStub("AceAddon-3.0"):NewAddon("PersonalRollLoot")
+
 
 -- namespace
 local _, ns = ...;
@@ -31,35 +32,70 @@ local CLASS_MONK = 10
 local CLASS_DRUID = 11
 local CLASS_DEMON_HUNTER = 12
 
+local CLASS_ROLES = {
+  [CLASS_WARRIOR] = {
+    [ROLE_MELEE_DPS] = true,
+    [ROLE_TANK] = true
+  },
+  [CLASS_PALADIN] = {
+    [ROLE_HEALER] = true,
+    [ROLE_MELEE_DPS] = true,
+    [ROLE_TANK] = true
+  },
+  [CLASS_HUNTER] = {
+    [ROLE_RANGED_DPS] = true
+  },
+  [CLASS_ROGUE] = {
+    [ROLE_MELEE_DPS] = true
+  },
+  [CLASS_PRIEST] = {
+    [ROLE_CASTER_DPS] = true,
+    [ROLE_HEALER] = true
+  },
+  [CLASS_SHAMAN] = {
+    [ROLE_CASTER_DPS] = true,
+    [ROLE_HEALER] = true,
+    [ROLE_MELEE_DPS] = true
+  },
+  [CLASS_MAGE] = {
+    [ROLE_CASTER_DPS] = true
+  },
+  [CLASS_WARLOCK] = {
+    [ROLE_CASTER_DPS] = true
+  },
+  [CLASS_DRUID] = {
+    [ROLE_CASTER_DPS] = true,
+    [ROLE_HEALER] = true,
+    [ROLE_MELEE_DPS] = true,
+    [ROLE_TANK] = true
+  }
+}
+
+local RAID_MOLTEN_CORE = "Molten Core"
+local RAID_BLACKWING_LAIR = "Blackwing Lair"
+
 local ITEM_LIST = {
   [16795] = { 
     itemId = 16795,
     name = "Arcanist Crown",
     roles = { [ROLE_CASTER_DPS] = true },
-    classes = { [CLASS_MAGE] = true }
+    classes = { [CLASS_MAGE] = true },
+    raids = { RAID_MOLTEN_CORE }
   },
   [16807] = {
     itemId = 16807,
     name = "Felheart Shoulder Pads",
     roles = { [ROLE_CASTER_DPS] = true },
-    classes = { [CLASS_WARLOCK] = true }
+    classes = { [CLASS_WARLOCK] = true },
+    raids = { RAID_MOLTEN_CORE }
   },
   [17063] = {
     itemId = 17063,
     name = "Band of Accuria",
     roles = { [ROLE_MELEE_DPS] = true, [ROLE_RANGED_DPS] = true, [ROLE_TANK] = true },
-    classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true }
+    classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
+    raids = { RAID_MOLTEN_CORE }
   }
-}
-
-local RAID_LIST = {
-  ["Molten Core"] = { "Molten Core",
-    { [16795] = true,
-      [16807] = true,
-      [17063] = true
-    }
-  },
-  ["Blackwing Lair"] = { "Blackwing Lair", {} }
 }
 
 -- saved variables
@@ -109,6 +145,17 @@ local function getRole(arg)
   return role
 end
 
+local function getRolesForClass(class)
+  local classRoles = {}
+  if (CLASS_ROLES[class]) then
+    -- copy the roles
+    for role,_ in pairs(CLASS_ROLES[class]) do
+      classRoles[role] = true
+    end
+  end
+  return classRoles
+end
+
 local function getItem(arg)
   if (not arg) then error("> No item id or name specified.", 0) end
   local itemId = tonumber(arg) -- will be nil if not a number
@@ -139,13 +186,14 @@ local COMMANDS = {
     -- add the player to our database
     local _,class,classIndex = UnitClass(name)
 
-    PLAYER_LIST[name] = {
+    local player = {
       ["name"] = name,
       ["realm"] = realm,
       ["class"] = class,
-      ["roles"] = {},
+      ["roles"] = getRolesForClass(classIndex),
       ["need-list"] = createNeedList(classIndex)
     }
+    PLAYER_LIST[name] = player
     print("> Added player '"..name.."-"..realm.."', "..class..".")
   end,
 
@@ -231,6 +279,10 @@ local COMMANDS = {
   end
 }
 
+-- ------------------------------------------------------- --
+-- register the slash commands and call the command table  --
+-- ------------------------------------------------------- --
+local toggleUI
 SLASH_PersonalRollLoot1 = "/prl"
 SLASH_PersonalRollLoot2 = "/personal"
 SlashCmdList["PersonalRollLoot"] = function(s)
@@ -240,6 +292,125 @@ SlashCmdList["PersonalRollLoot"] = function(s)
   if c then
     local status, err = pcall(c, args)
     if (not status) then print(err) end
+  else
+    -- no command specified, open the UI
+    toggleUI()
   end
   PersonalRollLootDB.PLAYER_LIST = PLAYER_LIST
 end
+
+
+-- ------------------------------------------------------- --
+-- create the UI                                           --
+-- ------------------------------------------------------- --
+local AceGUI = LibStub("AceGUI-3.0")
+local UIFrame
+
+local function closeUI(widget)
+  AceGUI:Release(widget)
+  UIFrame = nil
+end
+
+local function showUI()
+  UIFrame = AceGUI:Create("Frame")
+  UIFrame:SetCallback("OnClose", closeUI)
+  UIFrame:SetTitle("Personal Roll Loot")
+  UIFrame:SetLayout("Fill")
+  
+  -- create the tab group
+  local tab =  AceGUI:Create("TabGroup")
+  tab:SetLayout("Flow")
+  -- Setup which tabs to show
+  tab:SetTabs({{text="Players", value="PlayersTab"}, {text="Tab 2", value="tab2"}})
+  -- Register callback
+  
+  -- function that draws the widgets for the first tab
+  local function showPlayersTab(container)
+    local scrollContainer = AceGUI:Create("InlineGroup")
+--    scrollContainer:SetTitle("Player")
+    scrollContainer:SetFullHeight(true)
+    scrollContainer:SetRelativeWidth(0.3)
+    scrollContainer:SetLayout("Fill")
+    container:AddChild(scrollContainer)
+    
+    local scrollFrame = AceGUI:Create("ScrollFrame")
+    scrollFrame:SetLayout("Flow")
+    scrollContainer:AddChild(scrollFrame)
+
+    for playerName,_ in pairs(PLAYER_LIST) do
+      local label = AceGUI:Create("InteractiveLabel")
+      label:SetText(playerName)
+      label:SetFontObject(GameFontNormalLarge)
+      label:SetHeight(18)
+      scrollFrame:AddChild(label)
+    end
+    -- add a label at the end
+    local label = AceGUI:Create("Label")
+    scrollFrame:AddChild(label)
+    
+    local playerDetailsContainer = AceGUI:Create("InlineGroup")
+    playerDetailsContainer:SetLayout("List")
+    playerDetailsContainer:SetFullHeight(true)
+    playerDetailsContainer:SetRelativeWidth(0.7)
+--    playerDetailsContainer:SetTitle("Details")
+    container:AddChild(playerDetailsContainer)
+    
+    local playerNameLabel = AceGUI:Create("Label")
+    playerNameLabel:SetText("Player Name")
+    playerDetailsContainer:AddChild(playerNameLabel)
+    
+    local playerRolesGroup = AceGUI:Create("InlineGroup")
+    playerRolesGroup:SetLayout("Flow")
+    playerRolesGroup:SetTitle("Roles")
+    playerDetailsContainer:AddChild(playerRolesGroup)
+    
+    for role,_ in pairs(ROLES) do
+      local roleBox = AceGUI:Create("CheckBox")
+      roleBox:SetLabel(role)
+      playerRolesGroup:AddChild(roleBox)
+    end
+    
+    
+    
+  end
+  
+  -- function that draws the widgets for the second tab
+  local function DrawGroup2(container)
+    local desc = AceGUI:Create("Label")
+    desc:SetText("This is Tab 2")
+    desc:SetFullWidth(true)
+    container:AddChild(desc)
+    
+    local button = AceGUI:Create("Button")
+    button:SetText("Tab 2 Button")
+    button:SetWidth(200)
+    container:AddChild(button)
+  end
+  
+  -- Callback function for OnGroupSelected
+  local function SelectGroup(container, event, group)
+     container:ReleaseChildren()
+     if group == "PlayersTab" then
+        showPlayersTab(container)
+     elseif group == "tab2" then
+        DrawGroup2(container)
+     end
+  end
+  
+  tab:SetCallback("OnGroupSelected", SelectGroup)
+  -- Set initial Tab (this will fire the OnGroupSelected callback)
+  tab:SelectTab("PlayersTab")
+  
+  -- add to the frame container
+  UIFrame:AddChild(tab)
+end
+
+toggleUI = function()
+  if (UIFrame) then
+    closeUI(UIFrame)
+  else
+    showUI()
+  end
+end
+
+print("Addon loaded... PersonalRollLoot "..GetAddOnMetadata("PersonalRollLoot", "Version"))
