@@ -261,6 +261,34 @@ local function printInstanceInfo(instance)
     print("  created: "..instance["created"])
 end
 
+local function printMessage(text, type, receiver)
+  if (not receiver) then
+    print(text)
+  else
+    if (UnitExists(receiver)) then
+      SendChatMessage(text, type, nil, receiver)
+    end
+  end
+end
+
+local function printPlayerInfo(player, receiver)
+  local type = "WHISPER"
+  printMessage("> Player '"..player["name"].."', Class: "..player["class"]..",", type, receiver)
+
+  printMessage("Roles:", type, receiver)
+  local roles = player["roles"]
+  for l,_ in pairs(roles) do
+    printMessage("  "..l, type, receiver)
+  end
+
+  printMessage("Need-list:", type, receiver)
+  local needlist = player["need-list"]
+  for itemId,_ in pairs(needlist) do
+    local item = ITEM_LIST[itemId]
+    if (item) then printMessage("  "..item.name, type, receiver) end
+  end
+end
+
 -- slash commands
 local COMMANDS = {
   ["add-player"] = function(arg)
@@ -294,21 +322,7 @@ local COMMANDS = {
 
   ["player-info"] = function(arg)
     local player = getPlayer(arg)
-
-    print("> Player '"..player["name"].."', Class: "..player["class"]..",")
-
-    print("Roles:")
-    local roles = player["roles"]
-    for l,_ in pairs(roles) do
-      print("  "..l)
-    end
-
-    print("Need-list:")
-    local needlist = player["need-list"]
-    for itemId,_ in pairs(needlist) do
-      local item = ITEM_LIST[itemId]
-      if (item) then print("  "..item.name) end
-    end
+    printPlayerInfo(player, nil)
   end,
 
   ["add-role"] = function(arg)
@@ -460,6 +474,21 @@ local COMMANDS = {
       if (playerList) then print(playerList) end
       lootIndex = lootIndex + 1
     until(not roll)
+  end,
+  
+  ["announce"] = function(arg)
+    local invited = 0    
+    local memberCount = GetNumGroupMembers()
+    for index = 1, memberCount do
+      local member = GetRaidRosterInfo(index)
+      local name, realm = getPlayerByName(member)
+      local player = PLAYER_LIST[name]
+      if (player) then
+        printPlayerInfo(player, name)
+      else
+        SendChatMessage("> You are not registered for Personal Roll Loot.", "WHISPER", nil, name)
+      end
+    end
   end
 }
 
