@@ -82,6 +82,41 @@ local ITEM_LIST = {
     classes = { [CLASS_MAGE] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
+  [16796] = { 
+    itemId = 16796,
+    name = "Arcanist Leggings",
+    roles = { [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_MAGE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16797] = { 
+    itemId = 16797,
+    name = "Arcanist Mantle",
+    roles = { [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_MAGE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16798] = { 
+    itemId = 16798,
+    name = "Arcanist Robes",
+    roles = { [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_MAGE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16800] = { 
+    itemId = 16800,
+    name = "Arcanist Boots",
+    roles = { [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_MAGE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16801] = { 
+    itemId = 16801,
+    name = "Arcanist Gloves",
+    roles = { [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_MAGE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
   [16807] = {
     itemId = 16807,
     name = "Felheart Shoulder Pads",
@@ -289,6 +324,16 @@ local function printPlayerInfo(player, receiver)
   end
 end
 
+local function createPlayer(name, realm, class)
+  return {
+      ["name"] = name,
+      ["realm"] = realm,
+      ["class"] = class,
+      ["roles"] = getRolesForClass(class),
+      ["need-list"] = createNeedList(class)
+  }
+end
+
 -- slash commands
 local COMMANDS = {
   ["add-player"] = function(arg)
@@ -300,14 +345,7 @@ local COMMANDS = {
     -- add the player to our database
     local _,class = UnitClass(name)
 
-    local player = {
-      ["name"] = name,
-      ["realm"] = realm,
-      ["class"] = class,
-      ["roles"] = getRolesForClass(class),
-      ["need-list"] = createNeedList(class)
-    }
-    PLAYER_LIST[name] = player
+    PLAYER_LIST[name] = createPlayer(name,realm,class)
     print("> Added player '"..name.."-"..realm.."', "..class..".")
   end,
 
@@ -477,7 +515,6 @@ local COMMANDS = {
   end,
   
   ["announce"] = function(arg)
-    local invited = 0    
     local memberCount = GetNumGroupMembers()
     for index = 1, memberCount do
       local member = GetRaidRosterInfo(index)
