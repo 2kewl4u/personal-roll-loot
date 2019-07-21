@@ -1,6 +1,3 @@
-PersonalRollLoot = LibStub("AceAddon-3.0"):NewAddon("PersonalRollLoot")
-
-
 -- namespace
 local _, ns = ...;
 
@@ -10,7 +7,6 @@ local ROLE_MELEE_DPS = "melee-dps"
 local ROLE_RANGED_DPS = "ranged-dps"
 local ROLE_HEALER = "healer"
 local ROLE_TANK = "tank"
-
 local ROLES = {
   [ROLE_CASTER_DPS] = true,
   [ROLE_MELEE_DPS] = true,
@@ -73,6 +69,10 @@ local CLASS_ROLES = {
 
 local RAID_MOLTEN_CORE = "Molten Core"
 local RAID_BLACKWING_LAIR = "Blackwing Lair"
+local RAIDS = {
+  [RAID_MOLTEN_CORE] = true,
+  [RAID_BLACKWING_LAIR] = true
+}
 
 local ITEM_LIST = {
   [16795] = { 
@@ -99,10 +99,22 @@ local ITEM_LIST = {
 }
 
 -- saved variables
-PersonalRollLootDB = {
-  PLAYER_LIST = {}
-}
-local PLAYER_LIST = PersonalRollLootDB.PLAYER_LIST
+PersonalRollLootDB = {}
+local PLAYER_LIST
+local INSTANCE_LIST
+local activateInstance
+
+-- create an event frame
+local eventFrame = CreateFrame("Frame")
+eventFrame:RegisterEvent("ADDON_LOADED")
+function eventFrame:OnEvent(event, arg1)
+  if (event == "ADDON_LOADED") then
+    PLAYER_LIST = PersonalRollLootDB["PLAYER_LIST"] or {}
+    INSTANCE_LIST = PersonalRollLootDB["INSTANCE_LIST"] or {}
+    activateInstance = PersonalRollLootDB["activateInstance"]
+  end
+end
+eventFrame:SetScript("OnEvent", eventFrame.OnEvent);
 
 local function createNeedList(classIndex)
   local needlist = {}
@@ -167,12 +179,30 @@ local function getItem(arg)
   error("> Item with itemId or name '"..arg.."' not found.", 0)
 end
 
+local function getInstance(name)
+  if (not name) then error("> No instance name specified.", 0) end
+  local instance = INSTANCE_LIST[name]
+  if (not instance) then error("> No instance with the name '"..name.."' found.", 0) end
+  return instance
+end
+
 local function checkPlayerItem(player, item)
   local class = player["class"]
   if (not item.classes[class]) then
     local _,className,_ = UnitClass(player["name"])
     error("> Item '"..item.name.."' ("..item.itemId..") is not assigned to the class '"..className.."'.", 0)
   end
+end
+
+local function checkRaidName(raidName)
+  if (not raidName) then error("> No raid name specified.", 0) end
+  if (not RAIDS[raidName]) then error("> No raid with the name '"..raidName.."' found.", 0) end
+end
+
+local function printInstanceInfo(instance)
+    print("> Instance '"..instance["name"].."':")
+    print("  Raid: '"..instance["raid"].."'")
+    print("  created: "..instance["created"])
 end
 
 -- slash commands
@@ -276,6 +306,56 @@ local COMMANDS = {
     else
       print("> The item '"..item.name.."' ("..item.itemId..") was not on the need-list for player '"..name.."'.")
     end
+  end,
+  
+  ["create-instance"] = function(arg)
+    arg = arg or ""
+    local name, raidName = strsplit(" ", arg, 2)
+    if (strlen(name) < 1) then error("> Invalid instance name '"..name.."'.", 0) end
+    checkRaidName(raidName)
+
+    if (INSTANCE_LIST[name]) then error("> An instance with the name '"..name.."' is already registered.", 0) end
+    local creationTime = date()    
+    INSTANCE_LIST[name] = {
+      ["name"] = name,
+      ["raid"] = raidName,
+      ["created"] = creationTime,
+      ["players"] = {}
+    }
+    print("> Created new instance '"..name.."'.")
+  end,
+  
+  ["delete-instance"] = function(arg)
+    local instance = getInstance(arg)
+    local name = instance["name"]
+    INSTANCE_LIST[name] = nil
+    print("> Removed instance '"..name.."'.")
+    if (activateInstance == name) then activateInstance = nil end
+  end,
+  
+  ["instance-info"] = function(arg)
+    -- no arguments, print all instances
+    if (not arg) then
+      local empty = true
+      for name,instance in pairs(INSTANCE_LIST) do
+        printInstanceInfo(instance)
+        empty = false
+      end
+      if (empty) then print("> No instances found.") end
+    else
+      local instance = getInstance(arg)
+      printInstanceInfo(instance)
+    end
+  end,
+  
+  ["active-instance"] = function(arg)
+    local instance = getInstance(arg)
+    activateInstance = instance["name"]
+    print("> Instance '"..activateInstance.."' is now the active instance.")
+  end,
+  
+  ["invite"] = function(arg)
+    
   end
 }
 
@@ -296,7 +376,9 @@ SlashCmdList["PersonalRollLoot"] = function(s)
     -- no command specified, open the UI
 --    toggleUI()
   end
-  PersonalRollLootDB.PLAYER_LIST = PLAYER_LIST
+  PersonalRollLootDB["PLAYER_LIST"] = PLAYER_LIST
+  PersonalRollLootDB["INSTANCE_LIST"] = INSTANCE_LIST
+  PersonalRollLootDB["activateInstance"] = activateInstance
 end
 
 
