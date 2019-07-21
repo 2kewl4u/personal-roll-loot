@@ -15,18 +15,18 @@ local ROLES = {
   [ROLE_TANK] = true
 }
 
-local CLASS_WARRIOR = 1
-local CLASS_PALADIN = 2
-local CLASS_HUNTER = 3
-local CLASS_ROGUE = 4
-local CLASS_PRIEST = 5
-local CLASS_DEATH_KNIGHT = 6
-local CLASS_SHAMAN = 7
-local CLASS_MAGE = 8
-local CLASS_WARLOCK = 9
-local CLASS_MONK = 10
-local CLASS_DRUID = 11
-local CLASS_DEMON_HUNTER = 12
+local CLASS_WARRIOR = "WARRIOR"
+local CLASS_PALADIN = "PALADIN"
+local CLASS_HUNTER = "HUNTER"
+local CLASS_ROGUE = "ROGUE"
+local CLASS_PRIEST = "PRIEST"
+local CLASS_DEATH_KNIGHT = "DEATH KNIGHT"
+local CLASS_SHAMAN = "SHAMAN"
+local CLASS_MAGE = "MAGE"
+local CLASS_WARLOCK = "WARLOCK"
+local CLASS_MONK = "MONK"
+local CLASS_DRUID = "DRUID"
+local CLASS_DEMON_HUNTER = "DEMON_HUNTER"
 
 local CLASS_ROLES = {
   [CLASS_WARRIOR] = {
@@ -80,21 +80,28 @@ local ITEM_LIST = {
     name = "Arcanist Crown",
     roles = { [ROLE_CASTER_DPS] = true },
     classes = { [CLASS_MAGE] = true },
-    raids = { RAID_MOLTEN_CORE }
+    raids = { [RAID_MOLTEN_CORE] = true }
   },
   [16807] = {
     itemId = 16807,
     name = "Felheart Shoulder Pads",
     roles = { [ROLE_CASTER_DPS] = true },
     classes = { [CLASS_WARLOCK] = true },
-    raids = { RAID_MOLTEN_CORE }
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16837] = {
+    itemId = 16837,
+    name = "Earthfury Boots",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_SHAMAN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
   },
   [17063] = {
     itemId = 17063,
     name = "Band of Accuria",
     roles = { [ROLE_MELEE_DPS] = true, [ROLE_RANGED_DPS] = true, [ROLE_TANK] = true },
     classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
-    raids = { RAID_MOLTEN_CORE }
+    raids = { [RAID_MOLTEN_CORE] = true }
   }
 }
 
@@ -116,10 +123,20 @@ function eventFrame:OnEvent(event, arg1)
 end
 eventFrame:SetScript("OnEvent", eventFrame.OnEvent);
 
-local function createNeedList(classIndex)
+local function shuffle( tInput )
+    local tReturn = {}
+    for i = #tInput, 1, -1 do
+        local j = random(i)
+        tInput[i], tInput[j] = tInput[j], tInput[i]
+        tinsert(tReturn, tInput[i])
+    end
+    return tReturn
+end
+
+local function createNeedList(class)
   local needlist = {}
   for itemId,item in pairs(ITEM_LIST) do
-    if (item.classes[classIndex]) then
+    if (item.classes[class]) then
       needlist[itemId] = true
     end
   end
@@ -189,14 +206,53 @@ end
 local function checkPlayerItem(player, item)
   local class = player["class"]
   if (not item.classes[class]) then
-    local _,className,_ = UnitClass(player["name"])
-    error("> Item '"..item.name.."' ("..item.itemId..") is not assigned to the class '"..className.."'.", 0)
+    error("> Item '"..item.name.."' ("..item.itemId..") is not assigned to the class '"..class.."'.", 0)
   end
 end
 
 local function checkRaidName(raidName)
   if (not raidName) then error("> No raid name specified.", 0) end
   if (not RAIDS[raidName]) then error("> No raid with the name '"..raidName.."' found.", 0) end
+end
+
+local function isItemForInstance(item, instance)
+  local raid = instance["raid"]
+  return item["raids"][raid]
+end
+
+local function isItemForPlayer(item, player)
+  local class = player["class"]
+  local itemId = item["itemId"]
+  -- check if the item can be used by the players class
+  if (item["classes"][class]) then
+    -- check if the item is on the players need-list
+    if (player["need-list"][itemId]) then
+      -- check if the item is assigned the players role
+      for role,_ in pairs(item["roles"]) do
+        if (player["roles"][role]) then
+          return true
+        end
+      end
+    end
+  end
+end
+
+local function createLootList(instance, player)
+  local name = player["name"]
+  local items = {}
+  local itemIndex = 1
+  -- create a loot list
+  local class = player["class"]
+  for itemId, item in pairs(ITEM_LIST) do
+    if (isItemForInstance(item,instance) and isItemForPlayer(item,player)) then
+      items[itemIndex] = itemId
+      itemIndex = itemIndex + 1
+    end
+  end
+  -- shuffle the items
+  items = shuffle(items)
+  print("> Created loot table for player '"..name.."'.")
+  return items
 end
 
 local function printInstanceInfo(instance)
@@ -214,14 +270,14 @@ local COMMANDS = {
     if (PLAYER_LIST[name]) then error("> Player '"..name.."' already registered.", 0) end
 
     -- add the player to our database
-    local _,class,classIndex = UnitClass(name)
+    local _,class = UnitClass(name)
 
     local player = {
       ["name"] = name,
       ["realm"] = realm,
       ["class"] = class,
-      ["roles"] = getRolesForClass(classIndex),
-      ["need-list"] = createNeedList(classIndex)
+      ["roles"] = getRolesForClass(class),
+      ["need-list"] = createNeedList(class)
     }
     PLAYER_LIST[name] = player
     print("> Added player '"..name.."-"..realm.."', "..class..".")
@@ -355,7 +411,55 @@ local COMMANDS = {
   end,
   
   ["invite"] = function(arg)
+    if (not activateInstance) then error("> No active instance.", 0) end
+    local instance = getInstance(activateInstance)
+
+    if (not arg) then
+      local invited = 0    
+      local memberCount = GetNumGroupMembers()
+      for index = 1, memberCount do
+        local member = GetRaidRosterInfo(index)
+        local name, realm = getPlayerByName(member)
+        local player = getPlayer(name)
+        
+        if (not instance["players"][name]) then
+          instance["players"][name] = createLootList(instance,player)
+          invited = invited + 1
+        end
+      end
+      print("> Invited "..invited.." players.")
+    else
+      local player = getPlayer(arg)
+      local name = player["name"]
+      instance["players"][name] = createLootList(instance,player)
+    end
+  end,
+  
+  ["roll"] = function(arg)
+    local instance = getInstance(activateInstance)
+    local item = getItem(arg)
+    local itemId = item["itemId"]
     
+    print("> Rolling item '"..item.name.."' ("..item.itemId..")")
+    local lootIndex = 1
+    local roll
+    repeat
+      roll = false
+      local playerList
+      for name, lootlist in pairs(instance["players"]) do
+        local lootId = lootlist[lootIndex]
+        if (lootId) then
+         -- keep on rolling
+         roll = true
+         if (itemId == lootId) then
+          playerList = playerList or "Round "..lootIndex..":"
+          playerList = playerList.." "..name
+         end
+        end
+      end
+      if (playerList) then print(playerList) end
+      lootIndex = lootIndex + 1
+    until(not roll)
   end
 }
 
@@ -376,6 +480,7 @@ SlashCmdList["PersonalRollLoot"] = function(s)
     -- no command specified, open the UI
 --    toggleUI()
   end
+  
   PersonalRollLootDB["PLAYER_LIST"] = PLAYER_LIST
   PersonalRollLootDB["INSTANCE_LIST"] = INSTANCE_LIST
   PersonalRollLootDB["activateInstance"] = activateInstance
