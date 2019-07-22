@@ -1,7 +1,7 @@
-PersonalRollLoot = LibStub("AceAddon-3.0"):NewAddon("PersonalRollLoot")
-
 -- namespace
 local _, ns = ...;
+
+local ScrollList = ns.ScrollList
 
 -- constants
 local ROLE_CASTER_DPS = "caster-dps"
@@ -387,16 +387,19 @@ local COMMANDS = {
     if (PLAYER_LIST[name]) then error("> Player '"..name.."' already registered.", 0) end
 
     -- add the player to our database
-    local _,class = UnitClass(name)
+    if (not UnitIsPlayer(arg)) then error("> Unit '"..name.."' is not a player.", 0) end
+    local _,class,_ = UnitClass(arg)
 
     PLAYER_LIST[name] = createPlayer(name,realm,class)
     print("> Added player '"..name.."-"..realm.."', "..class..".")
   end,
 
   ["remove-player"] = function(arg)
-    local player = getPlayer(arg)
+    if (not arg) then error("> No player name specified.", 0) end
+    local player = PLAYER_LIST[arg]
+    if (not player) then player = getPlayer(arg) end
+    
     local name = player["name"]
-
     -- remove the player
     PLAYER_LIST[name] = nil
     print("> Removed player '"..name.."'.")
@@ -600,113 +603,135 @@ end
 -- ------------------------------------------------------- --
 -- create the UI                                           --
 -- ------------------------------------------------------- --
-local AceGUI = LibStub("AceGUI-3.0")
 local UIFrame
+local playerNameField
+local roleButtons = {}
 
-local function closeUI(widget)
-  AceGUI:Release(widget)
-  UIFrame = nil
+UIFrame = CreateFrame("Frame", "PersonalRollLootConfig", UIParent, "UIPanelDialogTemplate")
+UIFrame:SetAttribute("UIPanelLayout-defined", true)
+UIFrame:SetAttribute("UIPanelLayout-enabled", true)
+UIFrame:SetAttribute("UIPanelLayout-area", "left")
+UIFrame:SetAttribute("UIPanelLayout-pushable", 5)
+UIFrame:SetAttribute("UIPanelLayout-width", 660)
+UIFrame:SetAttribute("UIPanelLayout-whileDead", true)
+UIFrame:SetSize(660, 350)
+UIFrame:SetPoint("CENTER")
+UIFrame.Title:SetText("Personal Roll Loot")
+HideUIPanel(UIFrame)
+
+local scrollFrame = CreateFrame("ScrollFrame", "PersonalRollLootPlayerListScrollFrame", UIFrame, "FauxScrollFrameTemplate")
+scrollFrame:SetPoint("TOPLEFT", PersonalRollLootConfigDialogBG, "TOPLEFT", 6, -6)
+scrollFrame:SetPoint("BOTTOMLEFT", PersonalRollLootConfigDialogBG, "BOTTOMLEFT", 6, 6)
+scrollFrame:SetWidth(120)
+scrollFrame.offset = 0
+local function updateScrollFrame()
+  local offset = FauxScrollFrame_GetOffset(scrollFrame)
+  
+  local size = 0
+  for _, _ in pairs(PLAYER_LIST) do size = size + 1 end
+  
+  local numToDisplay = 15
+  if (size) then
+    local numItems = size
+    local buttonHeight = 25
+    FauxScrollFrame_Update(scrollFrame, size, numToDisplay, 25)
+  end
+  
+  local line = 0
+  for name, player in pairs(PLAYER_LIST) do
+    local lineminusoffset = line - offset
+    if (lineminusoffset > numToDisplay) then break end;
+    if (line >= offset and lineminusoffset < numToDisplay) then
+      local button = scrollFrame.buttons[lineminusoffset + 1]
+      if (button) then
+        button:SetText(name)
+        button:Show()
+      end
+    else
+      if (lineminusoffset >= 0 and lineminusoffset < numToDisplay) then
+        local button = scrollFrame.buttons[lineminusoffset + 1]
+        if (button) then
+          button:Hide()
+        end
+      end
+    end
+    line = line + 1
+  end
+  
+  -- hide unused items
+  while (line <= numToDisplay) do
+    local button = scrollFrame.buttons[line]
+    if (button) then
+      button:Hide()
+    end
+    line = line + 1;
+  end
+end
+scrollFrame:SetScript("OnVerticalScroll", function(self, offset)
+  FauxScrollFrame_OnVerticalScroll(self, offset, 25, updateScrollFrame)
+end)
+scrollFrame:SetScript("OnShow", updateScrollFrame)
+
+scrollFrame.buttons = {}
+for i = 1, 15 do
+  local button = CreateFrame("Button", nil, scrollFrame)
+  button:SetNormalFontObject("GameFontHighlightLeft")
+  button:SetHighlightFontObject("GameFontGreen")
+  button:SetPoint("TOPLEFT", scrollFrame, "TOPLEFT", 0, -20 * i + 20)
+  button:SetSize(120, 25)
+  button:SetText("text"..i)
+  button:SetScript("OnClick", function(self, mouseButton)
+    local name = button:GetText()
+    if (name and PLAYER_LIST[name]) then
+      local player = PLAYER_LIST[name]
+      playerNameField:SetText(name)
+      
+      for role in pairs(ROLES) do
+        local roleButton = roleButtons[role]
+        local checked = player.roles[role] == true
+        roleButton:SetChecked(checked)
+      end
+      
+      playerNameField.player = player
+    end
+  end)
+  scrollFrame.buttons[i] = button
 end
 
-local function showUI()
-  UIFrame = AceGUI:Create("Frame")
-  UIFrame:SetCallback("OnClose", closeUI)
-  UIFrame:SetTitle("Personal Roll Loot")
-  UIFrame:SetLayout("Fill")
-  
-  -- create the tab group
-  local tab =  AceGUI:Create("TabGroup")
-  tab:SetLayout("Flow")
-  -- Setup which tabs to show
-  tab:SetTabs({{text="Players", value="PlayersTab"}, {text="Tab 2", value="tab2"}})
-  -- Register callback
-  
-  -- function that draws the widgets for the first tab
-  local function showPlayersTab(container)
-    local scrollContainer = AceGUI:Create("InlineGroup")
---    scrollContainer:SetTitle("Player")
-    scrollContainer:SetFullHeight(true)
-    scrollContainer:SetRelativeWidth(0.3)
-    scrollContainer:SetLayout("Fill")
-    container:AddChild(scrollContainer)
-    
-    local scrollFrame = AceGUI:Create("ScrollFrame")
-    scrollFrame:SetLayout("Flow")
-    scrollContainer:AddChild(scrollFrame)
+playerNameField = UIFrame:CreateFontString(nil, "OVERLAY")
+playerNameField:SetPoint("TOPLEFT", scrollFrame, "TOPRIGHT", 40, -6)
+playerNameField:SetFontObject("GameFontHighlightLEFT")
+playerNameField:SetText("Player Name")
+playerNameField:SetSize(120, 20)
 
-    for playerName,_ in pairs(PLAYER_LIST) do
-      local label = AceGUI:Create("InteractiveLabel")
-      label:SetText(playerName)
-      label:SetFontObject(GameFontNormalLarge)
-      label:SetHeight(18)
-      scrollFrame:AddChild(label)
+-- role buttons
+local roleIndex = 0
+for role in pairs(ROLES) do
+  local roleButton = CreateFrame("CheckButton", nil, UIFrame, "UICheckButtonTemplate")
+  roleButton:SetPoint("TOPLEFT", playerNameField, "BOTTOMLEFT", 0, (-6 - 20 * roleIndex))
+  roleButton.text:SetText(role)
+  roleButton.role = role
+  roleButton:SetScript("OnClick", function()
+    local player = playerNameField.player
+    if (player) then
+      local checked = roleButton:GetChecked()
+      if (checked) then
+        player.roles[role] = true
+      else
+        player.roles[role] = nil
+      end
     end
-    -- add a label at the end
-    local label = AceGUI:Create("Label")
-    scrollFrame:AddChild(label)
-    
-    local playerDetailsContainer = AceGUI:Create("InlineGroup")
-    playerDetailsContainer:SetLayout("List")
-    playerDetailsContainer:SetFullHeight(true)
-    playerDetailsContainer:SetRelativeWidth(0.7)
---    playerDetailsContainer:SetTitle("Details")
-    container:AddChild(playerDetailsContainer)
-    
-    local playerNameLabel = AceGUI:Create("Label")
-    playerNameLabel:SetText("Player Name")
-    playerDetailsContainer:AddChild(playerNameLabel)
-    
-    local playerRolesGroup = AceGUI:Create("InlineGroup")
-    playerRolesGroup:SetLayout("Flow")
-    playerRolesGroup:SetTitle("Roles")
-    playerDetailsContainer:AddChild(playerRolesGroup)
-    
-    for role,_ in pairs(ROLES) do
-      local roleBox = AceGUI:Create("CheckBox")
-      roleBox:SetLabel(role)
-      playerRolesGroup:AddChild(roleBox)
-    end
-    
-    
-    
-  end
-  
-  -- function that draws the widgets for the second tab
-  local function DrawGroup2(container)
-    local desc = AceGUI:Create("Label")
-    desc:SetText("This is Tab 2")
-    desc:SetFullWidth(true)
-    container:AddChild(desc)
-    
-    local button = AceGUI:Create("Button")
-    button:SetText("Tab 2 Button")
-    button:SetWidth(200)
-    container:AddChild(button)
-  end
-  
-  -- Callback function for OnGroupSelected
-  local function SelectGroup(container, event, group)
-     container:ReleaseChildren()
-     if group == "PlayersTab" then
-        showPlayersTab(container)
-     elseif group == "tab2" then
-        DrawGroup2(container)
-     end
-  end
-  
-  tab:SetCallback("OnGroupSelected", SelectGroup)
-  -- Set initial Tab (this will fire the OnGroupSelected callback)
-  tab:SelectTab("PlayersTab")
-  
-  -- add to the frame container
-  UIFrame:AddChild(tab)
+  end)
+  roleButtons[role] = roleButton
+  roleIndex = roleIndex + 1
 end
+
 
 toggleUI = function()
-  if (UIFrame) then
-    closeUI(UIFrame)
+  if (UIFrame:IsShown()) then
+    HideUIPanel(UIFrame)
   else
-    showUI()
+    ShowUIPanel(UIFrame)
   end
 end
 
