@@ -4,5 +4,5 @@
 ## Author: Ben
 ## SavedVariables: PersonalRollLootDB
 
-embeds.xml
+ScrollList.lua
 PersonalRollLoot.lua

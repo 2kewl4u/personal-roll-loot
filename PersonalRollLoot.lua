@@ -22,13 +22,13 @@ local CLASS_PALADIN = "PALADIN"
 local CLASS_HUNTER = "HUNTER"
 local CLASS_ROGUE = "ROGUE"
 local CLASS_PRIEST = "PRIEST"
-local CLASS_DEATH_KNIGHT = "DEATH KNIGHT"
+local CLASS_DEATH_KNIGHT = "DEATHKNIGHT"
 local CLASS_SHAMAN = "SHAMAN"
 local CLASS_MAGE = "MAGE"
 local CLASS_WARLOCK = "WARLOCK"
 local CLASS_MONK = "MONK"
 local CLASS_DRUID = "DRUID"
-local CLASS_DEMON_HUNTER = "DEMON_HUNTER"
+local CLASS_DEMON_HUNTER = "DEMONHUNTER"
 
 local CLASS_ROLES = {
   [CLASS_WARRIOR] = {
@@ -50,6 +50,10 @@ local CLASS_ROLES = {
     [ROLE_CASTER_DPS] = true,
     [ROLE_HEALER] = true
   },
+  [CLASS_DEATH_KNIGHT] = {
+    [ROLE_MELEE_DPS] = true,
+    [ROLE_TANK] = true
+  },
   [CLASS_SHAMAN] = {
     [ROLE_CASTER_DPS] = true,
     [ROLE_HEALER] = true,
@@ -61,9 +65,18 @@ local CLASS_ROLES = {
   [CLASS_WARLOCK] = {
     [ROLE_CASTER_DPS] = true
   },
+  [CLASS_MONK] = {
+    [ROLE_MELEE_DPS] = true,
+    [ROLE_HEALER] = true,
+    [ROLE_TANK] = true
+  },
   [CLASS_DRUID] = {
     [ROLE_CASTER_DPS] = true,
     [ROLE_HEALER] = true,
+    [ROLE_MELEE_DPS] = true,
+    [ROLE_TANK] = true
+  },
+  [CLASS_DEMON_HUNTER] = {
     [ROLE_MELEE_DPS] = true,
     [ROLE_TANK] = true
   }
@@ -222,7 +235,7 @@ local function createNeedList(class)
   return needlist
 end
 
-local function getPlayerByName(arg)
+local function getPlayerNameAndRealm(arg)
   if (not arg) then error("> No player name specified.", 0) end
   local name, realm = UnitName(arg)
   if not name then error("> No player found with the name '"..arg.."'.", 0) end
@@ -231,7 +244,7 @@ local function getPlayerByName(arg)
 end
 
 local function getPlayer(arg)
-  local name, realm = getPlayerByName(arg)
+  local name, realm = getPlayerNameAndRealm(arg)
   local player = PLAYER_LIST[name]
   if (not player) then error("> No player registered with the name '"..name.."'.", 0) end
   return player
@@ -381,17 +394,33 @@ end
 -- slash commands
 local COMMANDS = {
   ["add-player"] = function(arg)
-    local name, realm = getPlayerByName(arg)
+    if (not arg) then
+      local added = 0    
+      local memberCount = GetNumGroupMembers()
+      for index = 1, memberCount do
+        local member = GetRaidRosterInfo(index)
+        local name, realm = getPlayerNameAndRealm(member)
 
-    -- check if we already have the player
-    if (PLAYER_LIST[name]) then error("> Player '"..name.."' already registered.", 0) end
-
-    -- add the player to our database
-    if (not UnitIsPlayer(arg)) then error("> Unit '"..name.."' is not a player.", 0) end
-    local _,class,_ = UnitClass(arg)
-
-    PLAYER_LIST[name] = createPlayer(name,realm,class)
-    print("> Added player '"..name.."-"..realm.."', "..class..".")
+        if (not PLAYER_LIST[name]) and UnitIsPlayer(member) then
+          local _,class,_ = UnitClass(member)
+          PLAYER_LIST[name] = createPlayer(name,realm,class)
+          added = added + 1
+        end
+      end
+      print("> Added "..added.." players.")
+    else
+      local name, realm = getPlayerNameAndRealm(arg)
+  
+      -- check if we already have the player
+      if (PLAYER_LIST[name]) then error("> Player '"..name.."' already registered.", 0) end
+  
+      -- add the player to our database
+      if (not UnitIsPlayer(arg)) then error("> Unit '"..name.."' is not a player.", 0) end
+      local _,class,_ = UnitClass(arg)
+  
+      PLAYER_LIST[name] = createPlayer(name,realm,class)
+      print("> Added player '"..name.."-"..realm.."', "..class..".")
+    end
   end,
 
   ["remove-player"] = function(arg)
@@ -518,7 +547,7 @@ local COMMANDS = {
       local memberCount = GetNumGroupMembers()
       for index = 1, memberCount do
         local member = GetRaidRosterInfo(index)
-        local name, realm = getPlayerByName(member)
+        local name, realm = getPlayerNameAndRealm(member)
         local player = getPlayer(name)
         
         if (not instance["players"][name]) then
@@ -565,7 +594,7 @@ local COMMANDS = {
     local memberCount = GetNumGroupMembers()
     for index = 1, memberCount do
       local member = GetRaidRosterInfo(index)
-      local name, realm = getPlayerByName(member)
+      local name, realm = getPlayerNameAndRealm(member)
       local player = PLAYER_LIST[name]
       if (player) then
         printPlayerInfo(player, name)
@@ -606,6 +635,7 @@ end
 local UIFrame
 local playerNameField
 local roleButtons = {}
+local playerItemScrollList
 
 UIFrame = CreateFrame("Frame", "PersonalRollLootConfig", UIParent, "UIPanelDialogTemplate")
 UIFrame:SetAttribute("UIPanelLayout-defined", true)
@@ -614,95 +644,36 @@ UIFrame:SetAttribute("UIPanelLayout-area", "left")
 UIFrame:SetAttribute("UIPanelLayout-pushable", 5)
 UIFrame:SetAttribute("UIPanelLayout-width", 660)
 UIFrame:SetAttribute("UIPanelLayout-whileDead", true)
-UIFrame:SetSize(660, 350)
+UIFrame:SetSize(445, 490)
 UIFrame:SetPoint("CENTER")
 UIFrame.Title:SetText("Personal Roll Loot")
 HideUIPanel(UIFrame)
 
-local scrollFrame = CreateFrame("ScrollFrame", "PersonalRollLootPlayerListScrollFrame", UIFrame, "FauxScrollFrameTemplate")
-scrollFrame:SetPoint("TOPLEFT", PersonalRollLootConfigDialogBG, "TOPLEFT", 6, -6)
-scrollFrame:SetPoint("BOTTOMLEFT", PersonalRollLootConfigDialogBG, "BOTTOMLEFT", 6, 6)
-scrollFrame:SetWidth(120)
-scrollFrame.offset = 0
-local function updateScrollFrame()
-  local offset = FauxScrollFrame_GetOffset(scrollFrame)
-  
-  local size = 0
-  for _, _ in pairs(PLAYER_LIST) do size = size + 1 end
-  
-  local numToDisplay = 15
-  if (size) then
-    local numItems = size
-    local buttonHeight = 25
-    FauxScrollFrame_Update(scrollFrame, size, numToDisplay, 25)
+local playerScrollList = ScrollList.new("PersonalRollLootPlayerListScrollFrame", UIFrame, 20)
+playerScrollList:SetPoint("TOPLEFT", PersonalRollLootConfigDialogBG, "TOPLEFT", 6, -6)
+playerScrollList:SetPoint("BOTTOMLEFT", PersonalRollLootConfigDialogBG, "BOTTOMLEFT", 6, 41)
+playerScrollList:SetWidth(180)
+playerScrollList:SetButtonHeight(20)
+playerScrollList:SetLabelProvider(function(k, v) return k end)
+playerScrollList:SetContentProvider(function() return PLAYER_LIST end)
+playerScrollList:SetButtonScript("OnClick", function(index, button, name, player)
+  playerNameField:SetText(name..", "..player.class)
+  for role in pairs(ROLES) do
+    local roleButton = roleButtons[role]
+    local checked = player.roles[role] == true
+    roleButton:SetChecked(checked)
+    
+    playerNameField.player = player
   end
-  
-  local line = 0
-  for name, player in pairs(PLAYER_LIST) do
-    local lineminusoffset = line - offset
-    if (lineminusoffset > numToDisplay) then break end;
-    if (line >= offset and lineminusoffset < numToDisplay) then
-      local button = scrollFrame.buttons[lineminusoffset + 1]
-      if (button) then
-        button:SetText(name)
-        button:Show()
-      end
-    else
-      if (lineminusoffset >= 0 and lineminusoffset < numToDisplay) then
-        local button = scrollFrame.buttons[lineminusoffset + 1]
-        if (button) then
-          button:Hide()
-        end
-      end
-    end
-    line = line + 1
-  end
-  
-  -- hide unused items
-  while (line <= numToDisplay) do
-    local button = scrollFrame.buttons[line]
-    if (button) then
-      button:Hide()
-    end
-    line = line + 1;
-  end
-end
-scrollFrame:SetScript("OnVerticalScroll", function(self, offset)
-  FauxScrollFrame_OnVerticalScroll(self, offset, 25, updateScrollFrame)
+  playerItemScrollList:Update()
 end)
-scrollFrame:SetScript("OnShow", updateScrollFrame)
-
-scrollFrame.buttons = {}
-for i = 1, 15 do
-  local button = CreateFrame("Button", nil, scrollFrame)
-  button:SetNormalFontObject("GameFontHighlightLeft")
-  button:SetHighlightFontObject("GameFontGreen")
-  button:SetPoint("TOPLEFT", scrollFrame, "TOPLEFT", 0, -20 * i + 20)
-  button:SetSize(120, 25)
-  button:SetText("text"..i)
-  button:SetScript("OnClick", function(self, mouseButton)
-    local name = button:GetText()
-    if (name and PLAYER_LIST[name]) then
-      local player = PLAYER_LIST[name]
-      playerNameField:SetText(name)
-      
-      for role in pairs(ROLES) do
-        local roleButton = roleButtons[role]
-        local checked = player.roles[role] == true
-        roleButton:SetChecked(checked)
-      end
-      
-      playerNameField.player = player
-    end
-  end)
-  scrollFrame.buttons[i] = button
-end
+CreateFrame("Frame", nil, playerScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
 
 playerNameField = UIFrame:CreateFontString(nil, "OVERLAY")
-playerNameField:SetPoint("TOPLEFT", scrollFrame, "TOPRIGHT", 40, -6)
+playerNameField:SetPoint("TOPLEFT", playerScrollList:GetFrame(), "TOPRIGHT", 40, -6)
 playerNameField:SetFontObject("GameFontHighlightLEFT")
 playerNameField:SetText("Player Name")
-playerNameField:SetSize(120, 20)
+playerNameField:SetSize(180, 20)
 
 -- role buttons
 local roleIndex = 0
@@ -725,6 +696,83 @@ for role in pairs(ROLES) do
   roleButtons[role] = roleButton
   roleIndex = roleIndex + 1
 end
+
+-- item list
+playerItemScrollList = ScrollList.new("PersonalRollLootPlayerItemListScrollFrame", UIFrame, 12)
+--playerItemScrollList:SetPoint("TOPLEFT", playerScrollList:GetFrame(), "CENTER", 0, -6)
+playerItemScrollList:SetPoint("BOTTOMLEFT", playerScrollList:GetFrame(), "BOTTOMRIGHT", 34, 0)
+--playerItemScrollList:SetPoint("TOPRIGHT", PersonalRollLootConfigDialogBG, "TOPRIGHT", -6, -6)
+playerItemScrollList:SetSize(180, 250)
+playerItemScrollList:SetButtonHeight(20)
+playerItemScrollList:SetContentProvider(function() return ITEM_LIST end)
+playerItemScrollList:SetLabelProvider(function(k, v)
+  local itemName = GetItemInfo(v.itemId)
+  if (not itemName) then itemName = v.name end
+
+  local disabled = true
+  local player = playerNameField.player
+  if (player) then
+    if (player["need-list"][v.itemId]) then disabled = false end
+  end
+  
+  return itemName, disabled
+end)
+playerItemScrollList:SetButtonScript("OnClick", function(index, button, itemId, item)
+  local player = playerNameField.player
+  if (player) then
+    local state = player["need-list"][itemId]
+    -- toggle the item state
+    if (state) then state = nil else state = true end
+    player["need-list"][itemId] = state
+    playerItemScrollList:Update()
+  end
+end)
+playerItemScrollList:SetFilter(function(itemId, item)
+  local classes = item.classes
+  local player = playerNameField.player
+  if (player) then
+    return item.classes[player.class]
+  end
+  return true
+end)
+-- border frame for the list
+CreateFrame("Frame", nil, playerItemScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
+
+-- add and remove player buttons
+local addPlayerButton = CreateFrame("Button", nil, UIFrame, "GameMenuButtonTemplate")
+addPlayerButton:SetPoint("TOPLEFT", playerScrollList:GetFrame(), "BOTTOMLEFT", 10, -6)
+addPlayerButton:SetPoint("TOPRIGHT", playerScrollList:GetFrame(), "BOTTOMRIGHT", -10, -6)
+addPlayerButton:SetText("Add Player(s)")
+addPlayerButton:SetScript("OnClick", function()
+  local cmd = COMMANDS["add-player"]
+  local name = UnitName("target")
+  local status, err = pcall(cmd, name)
+  if (not status) then
+    print(err)
+  else
+    playerScrollList:Update()
+  end
+end)
+
+local removePlayerButton = CreateFrame("Button", nil, UIFrame, "GameMenuButtonTemplate")
+removePlayerButton:SetPoint("TOPLEFT", playerItemScrollList:GetFrame(), "BOTTOMLEFT", 10, -6)
+removePlayerButton:SetPoint("TOPRIGHT", playerItemScrollList:GetFrame(), "BOTTOMRIGHT", -10, -6)
+removePlayerButton:SetText("Remove Player")
+removePlayerButton:SetScript("OnClick", function()
+  local player = playerNameField.player
+  if (player) then
+    PLAYER_LIST[player.name] = nil
+    -- update UI elements
+    playerNameField:SetText("Player Name")
+    playerNameField.player = nil
+    playerScrollList:Update()
+    playerItemScrollList:Update()
+    for role, roleButton in pairs(roleButtons) do
+      roleButton:SetChecked(false)
+    end
+  end
+end)
+
 
 
 toggleUI = function()
