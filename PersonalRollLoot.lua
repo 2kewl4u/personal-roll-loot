@@ -89,45 +89,6 @@ local RAIDS = {
   [RAID_BLACKWING_LAIR] = true
 }
 
-local CLASS_ROLES = {
-  [CLASS_WARRIOR] = {
-    [ROLE_MELEE_DPS] = true,
-    [ROLE_TANK] = true
-  },
-  [CLASS_PALADIN] = {
-    [ROLE_HEALER] = true,
-    [ROLE_MELEE_DPS] = true,
-    [ROLE_TANK] = true
-  },
-  [CLASS_HUNTER] = {
-    [ROLE_RANGED_DPS] = true
-  },
-  [CLASS_ROGUE] = {
-    [ROLE_MELEE_DPS] = true
-  },
-  [CLASS_PRIEST] = {
-    [ROLE_CASTER_DPS] = true,
-    [ROLE_HEALER] = true
-  },
-  [CLASS_SHAMAN] = {
-    [ROLE_CASTER_DPS] = true,
-    [ROLE_HEALER] = true,
-    [ROLE_MELEE_DPS] = true
-  },
-  [CLASS_MAGE] = {
-    [ROLE_CASTER_DPS] = true
-  },
-  [CLASS_WARLOCK] = {
-    [ROLE_CASTER_DPS] = true
-  },
-  [CLASS_DRUID] = {
-    [ROLE_CASTER_DPS] = true,
-    [ROLE_HEALER] = true,
-    [ROLE_MELEE_DPS] = true,
-    [ROLE_TANK] = true
-  }
-}
-
 local RAID_MOLTEN_CORE = "Molten Core"
 local RAID_BLACKWING_LAIR = "Blackwing Lair"
 
@@ -499,7 +460,7 @@ local COMMANDS = {
     checkRaidName(raidName)
 
     if (INSTANCE_LIST[name]) then error("> An instance with the name '"..name.."' is already registered.", 0) end
-    local creationTime = date()    
+    local creationTime = date("%y-%m-%d %H:%M:%S") 
     INSTANCE_LIST[name] = {
       ["name"] = name,
       ["raid"] = raidName,
@@ -636,6 +597,16 @@ local UIFrame
 local playerNameField
 local roleButtons = {}
 local playerItemScrollList
+local tabs = {}
+local numTabs = 3
+local playerTabFrame
+local instancesTabFrame
+local raidTabFrame
+
+local instanceNameField
+local instanceRaidField
+local instanceCreatedField
+local instancePlayersScrollList
 
 UIFrame = CreateFrame("Frame", "PersonalRollLootConfig", UIParent, "UIPanelDialogTemplate")
 UIFrame:SetAttribute("UIPanelLayout-defined", true)
@@ -644,14 +615,52 @@ UIFrame:SetAttribute("UIPanelLayout-area", "left")
 UIFrame:SetAttribute("UIPanelLayout-pushable", 5)
 UIFrame:SetAttribute("UIPanelLayout-width", 660)
 UIFrame:SetAttribute("UIPanelLayout-whileDead", true)
-UIFrame:SetSize(445, 490)
+UIFrame:SetSize(440, 485)
 UIFrame:SetPoint("CENTER")
 UIFrame.Title:SetText("Personal Roll Loot")
+UIFrame.numTabs = numTabs
 HideUIPanel(UIFrame)
+-- create tabs
+for tabIndex = 1, numTabs do
+  local tabButton = CreateFrame("Button", UIFrame:GetName().."Tab"..tabIndex, UIFrame, "CharacterFrameTabButtonTemplate")
+  local tabFrame = CreateFrame("Frame", nil, UIFrame)
+  tabButton.contentFrame = tabFrame
+  tabs[tabIndex] = tabButton
+  
+  tabButton:SetID(tabIndex)
+  tabButton:SetText("Tab"..tabIndex)
+  tabButton:SetScript("OnClick", function()
+    PanelTemplates_SetTab(UIFrame, tabIndex)
+    for index, tab in pairs(tabs) do
+      if (index == tabIndex) then
+        tab.contentFrame:Show()
+      else
+        tab.contentFrame:Hide()
+      end
+    end
+  end)  
+  if (tabIndex == 1) then
+    tabButton:SetPoint("TOPLEFT", UIFrame, "BOTTOMLEFT", 5, 7)
+  else
+    tabButton:SetPoint("TOPLEFT", tabs[tabIndex - 1], "TOPRIGHT", -14, 0)
+  end
+  
+  tabFrame:SetPoint("TOPLEFT", PersonalRollLootConfigDialogBG, "TOPLEFT", 0, 0)
+  tabFrame:SetPoint("BOTTOMRIGHT", PersonalRollLootConfigDialogBG, "BOTTOMRIGHT", 0, 0)
+  if (tabIndex ~= 1) then tabFrame:Hide() end
+end
+PanelTemplates_SetTab(UIFrame, 1)
+-- set the tab names
+tabs[1]:SetText("Players")
+tabs[2]:SetText("Instances")
+tabs[3]:SetText("Active Raid")
+playerTabFrame = tabs[1].contentFrame
+instancesTabFrame = tabs[2].contentFrame
+raidTabFrame = tabs[3].contentFrame
 
-local playerScrollList = ScrollList.new("PersonalRollLootPlayerListScrollFrame", UIFrame, 20)
-playerScrollList:SetPoint("TOPLEFT", PersonalRollLootConfigDialogBG, "TOPLEFT", 6, -6)
-playerScrollList:SetPoint("BOTTOMLEFT", PersonalRollLootConfigDialogBG, "BOTTOMLEFT", 6, 41)
+local playerScrollList = ScrollList.new("PersonalRollLootPlayerListScrollFrame", playerTabFrame, 20)
+playerScrollList:SetPoint("TOPLEFT", playerTabFrame, "TOPLEFT", 6, -6)
+playerScrollList:SetPoint("BOTTOMLEFT", playerTabFrame, "BOTTOMLEFT", 6, 36)
 playerScrollList:SetWidth(180)
 playerScrollList:SetButtonHeight(20)
 playerScrollList:SetLabelProvider(function(k, v) return k end)
@@ -662,14 +671,20 @@ playerScrollList:SetButtonScript("OnClick", function(index, button, name, player
     local roleButton = roleButtons[role]
     local checked = player.roles[role] == true
     roleButton:SetChecked(checked)
-    
-    playerNameField.player = player
+    if (CLASS_ROLES[player.class][role]) then
+      roleButton:SetEnabled(true)
+      roleButton.text:SetFontObject("GameFontNormal")
+    else
+      roleButton:SetEnabled(false)
+      roleButton.text:SetFontObject("GameFontDisable")
+    end
   end
+  playerNameField.player = player
   playerItemScrollList:Update()
 end)
 CreateFrame("Frame", nil, playerScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
 
-playerNameField = UIFrame:CreateFontString(nil, "OVERLAY")
+playerNameField = playerTabFrame:CreateFontString(nil, "OVERLAY")
 playerNameField:SetPoint("TOPLEFT", playerScrollList:GetFrame(), "TOPRIGHT", 40, -6)
 playerNameField:SetFontObject("GameFontHighlightLEFT")
 playerNameField:SetText("Player Name")
@@ -678,9 +693,11 @@ playerNameField:SetSize(180, 20)
 -- role buttons
 local roleIndex = 0
 for role in pairs(ROLES) do
-  local roleButton = CreateFrame("CheckButton", nil, UIFrame, "UICheckButtonTemplate")
+  local roleButton = CreateFrame("CheckButton", nil, playerTabFrame, "UICheckButtonTemplate")
   roleButton:SetPoint("TOPLEFT", playerNameField, "BOTTOMLEFT", 0, (-6 - 20 * roleIndex))
   roleButton.text:SetText(role)
+  roleButton.text:SetFontObject("GameFontDisable")
+  roleButton:SetEnabled(false)
   roleButton.role = role
   roleButton:SetScript("OnClick", function()
     local player = playerNameField.player
@@ -698,10 +715,8 @@ for role in pairs(ROLES) do
 end
 
 -- item list
-playerItemScrollList = ScrollList.new("PersonalRollLootPlayerItemListScrollFrame", UIFrame, 12)
---playerItemScrollList:SetPoint("TOPLEFT", playerScrollList:GetFrame(), "CENTER", 0, -6)
+playerItemScrollList = ScrollList.new("PersonalRollLootPlayerItemListScrollFrame", playerTabFrame, 12)
 playerItemScrollList:SetPoint("BOTTOMLEFT", playerScrollList:GetFrame(), "BOTTOMRIGHT", 34, 0)
---playerItemScrollList:SetPoint("TOPRIGHT", PersonalRollLootConfigDialogBG, "TOPRIGHT", -6, -6)
 playerItemScrollList:SetSize(180, 250)
 playerItemScrollList:SetButtonHeight(20)
 playerItemScrollList:SetContentProvider(function() return ITEM_LIST end)
@@ -739,7 +754,7 @@ end)
 CreateFrame("Frame", nil, playerItemScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
 
 -- add and remove player buttons
-local addPlayerButton = CreateFrame("Button", nil, UIFrame, "GameMenuButtonTemplate")
+local addPlayerButton = CreateFrame("Button", nil, playerTabFrame, "GameMenuButtonTemplate")
 addPlayerButton:SetPoint("TOPLEFT", playerScrollList:GetFrame(), "BOTTOMLEFT", 10, -6)
 addPlayerButton:SetPoint("TOPRIGHT", playerScrollList:GetFrame(), "BOTTOMRIGHT", -10, -6)
 addPlayerButton:SetText("Add Player(s)")
@@ -754,7 +769,7 @@ addPlayerButton:SetScript("OnClick", function()
   end
 end)
 
-local removePlayerButton = CreateFrame("Button", nil, UIFrame, "GameMenuButtonTemplate")
+local removePlayerButton = CreateFrame("Button", nil, playerTabFrame, "GameMenuButtonTemplate")
 removePlayerButton:SetPoint("TOPLEFT", playerItemScrollList:GetFrame(), "BOTTOMLEFT", 10, -6)
 removePlayerButton:SetPoint("TOPRIGHT", playerItemScrollList:GetFrame(), "BOTTOMRIGHT", -10, -6)
 removePlayerButton:SetText("Remove Player")
@@ -773,7 +788,154 @@ removePlayerButton:SetScript("OnClick", function()
   end
 end)
 
+-- instances tab
+local instanceScrollList = ScrollList.new("PersonalRollLootInstanceListScrollFrame", instancesTabFrame, 16)
+instanceScrollList:SetPoint("TOPLEFT", instancesTabFrame, "TOPLEFT", 6, -6)
+instanceScrollList:SetPoint("BOTTOMLEFT", instancesTabFrame, "TOPLEFT", 6, -335)
+instanceScrollList:SetWidth(180)
+instanceScrollList:SetButtonHeight(20)
+instanceScrollList:SetLabelProvider(function(k, v) return k end)
+instanceScrollList:SetContentProvider(function() return INSTANCE_LIST end)
+instanceScrollList:SetButtonScript("OnClick", function(index, button, name, instance)
+  activateInstance = name
+  instanceNameField:SetText("Instance: "..name)
+  instanceRaidField:SetText("Raid: "..instance.raid)
+  instanceCreatedField:SetText("Created: "..instance.created)
+  instancePlayersScrollList:Update()
+end)
+CreateFrame("Frame", nil, instanceScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
 
+local newInstanceLabel = instancesTabFrame:CreateFontString(nil, "OVERLAY")
+newInstanceLabel:SetPoint("TOPLEFT", instanceScrollList:GetFrame(), "BOTTOMLEFT", 6, -6)
+newInstanceLabel:SetFontObject("GameFontNormalLEFT")
+newInstanceLabel:SetText("New Instance")
+newInstanceLabel:SetSize(180, 20)
+
+local newInstanceEditBox = CreateFrame("Editbox", nil, instancesTabFrame, "InputBoxTemplate")
+newInstanceEditBox:SetPoint("TOPLEFT", newInstanceLabel, "BOTTOMLEFT", 0, 0)
+newInstanceEditBox:SetSize(180, 25)
+newInstanceEditBox:SetAutoFocus(false)
+newInstanceEditBox:ClearFocus()
+
+local newInstanceRaidDropDown = CreateFrame("Frame", nil, instancesTabFrame, "UIDropDownMenuTemplate")
+newInstanceRaidDropDown:SetPoint("TOPLEFT", newInstanceEditBox, "BOTTOMLEFT", -23, -6)
+newInstanceRaidDropDown:SetHeight(25)
+UIDropDownMenu_SetWidth(newInstanceRaidDropDown, 170) -- Use in place :SetWidth
+UIDropDownMenu_Initialize(newInstanceRaidDropDown, function(self, level, menuList)
+  local menuItem = UIDropDownMenu_CreateInfo()
+  for raid in pairs(RAIDS) do
+    menuItem.text = raid
+    menuItem.func = function()
+      newInstanceRaidDropDown.value = raid
+      UIDropDownMenu_SetText(newInstanceRaidDropDown, raid)
+    end
+    UIDropDownMenu_AddButton(menuItem)
+  end
+end)
+
+local addInstanceButton = CreateFrame("Button", nil, instancesTabFrame, "GameMenuButtonTemplate")
+addInstanceButton:SetPoint("TOPLEFT", newInstanceEditBox, "BOTTOMLEFT", 10, -37)
+addInstanceButton:SetPoint("TOPRIGHT", newInstanceEditBox, "BOTTOMRIGHT", -10, -37)
+addInstanceButton:SetText("Add Instance")
+addInstanceButton:SetScript("OnClick", function()
+  local name = newInstanceEditBox:GetText()
+  local raid = newInstanceRaidDropDown.value
+  if (name and raid) then
+    local cmd = COMMANDS["create-instance"]
+    local status, err = pcall(cmd, name.." "..raid)
+    if (not status) then
+      print(err)
+    else
+      instanceScrollList:Update()
+    end
+    -- clear name
+    newInstanceEditBox:SetText("")
+  end
+end)
+
+instanceNameField = instancesTabFrame:CreateFontString(nil, "OVERLAY")
+instanceNameField:SetPoint("TOPLEFT", instanceScrollList:GetFrame(), "TOPRIGHT", 40, -6)
+instanceNameField:SetFontObject("GameFontHighlightLEFT")
+instanceNameField:SetText("Instance:")
+instanceNameField:SetSize(180, 20)
+
+instanceRaidField = instancesTabFrame:CreateFontString(nil, "OVERLAY")
+instanceRaidField:SetPoint("TOPLEFT", instanceNameField, "BOTTOMLEFT", 0, 0)
+instanceRaidField:SetFontObject("GameFontHighlightLEFT")
+instanceRaidField:SetText("Raid:")
+instanceRaidField:SetSize(180, 20)
+
+instanceCreatedField = instancesTabFrame:CreateFontString(nil, "OVERLAY")
+instanceCreatedField:SetPoint("TOPLEFT", instanceRaidField, "BOTTOMLEFT", 0, 0)
+instanceCreatedField:SetFontObject("GameFontHighlightLEFT")
+instanceCreatedField:SetText("Created:")
+instanceCreatedField:SetSize(180, 20)
+
+instancesTabFrame:SetScript("OnShow", function()
+  if (activateInstance) then
+    local instance = INSTANCE_LIST[activateInstance]
+    if (instance) then
+      instanceNameField:SetText("Instance: "..instance.name)
+      instanceRaidField:SetText("Raid: "..instance.raid)
+      instanceCreatedField:SetText("Created: "..instance.created)
+    end
+  end
+end)
+
+local instancePlayersField = instancesTabFrame:CreateFontString(nil, "OVERLAY")
+instancePlayersField:SetPoint("TOPLEFT", instanceCreatedField, "BOTTOMLEFT", 0, -6)
+instancePlayersField:SetFontObject("GameFontNormalLEFT")
+instancePlayersField:SetText("Players")
+instancePlayersField:SetSize(180, 20)
+
+instancePlayersScrollList = ScrollList.new("PersonalRollLootInstancePlayerListScrollFrame", instancesTabFrame, 20)
+instancePlayersScrollList:SetPoint("TOPLEFT", instancePlayersField, "BOTTOMLEFT", -6, -6)
+instancePlayersScrollList:SetPoint("BOTTOMLEFT", instancePlayersField, "BOTTOMLEFT", -6, -292)
+instancePlayersScrollList:SetWidth(180)
+instancePlayersScrollList:SetButtonHeight(20)
+instancePlayersScrollList:SetLabelProvider(function(name, lootlist) return name end)
+instancePlayersScrollList:SetContentProvider(function()
+  if (activateInstance) then
+    local instance = INSTANCE_LIST[activateInstance]
+    if (instance) then
+      return instance.players or {}
+    end
+  end
+  return {}
+end)
+CreateFrame("Frame", nil, instancePlayersScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
+
+local inviteButton = CreateFrame("Button", nil, instancesTabFrame, "GameMenuButtonTemplate")
+inviteButton:SetPoint("TOPLEFT", instancePlayersScrollList:GetFrame(), "BOTTOMLEFT", 10, -6)
+inviteButton:SetPoint("TOPRIGHT", instancePlayersScrollList:GetFrame(), "BOTTOMRIGHT", -10, -6)
+inviteButton:SetText("Invite")
+inviteButton:SetScript("OnClick", function()
+  local cmd = COMMANDS["invite"]
+  local status, err = pcall(cmd)
+  if (not status) then
+    print(err)
+  else
+    instancePlayersScrollList:Update()
+  end
+end)
+
+local deleteInstanceButton = CreateFrame("Button", nil, instancesTabFrame, "GameMenuButtonTemplate")
+deleteInstanceButton:SetPoint("TOPLEFT", inviteButton, "BOTTOMLEFT", 0, -6)
+deleteInstanceButton:SetPoint("TOPRIGHT", inviteButton, "BOTTOMRIGHT", 0, -6)
+deleteInstanceButton:SetText("Delete Instance")
+deleteInstanceButton:SetScript("OnClick", function()
+  local cmd = COMMANDS["delete-instance"]
+  local status, err = pcall(cmd, activateInstance)
+  if (not status) then
+    print(err)
+  else
+    instanceNameField:SetText("Instance:")
+    instanceRaidField:SetText("Raid:")
+    instanceCreatedField:SetText("Created:")
+    instanceScrollList:Update()
+    instancePlayersScrollList:Update()
+  end
+end)
 
 toggleUI = function()
   if (UIFrame:IsShown()) then
