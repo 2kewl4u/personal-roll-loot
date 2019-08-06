@@ -750,6 +750,13 @@ playerItemScrollList:SetFilter(function(itemId, item)
   end
   return true
 end)
+playerItemScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
+  GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
+  GameTooltip:SetItemByID(itemId)
+end)
+playerItemScrollList:SetButtonScript("OnLeave", function()
+  GameTooltip:Hide()
+end)
 -- border frame for the list
 CreateFrame("Frame", nil, playerItemScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
 
@@ -917,6 +924,7 @@ inviteButton:SetScript("OnClick", function()
   else
     instancePlayersScrollList:Update()
   end
+--  GameTooltip:SetHyperlink("item:16846:0:0:0:0:0:0:0")
 end)
 
 local deleteInstanceButton = CreateFrame("Button", nil, instancesTabFrame, "GameMenuButtonTemplate")

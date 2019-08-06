@@ -101,13 +101,18 @@ function ScrollList.new(globalName, parentFrame, numToDisplay)
     local button = CreateFrame("Button", nil, frame)
     button:SetNormalFontObject("GameFontHighlightLeft")
     button:SetHighlightFontObject("GameFontNormal")
-    button:SetScript("OnClick", function(self, mouseButton)
-      local item = button.item
-      if (item) then
-        local script = list.buttonScript["OnClick"]
-        if (script) then script(buttonIndex, button, item.key, item.value) end
-      end
-    end)
+    
+    -- register events
+    local events = { "OnClick", "OnEnter", "OnLeave" }
+    for _, event in pairs(events) do
+      button:SetScript(event, function(self, mouseButton)
+        local item = button.item
+        if (item) then
+          local script = list.buttonScript[event]
+          if (script) then script(buttonIndex, button, item.key, item.value) end
+        end
+      end)
+    end
     button.index = buttonIndex
     buttons[buttonIndex] = button
   end
