@@ -16,29 +16,29 @@ ns.ScrollList = {
 local ScrollList = ns.ScrollList
 ScrollList.__index = ScrollList
 
-local function size(items)
-  local size = 0
-  for _, _ in pairs(items) do
-    size = size + 1
+local function size(self, items)
+  local count = 0
+  for key, value in pairs(items) do
+    if (self.filter(key, value) == true) then
+      count = count + 1
+    end
   end
-  return size
+  return count
 end
 
 local function updateScrollFrame(self)
   local scrollFrame = self.frame
-  local offset = FauxScrollFrame_GetOffset(scrollFrame)
   local items = self.contentProvider()
-  local size = size(items)
+  local itemCount = size(self, items)
   local numToDisplay = self.numToDisplay
-  if (size > numToDisplay) then
-    FauxScrollFrame_Update(scrollFrame, size, numToDisplay, self.buttonHeight)
-  end
+  FauxScrollFrame_Update(scrollFrame, itemCount, numToDisplay, self.buttonHeight, nil, nil, nil, nil, nil, nil, true)
+  local offset = FauxScrollFrame_GetOffset(scrollFrame)
   
   local line = 0
   for key, value in pairs(items) do
-    if (self.filter(key, value)) then
+    if (self.filter(key, value) == true) then
       local lineminusoffset = line - offset
-      if (lineminusoffset >= numToDisplay) then break end;
+      if (lineminusoffset >= numToDisplay) then break end
       if (line >= offset and lineminusoffset <= numToDisplay) then
         local button = self.buttons[lineminusoffset + 1]
         if (button) then
