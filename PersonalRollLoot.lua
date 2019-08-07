@@ -89,9 +89,6 @@ local RAIDS = {
   [RAID_BLACKWING_LAIR] = true
 }
 
-local RAID_MOLTEN_CORE = "Molten Core"
-local RAID_BLACKWING_LAIR = "Blackwing Lair"
-
 local ITEM_LIST = {
   [16795] = { 
     itemId = 16795,
@@ -135,11 +132,172 @@ local ITEM_LIST = {
     classes = { [CLASS_MAGE] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
+  [16803] = {
+    itemId = 16803,
+    name = "Felheart Slippers",
+    roles = { [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_WARLOCK] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16805] = {
+    itemId = 16805,
+    name = "Felheart Gloves",
+    roles = { [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_WARLOCK] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
   [16807] = {
     itemId = 16807,
     name = "Felheart Shoulder Pads",
     roles = { [ROLE_CASTER_DPS] = true },
     classes = { [CLASS_WARLOCK] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16808] = {
+    itemId = 16808,
+    name = "Felheart Horns",
+    roles = { [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_WARLOCK] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16809] = {
+    itemId = 16809,
+    name = "Felheart Robes",
+    roles = { [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_WARLOCK] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16810] = {
+    itemId = 16810,
+    name = "Felheart Pants",
+    roles = { [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_WARLOCK] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16811] = {
+    itemId = 16811,
+    name = "Boots of Prophecy",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_PRIEST] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16812] = {
+    itemId = 16812,
+    name = "Gloves of Prophecy",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_PRIEST] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16813] = {
+    itemId = 16813,
+    name = "Circlet of Prophecy",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_PRIEST] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16814] = {
+    itemId = 16814,
+    name = "Pants of Prophecy",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_PRIEST] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16815] = {
+    itemId = 16815,
+    name = "Robes of Prophecy",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_PRIEST] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16816] = {
+    itemId = 16816,
+    name = "Mantle of Prophecy",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_PRIEST] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16820] = {
+    itemId = 16820,
+    name = "Nightslayer Chestpiece",
+    roles = { [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_ROGUE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16821] = {
+    itemId = 16821,
+    name = "Nightslayer Cover",
+    roles = { [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_ROGUE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16822] = {
+    itemId = 16822,
+    name = "Nightslayer Pants",
+    roles = { [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_ROGUE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16823] = {
+    itemId = 16823,
+    name = "Nightslayer Shoulder Pads",
+    roles = { [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_ROGUE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16824] = {
+    itemId = 16824,
+    name = "Nightslayer Boots",
+    roles = { [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_ROGUE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16826] = {
+    itemId = 16826,
+    name = "Nightslayer Gloves",
+    roles = { [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_ROGUE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16829] = {
+    itemId = 16829,
+    name = "Cenarion Boots",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_DRUID] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16831] = {
+    itemId = 16831,
+    name = "Cenarion Gloves",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_DRUID] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16833] = {
+    itemId = 16833,
+    name = "Cenarion Vestments",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_DRUID] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16834] = {
+    itemId = 16834,
+    name = "Cenarion Helm",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_DRUID] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16835] = {
+    itemId = 16835,
+    name = "Cenarion Leggings",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_DRUID] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16836] = {
+    itemId = 16836,
+    name = "Cenarion Spaulders",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_DRUID] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
   [16837] = {
@@ -149,19 +307,271 @@ local ITEM_LIST = {
     classes = { [CLASS_SHAMAN] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
+  [16839] = {
+    itemId = 16839,
+    name = "Earthfury Gauntlets",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_SHAMAN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16841] = {
+    itemId = 16841,
+    name = "Earthfury Vestments",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_SHAMAN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16842] = {
+    itemId = 16842,
+    name = "Earthfury Helmet",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_SHAMAN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16843] = {
+    itemId = 16843,
+    name = "Earthfury Legguards",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_SHAMAN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16844] = {
+    itemId = 16844,
+    name = "Earthfury Epaulets",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_SHAMAN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16845] = {
+    itemId = 16845,
+    name = "Giantstalker's Breastplate",
+    roles = { [ROLE_RANGED_DPS] = true },
+    classes = { [CLASS_HUNTER] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16846] = {
+    itemId = 16846,
+    name = "Giantstalker's Helmet",
+    roles = { [ROLE_RANGED_DPS] = true },
+    classes = { [CLASS_HUNTER] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16847] = {
+    itemId = 16847,
+    name = "Giantstalker's Leggings",
+    roles = { [ROLE_RANGED_DPS] = true },
+    classes = { [CLASS_HUNTER] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16848] = {
+    itemId = 16848,
+    name = "Giantstalker's Epaulets",
+    roles = { [ROLE_RANGED_DPS] = true },
+    classes = { [CLASS_HUNTER] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16849] = {
+    itemId = 16849,
+    name = "Giantstalker's Boots",
+    roles = { [ROLE_RANGED_DPS] = true },
+    classes = { [CLASS_HUNTER] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16852] = {
+    itemId = 16852,
+    name = "Giantstalker's Gloves",
+    roles = { [ROLE_RANGED_DPS] = true },
+    classes = { [CLASS_HUNTER] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16853] = {
+    itemId = 16853,
+    name = "Lawbringer Chestguard",
+    roles = { [ROLE_HEALER] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_PALADIN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16854] = {
+    itemId = 16854,
+    name = "Lawbringer Helm",
+    roles = { [ROLE_HEALER] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_PALADIN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16855] = {
+    itemId = 16855,
+    name = "Lawbringer Legplates",
+    roles = { [ROLE_HEALER] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_PALADIN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16856] = {
+    itemId = 16856,
+    name = "Lawbringer Spaulders",
+    roles = { [ROLE_HEALER] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_PALADIN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16859] = {
+    itemId = 16859,
+    name = "Lawbringer Boots",
+    roles = { [ROLE_HEALER] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_PALADIN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16860] = {
+    itemId = 16860,
+    name = "Lawbringer Gauntlets",
+    roles = { [ROLE_HEALER] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_PALADIN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16862] = {
+    itemId = 16862,
+    name = "Sabatons of Might",
+    roles = { [ROLE_TANK] = true },
+    classes = { [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16863] = {
+    itemId = 16863,
+    name = "Gauntlets of Might",
+    roles = { [ROLE_TANK] = true },
+    classes = { [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16865] = {
+    itemId = 16865,
+    name = "Breastplate of Might",
+    roles = { [ROLE_TANK] = true },
+    classes = { [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16866] = {
+    itemId = 16866,
+    name = "Helm of Might",
+    roles = { [ROLE_TANK] = true },
+    classes = { [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16867] = {
+    itemId = 16867,
+    name = "Legplates of Might",
+    roles = { [ROLE_TANK] = true },
+    classes = { [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16868] = {
+    itemId = 16868,
+    name = "Pauldrons of Might",
+    roles = { [ROLE_TANK] = true },
+    classes = { [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16901] = {
+    itemId = 16901,
+    name = "Stormrage Legguards",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_DRUID] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16909] = {
+    itemId = 16909,
+    name = "Bloodfang Pants",
+    roles = { [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_ROGUE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16915] = {
+    itemId = 16915,
+    name = "Netherwind Pants",
+    roles = { [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_MAGE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16922] = {
+    itemId = 16922,
+    name = "Leggings of Transcendence",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_PRIEST] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16930] = {
+    itemId = 16930,
+    name = "Nemesis Leggings",
+    roles = { [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_WARLOCK] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16938] = {
+    itemId = 16938,
+    name = "Dragonstalker's Legguards",
+    roles = { [ROLE_RANGED_DPS] = true },
+    classes = { [CLASS_HUNTER] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16946] = {
+    itemId = 16946,
+    name = "Legplates of Ten Storms",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_SHAMAN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16954] = {
+    itemId = 16954,
+    name = "Judgement Legplates",
+    roles = { [ROLE_HEALER] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_PALADIN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16962] = {
+    itemId = 16962,
+    name = "Legplates of Wrath",
+    roles = { [ROLE_TANK] = true },
+    classes = { [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
   [17063] = {
     itemId = 17063,
     name = "Band of Accuria",
     roles = { [ROLE_MELEE_DPS] = true, [ROLE_RANGED_DPS] = true, [ROLE_TANK] = true },
     classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17065] = {
+    itemId = 17065,
+    name = "Medallion of Steadfast Might",
+    roles = { [ROLE_TANK] = true },
+    classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_DRUID] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17066] = {
+    itemId = 17066,
+    name = "Drillborer Disk",
+    roles = { [ROLE_TANK] = true },
+    classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17069] = {
+    itemId = 17069,
+    name = "Striker's Mark",
+    roles = { [ROLE_RANGED_DPS] = true, [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17071] = {
+    itemId = 17071,
+    name = "Gutgore Ripper",
+    roles = { [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
   }
 }
 
 -- saved variables
 PersonalRollLootDB = {}
-local PLAYER_LIST
-local INSTANCE_LIST
+local PLAYER_LIST = {}
+local INSTANCE_LIST = {}
 local activateInstance
 
 -- create an event frame
@@ -352,7 +762,9 @@ local function createPlayer(name, realm, class)
   }
 end
 
--- slash commands
+-- ------------------------------------------------------- --
+-- slash commands                                          --
+-- ------------------------------------------------------- --
 local COMMANDS = {
   ["add-player"] = function(arg)
     if (not arg) then
@@ -573,7 +985,6 @@ local toggleUI
 SLASH_PersonalRollLoot1 = "/prl"
 SLASH_PersonalRollLoot2 = "/personal"
 SlashCmdList["PersonalRollLoot"] = function(s)
-  PLAYER_LIST = PersonalRollLootDB.PLAYER_LIST
   local cmd, args = strsplit(" ", s, 2)
   local c = COMMANDS[cmd]
   if c then
@@ -601,7 +1012,7 @@ local tabs = {}
 local numTabs = 3
 local playerTabFrame
 local instancesTabFrame
-local raidTabFrame
+local rollTabFrame
 
 local instanceNameField
 local instanceRaidField
@@ -653,10 +1064,10 @@ PanelTemplates_SetTab(UIFrame, 1)
 -- set the tab names
 tabs[1]:SetText("Players")
 tabs[2]:SetText("Instances")
-tabs[3]:SetText("Active Raid")
+tabs[3]:SetText("Roll")
 playerTabFrame = tabs[1].contentFrame
 instancesTabFrame = tabs[2].contentFrame
-raidTabFrame = tabs[3].contentFrame
+rollTabFrame = tabs[3].contentFrame
 
 local playerScrollList = ScrollList.new("PersonalRollLootPlayerListScrollFrame", playerTabFrame, 20)
 playerScrollList:SetPoint("TOPLEFT", playerTabFrame, "TOPLEFT", 6, -6)
@@ -720,14 +1131,14 @@ playerItemScrollList:SetPoint("BOTTOMLEFT", playerScrollList:GetFrame(), "BOTTOM
 playerItemScrollList:SetSize(180, 250)
 playerItemScrollList:SetButtonHeight(20)
 playerItemScrollList:SetContentProvider(function() return ITEM_LIST end)
-playerItemScrollList:SetLabelProvider(function(k, v)
-  local itemName = GetItemInfo(v.itemId)
-  if (not itemName) then itemName = v.name end
+playerItemScrollList:SetLabelProvider(function(itemId, item)
+  local itemName = GetItemInfo(item.itemId)
+  if (not itemName) then itemName = item.name end
 
   local disabled = true
   local player = playerNameField.player
   if (player) then
-    if (player["need-list"][v.itemId]) then disabled = false end
+    if (player["need-list"][item.itemId]) then disabled = false end
   end
   
   return itemName, disabled
@@ -924,7 +1335,6 @@ inviteButton:SetScript("OnClick", function()
   else
     instancePlayersScrollList:Update()
   end
---  GameTooltip:SetHyperlink("item:16846:0:0:0:0:0:0:0")
 end)
 
 local deleteInstanceButton = CreateFrame("Button", nil, instancesTabFrame, "GameMenuButtonTemplate")
@@ -944,6 +1354,32 @@ deleteInstanceButton:SetScript("OnClick", function()
     instancePlayersScrollList:Update()
   end
 end)
+
+local rollItemsScrollList = ScrollList.new("PersonalRollLootRollItemScrollFrame", rollTabFrame, 20)
+rollItemsScrollList:SetPoint("TOPLEFT", rollTabFrame, "TOPLEFT", 6, -6)
+rollItemsScrollList:SetPoint("BOTTOMLEFT", rollTabFrame, "BOTTOMLEFT", 6, 36)
+rollItemsScrollList:SetWidth(180)
+rollItemsScrollList:SetButtonHeight(20)
+rollItemsScrollList:SetContentProvider(function() return ITEM_LIST end)
+rollItemsScrollList:SetLabelProvider(function(itemId, item)
+  local itemName = GetItemInfo(item.itemId)
+  if (not itemName) then itemName = item.name end
+  return itemName
+end)
+CreateFrame("Frame", nil, rollItemsScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
+rollItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
+  GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
+  GameTooltip:SetItemByID(itemId)
+end)
+rollItemsScrollList:SetButtonScript("OnLeave", function()
+  GameTooltip:Hide()
+end)
+rollItemsScrollList:SetButtonScript("OnClick", function(index, button, itemId, item)
+  local cmd = COMMANDS["roll"]
+  local status, err = pcall(cmd, itemId)
+  if (not status) then print(err) end
+end)
+
 
 toggleUI = function()
   if (UIFrame:IsShown()) then
