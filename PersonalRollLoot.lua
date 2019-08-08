@@ -565,6 +565,190 @@ local ITEM_LIST = {
     roles = { [ROLE_MELEE_DPS] = true },
     classes = { [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_WARRIOR] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17072] = {
+    itemId = 17072,
+    name = "Blastershot Launcher",
+    roles = { [ROLE_RANGED_DPS] = true, [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17073] = {
+    itemId = 17073,
+    name = "Earthshaker",
+    roles = { [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_DRUID] = true, [CLASS_PALADIN] = true, [CLASS_WARRIOR] = true, [CLASS_SHAMAN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17074] = {
+    itemId = 17074,
+    name = "Shadowstrike",
+    roles = { [ROLE_RANGED_DPS] = true, [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_HUNTER] = true, [CLASS_PALADIN] = true, [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17076] = {
+    itemId = 17076,
+    name = "Bonereaver's Edge",
+    roles = { [ROLE_RANGED_DPS] = true, [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_HUNTER] = true, [CLASS_PALADIN] = true, [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17077] = {
+    itemId = 17077,
+    name = "Crimson Shocker",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17082] = {
+    itemId = 17082,
+    name = "Shard of the Flame",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true,
+                [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17102] = {
+    itemId = 17102,
+    name = "Cloak of the Shrouded Mists",
+    roles = { [ROLE_RANGED_DPS] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17103] = {
+    itemId = 17103,
+    name = "Azuresong Mageblade",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_MAGE] = true, [CLASS_WARLOCK] = true, [CLASS_PALADIN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17104] = {
+    itemId = 17104,
+    name = "Spinal Reaper",
+    roles = { [ROLE_RANGED_DPS] = true, [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_HUNTER] = true, [CLASS_SHAMAN] = true, [CLASS_PALADIN] = true, [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17105] = {
+    itemId = 17105,
+    name = "Aurastone Hammer",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_DRUID] = true, [CLASS_SHAMAN] = true, [CLASS_PALADIN] = true, [CLASS_PRIEST] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17106] = {
+    itemId = 17106,
+    name = "Malistar's Defender",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_SHAMAN] = true, [CLASS_PALADIN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17107] = {
+    itemId = 17107,
+    name = "Dragon's Blood Cape",
+    roles = { [ROLE_RANGED_DPS] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17109] = {
+    itemId = 17109,
+    name = "Choker of Enlightenment",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17110] = {
+    itemId = 17110,
+    name = "Seal of the Archmagus",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [17204] = {
+    itemId = 17204,
+    name = "Eye of Sulfuras",
+    roles = { [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [18203] = {
+    itemId = 18203,
+    name = "Eskhandar's Right Claw",
+    roles = { [ROLE_RANGED_DPS] = true, [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [18564] = {
+    itemId = 18564,
+    name = "Bindings of the Windseeker",
+    roles = { [ROLE_RANGED_DPS] = true, [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_PALADIN] = true, [CLASS_ROGUE] = true, [CLASS_HUNTER] = true, [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [18814] = {
+    itemId = 18814,
+    name = "Choker of the Fire Lord",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [18815] = {
+    itemId = 18815,
+    name = "Essence of the Pure Flame",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true,
+                [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [18816] = {
+    itemId = 18816,
+    name = "Perdition's Blade",
+    roles = { [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [18817] = {
+    itemId = 18817,
+    name = "Crown of Destruction",
+    roles = { [ROLE_RANGED_DPS] = true, [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_HUNTER] = true, [CLASS_SHAMAN] = true, [CLASS_PALADIN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [18820] = {
+    itemId = 18820,
+    name = "Talisman of Ephemeral Power",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [18821] = {
+    itemId = 18821,
+    name = "Quick Strike Ring",
+    roles = { [ROLE_RANGED_DPS] = true, [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_ROGUE] = true, [CLASS_WARRIOR] = true, [CLASS_HUNTER] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [18822] = {
+    itemId = 18822,
+    name = "Obsidian Edged Blade",
+    roles = { [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_PALADIN] = true, [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [18823] = {
+    itemId = 18823,
+    name = "Aged Core Leather Gloves",
+    roles = { [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_ROGUE] = true, [CLASS_DRUID] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [18824] = {
+    itemId = 18824,
+    name = "Magma Tempered Boots",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_PALADIN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
   }
 }
 
