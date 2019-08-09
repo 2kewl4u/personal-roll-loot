@@ -42,8 +42,8 @@ local function updateScrollFrame(self)
       if (line >= offset and lineminusoffset <= numToDisplay) then
         local button = self.buttons[lineminusoffset + 1]
         if (button) then
-          local text, disabled = self.labelProvider(key, value)
-          button:SetText(tostring(text))
+          local text, disabled = self.labelProvider(key, value, button)
+          button:SetText(tostring(text or ""))
           if (disabled) then
             button:SetNormalFontObject("GameFontDisableLeft")
           else
@@ -79,7 +79,7 @@ local function updateScrollFrame(self)
   end
 end
 
-function ScrollList.new(globalName, parentFrame, numToDisplay)
+function ScrollList.new(globalName, parentFrame, numToDisplay, buttonTemplate)
   local self = setmetatable({}, ScrollList)
   local list = self
   self.numToDisplay = numToDisplay
@@ -98,7 +98,7 @@ function ScrollList.new(globalName, parentFrame, numToDisplay)
   -- create the buttons within the frame
   local buttons = {}
   for buttonIndex = 1, numToDisplay do
-    local button = CreateFrame("Button", nil, frame)
+    local button = CreateFrame("Button", nil, frame, buttonTemplate)
     button:SetNormalFontObject("GameFontHighlightLeft")
     button:SetHighlightFontObject("GameFontNormal")
     

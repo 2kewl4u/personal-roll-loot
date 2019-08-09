@@ -1,8 +1,9 @@
 ## Interface: 80200
 ## Title: Personal Roll Loot
-## Version: 1.0.0
+## Version: 0.0.1
 ## Author: Ben
 ## SavedVariables: PersonalRollLootDB
 
 ScrollList.lua
+Items.lua
 PersonalRollLoot.lua
