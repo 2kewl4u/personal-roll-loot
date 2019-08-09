@@ -353,12 +353,29 @@ local function createPlayer(name, realm, class)
   }
 end
 
-local function announceMemberInfo(player)
-  local target = player.name
-  local message = encodePlayerInfo(player)
---  C_ChatInfo.SendAddonMessage("PRLMemberInfo", msg, "WHISPER", receiver)
-  AddonMessage_Send("PRLMemberInfo", message, "WHISPER", target)
+local function isInGroup(player)
+  if (player) then
+    local name = player.name
+    local playerName = UnitName("player")
+    if (name == playerName or UnitInRaid(name) or UnitInParty(name)) then
+      return true
+    end
+  end
 end
+
+local function announceMemberInfo(player)
+  if (isInGroup(player)) then
+    local target = player.name
+    local message = encodePlayerInfo(player)
+    AddonMessage_Send("PRLMemberInfo", message, "WHISPER", target)
+  end
+end
+
+-- the roll algorithm
+local rollItem
+local rollOrder = {}
+
+
 
 -- ------------------------------------------------------- --
 -- slash commands                                          --
@@ -628,6 +645,7 @@ local instanceNameField
 local instanceRaidField
 local instanceCreatedField
 local instancePlayersScrollList
+local lootItems = {}
 
 MasterUIFrame = CreateFrame("Frame", "PersonalRollLootMaster", UIParent, "UIPanelDialogTemplate")
 MasterUIFrame:SetAttribute("UIPanelLayout-defined", true)
@@ -1012,6 +1030,63 @@ rollItemsScrollList:SetFilter(function(itemId, item)
   end
 end)
 
+local lootItemsField = rollTabFrame:CreateFontString(nil, "OVERLAY")
+lootItemsField:SetPoint("TOPLEFT", rollItemsScrollList:GetFrame(), "TOPRIGHT", 40, -6)
+lootItemsField:SetFontObject("GameFontNormalLEFT")
+lootItemsField:SetText("Loot")
+lootItemsField:SetSize(155, 20)
+
+local lootItemsScrollList = ScrollList.new("PersonalRollLootLootItemScrollFrame", rollTabFrame, 3, "LargeItemButtonTemplate")
+lootItemsScrollList:SetPoint("TOPLEFT", lootItemsField, "BOTTOMLEFT", -6, -6)
+lootItemsScrollList:SetSize(155, 127)
+lootItemsScrollList:SetButtonHeight(41)
+lootItemsScrollList:SetContentProvider(function() return lootItems end)
+lootItemsScrollList:SetLabelProvider(function(itemId, item, button)
+  local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType,
+        itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(itemId)
+
+  if (itemName) then
+    button.Icon:SetTexture(itemTexture)
+    button.Name:SetText(itemName)
+    button.Name:SetFontObject("GameFontHighlight")
+  end
+end)
+CreateFrame("Frame", nil, lootItemsScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
+lootItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
+  GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
+  GameTooltip:SetItemByID(itemId)
+end)
+lootItemsScrollList:SetButtonScript("OnLeave", function()
+  GameTooltip:Hide()
+end)
+lootItemsScrollList:SetButtonScript("OnClick", function(index, button, itemId, item)
+  local cmd = COMMANDS["roll"]
+  local status, err = pcall(cmd, itemId)
+  if (not status) then print(err) end
+end)
+
+local lootPrioField = rollTabFrame:CreateFontString(nil, "OVERLAY")
+lootPrioField:SetPoint("TOPLEFT", lootItemsScrollList:GetFrame(), "BOTTOMLEFT", 6, -6)
+lootPrioField:SetFontObject("GameFontNormalLEFT")
+lootPrioField:SetText("Loot Priority Order")
+lootPrioField:SetSize(155, 20)
+
+local rollItemField = rollTabFrame:CreateFontString(nil, "OVERLAY")
+rollItemField:SetPoint("TOPLEFT", lootPrioField, "BOTTOMLEFT", 0, 0)
+rollItemField:SetFontObject("GameFontHighlightLEFT")
+rollItemField:SetText("Item: -")
+rollItemField:SetSize(155, 20)
+
+local lootOrderScrollList = ScrollList.new("PersonalRollLootLootOrderScrollFrame", rollTabFrame, 11)
+lootOrderScrollList:SetPoint("TOPLEFT", rollItemField, "BOTTOMLEFT", -6, -6)
+lootOrderScrollList:SetPoint("BOTTOMLEFT", rollTabFrame, "BOTTOM", 0, 6)
+lootOrderScrollList:SetWidth(155)
+lootOrderScrollList:SetButtonHeight(20)
+lootOrderScrollList:SetContentProvider(function() return PLAYER_LIST end)
+lootOrderScrollList:SetLabelProvider(function(k, v) return k end)
+CreateFrame("Frame", nil, lootOrderScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
+
+
 -- ------------------------------------------------------- --
 -- create the member UI                                    --
 -- ------------------------------------------------------- --
@@ -1144,11 +1219,42 @@ toggleMasterUI = function() toggleUI(MasterUIFrame) end
 toggleMemberUI = function() toggleUI(MemberUIFrame) end
 
 
+local function getItemIDForName(name)
+  if (name) then
+    for itemId in pairs(ITEM_LIST) do
+      local itemName = GetItemInfo(itemId)
+      if (name == itemName) then return itemId end
+    end
+  end
+end
+
 test = function()
-  local a, b = strsplit("#", "a#", 2)
-  print(a)
-  print(b)
-  print(strlen(b))
+  local lootCount = GetNumLootItems()
+  for index = 1, lootCount do
+    local lootIcon, lootName, lootQuantity, rarity, locked,
+          isQuestItem, questId, isActive = GetLootSlotInfo(index)
+    local itemId = getItemIDForName(lootName)
+    if (itemId) then
+      print("I know this item:")
+      print(GetItemInfo(itemId))
+    end
+  end
+end
+
+local function updateLootItems()
+  local items = {}
+  -- TODO update only when in raid environment
+  local lootCount = GetNumLootItems()
+  for index = 1, lootCount do
+    local lootIcon, lootName, lootQuantity, rarity, locked,
+          isQuestItem, questId, isActive = GetLootSlotInfo(index)
+    local itemId = getItemIDForName(lootName)
+    if (itemId) then
+      items[itemId] = ITEM_LIST[itemId]
+    end
+  end
+  lootItems = items
+  lootItemsScrollList:Update()
 end
 
 local function receiveMemberInfo(msg)
@@ -1169,6 +1275,8 @@ end
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("ADDON_LOADED")
 eventFrame:RegisterEvent("CHAT_MSG_ADDON")
+eventFrame:RegisterEvent("LOOT_OPENED")
+eventFrame:RegisterEvent("LOOT_SLOT_CLEARED")
 C_ChatInfo.RegisterAddonMessagePrefix("PRLMemberInfo")
 function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4)
   if (event == "ADDON_LOADED") then
@@ -1183,6 +1291,8 @@ function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4)
         receiveMemberInfo(message)
       end
     end)
+  elseif (event == "LOOT_OPENED" or event == "LOOT_SLOT_CLEARED") then
+    updateLootItems()
   end
 end
 eventFrame:SetScript("OnEvent", eventFrame.OnEvent)
