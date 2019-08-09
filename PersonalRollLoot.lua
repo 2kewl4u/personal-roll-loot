@@ -375,7 +375,35 @@ end
 local rollItem
 local rollOrder = {}
 
-
+local function roll(itemIdOrName)
+  local instance = getInstance(activateInstance)
+  local item = getItem(itemIdOrName)
+  local itemId = item.itemId
+  rollItem = item
+  print("> Rolling item '"..item.name.."' ("..item.itemId..")")
+  local round = 1
+  local roll
+  local rollOrderList = {}
+  repeat
+    roll = false
+    local playerList
+    for name, lootlist in pairs(instance.players) do
+      local lootId = lootlist[round]
+      if (lootId) then
+       -- keep on rolling
+       roll = true
+       if (itemId == lootId) then
+        table.insert(rollOrderList, { round, name })
+        playerList = playerList or "Round "..round..":"
+        playerList = playerList.." "..name
+       end
+      end
+    end
+    if (playerList) then print(playerList) end
+    round = round + 1
+  until(not roll)
+  rollOrder = rollOrderList
+end
 
 -- ------------------------------------------------------- --
 -- slash commands                                          --
@@ -552,30 +580,31 @@ local COMMANDS = {
   end,
   
   ["roll"] = function(arg)
-    local instance = getInstance(activateInstance)
-    local item = getItem(arg)
-    local itemId = item["itemId"]
-    
-    print("> Rolling item '"..item.name.."' ("..item.itemId..")")
-    local lootIndex = 1
-    local roll
-    repeat
-      roll = false
-      local playerList
-      for name, lootlist in pairs(instance["players"]) do
-        local lootId = lootlist[lootIndex]
-        if (lootId) then
-         -- keep on rolling
-         roll = true
-         if (itemId == lootId) then
-          playerList = playerList or "Round "..lootIndex..":"
-          playerList = playerList.." "..name
-         end
-        end
-      end
-      if (playerList) then print(playerList) end
-      lootIndex = lootIndex + 1
-    until(not roll)
+    roll(arg)
+--    local instance = getInstance(activateInstance)
+--    local item = getItem(arg)
+--    local itemId = item["itemId"]
+--    
+--    print("> Rolling item '"..item.name.."' ("..item.itemId..")")
+--    local lootIndex = 1
+--    local roll
+--    repeat
+--      roll = false
+--      local playerList
+--      for name, lootlist in pairs(instance["players"]) do
+--        local lootId = lootlist[lootIndex]
+--        if (lootId) then
+--         -- keep on rolling
+--         roll = true
+--         if (itemId == lootId) then
+--          playerList = playerList or "Round "..lootIndex..":"
+--          playerList = playerList.." "..name
+--         end
+--        end
+--      end
+--      if (playerList) then print(playerList) end
+--      lootIndex = lootIndex + 1
+--    until(not roll)
   end,
   
   ["announce"] = function(arg)
@@ -646,6 +675,8 @@ local instanceRaidField
 local instanceCreatedField
 local instancePlayersScrollList
 local lootItems = {}
+local rollItemField
+local rollOrderScrollList
 
 MasterUIFrame = CreateFrame("Frame", "PersonalRollLootMaster", UIParent, "UIPanelDialogTemplate")
 MasterUIFrame:SetAttribute("UIPanelLayout-defined", true)
@@ -995,6 +1026,19 @@ deleteInstanceButton:SetScript("OnClick", function()
   end
 end)
 
+local function updateRollOrderFields(index, button, itemId, item)
+  local status, err = pcall(roll, itemId)
+  if (not status) then
+    print(err)
+  else
+    if (rollItem) then
+      local itemName = GetItemInfo(rollItem.itemId) or rollItem.name
+      rollItemField:SetText("Item: "..itemName)
+      rollOrderScrollList:Update()
+    end
+  end
+end
+
 local rollItemsScrollList = ScrollList.new("PersonalRollLootRollItemScrollFrame", rollTabFrame, 10, "LargeItemButtonTemplate")
 rollItemsScrollList:SetPoint("TOPLEFT", rollTabFrame, "TOPLEFT", 6, -6)
 rollItemsScrollList:SetPoint("BOTTOMLEFT", rollTabFrame, "BOTTOMLEFT", 6, 30)
@@ -1018,11 +1062,7 @@ end)
 rollItemsScrollList:SetButtonScript("OnLeave", function()
   GameTooltip:Hide()
 end)
-rollItemsScrollList:SetButtonScript("OnClick", function(index, button, itemId, item)
-  local cmd = COMMANDS["roll"]
-  local status, err = pcall(cmd, itemId)
-  if (not status) then print(err) end
-end)
+rollItemsScrollList:SetButtonScript("OnClick", updateRollOrderFields)
 rollItemsScrollList:SetFilter(function(itemId, item)
   if (activateInstance) then
     local instance = INSTANCE_LIST[activateInstance]
@@ -1059,11 +1099,7 @@ end)
 lootItemsScrollList:SetButtonScript("OnLeave", function()
   GameTooltip:Hide()
 end)
-lootItemsScrollList:SetButtonScript("OnClick", function(index, button, itemId, item)
-  local cmd = COMMANDS["roll"]
-  local status, err = pcall(cmd, itemId)
-  if (not status) then print(err) end
-end)
+lootItemsScrollList:SetButtonScript("OnClick", updateRollOrderFields)
 
 local lootPrioField = rollTabFrame:CreateFontString(nil, "OVERLAY")
 lootPrioField:SetPoint("TOPLEFT", lootItemsScrollList:GetFrame(), "BOTTOMLEFT", 6, -6)
@@ -1071,20 +1107,36 @@ lootPrioField:SetFontObject("GameFontNormalLEFT")
 lootPrioField:SetText("Loot Priority Order")
 lootPrioField:SetSize(155, 20)
 
-local rollItemField = rollTabFrame:CreateFontString(nil, "OVERLAY")
+rollItemField = rollTabFrame:CreateFontString(nil, "OVERLAY")
 rollItemField:SetPoint("TOPLEFT", lootPrioField, "BOTTOMLEFT", 0, 0)
 rollItemField:SetFontObject("GameFontHighlightLEFT")
 rollItemField:SetText("Item: -")
 rollItemField:SetSize(155, 20)
+local rollItemFieldButton = CreateFrame("Button", rollItemField)
+rollItemFieldButton:SetPoint("TOPLEFT", rollItemField, "TOPLEFT", 0, 0)
+rollItemFieldButton:SetSize(155, 20)
+rollItemFieldButton:SetScript("OnEnter", function()
+  if (rollItem) then
+    GameTooltip:SetOwner(rollItemField, "ANCHOR_BOTTOMRIGHT")
+    GameTooltip:SetItemByID(rollItem.itemId)
+  end
+end)
+rollItemFieldButton:SetScript("OnLeave", function()
+  GameTooltip:Hide()
+end)
 
-local lootOrderScrollList = ScrollList.new("PersonalRollLootLootOrderScrollFrame", rollTabFrame, 11)
-lootOrderScrollList:SetPoint("TOPLEFT", rollItemField, "BOTTOMLEFT", -6, -6)
-lootOrderScrollList:SetPoint("BOTTOMLEFT", rollTabFrame, "BOTTOM", 0, 6)
-lootOrderScrollList:SetWidth(155)
-lootOrderScrollList:SetButtonHeight(20)
-lootOrderScrollList:SetContentProvider(function() return PLAYER_LIST end)
-lootOrderScrollList:SetLabelProvider(function(k, v) return k end)
-CreateFrame("Frame", nil, lootOrderScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
+rollOrderScrollList = ScrollList.new("PersonalRollLootLootOrderScrollFrame", rollTabFrame, 11)
+rollOrderScrollList:SetPoint("TOPLEFT", rollItemField, "BOTTOMLEFT", -6, -6)
+rollOrderScrollList:SetPoint("BOTTOMLEFT", rollTabFrame, "BOTTOM", 0, 6)
+rollOrderScrollList:SetWidth(155)
+rollOrderScrollList:SetButtonHeight(20)
+rollOrderScrollList:SetContentProvider(function() return rollOrder end)
+rollOrderScrollList:SetLabelProvider(function(index, roundAndPlayerName)
+  local round = roundAndPlayerName[1]
+  local playerName = roundAndPlayerName[2]
+  return round.." - "..playerName
+end)
+CreateFrame("Frame", nil, rollOrderScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
 
 
 -- ------------------------------------------------------- --

@@ -3,3 +3,5 @@
 - announcement of the loot rounds to roll for the items
 
 -- only announce if you are leader or master looter and only to grp members that exist
+- history of the drops and loots of the raid grps
+- invite players into the raidgrp for the selected instance
