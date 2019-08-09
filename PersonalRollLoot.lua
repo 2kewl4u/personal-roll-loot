@@ -100,6 +100,83 @@ local PLAYER_LIST = {}
 local INSTANCE_LIST = {}
 local activateInstance
 
+local function tblsize(tbl)
+  local size = 0
+  if (tbl) then
+    for _ in pairs(tbl) do
+      size = size + 1
+    end
+  end
+  return size
+end
+
+local function keyToString(key, value) return tostring(key) end
+
+local function toCSVList(list, enc)
+  local csv = ""
+  if (not list) then return csv end
+  local first = true
+  for key, value in pairs(list) do
+    if (not first) then csv = csv.."," end
+    csv = csv..enc(key, value)
+    first = nil
+  end
+  return csv
+end
+
+local function fromCSVList(csv, dec)
+  if (csv) then
+    local list = {}
+    local split = { strsplit(",", csv) }
+    for _, element in pairs(split) do
+      dec(list, element)
+    end
+    return list 
+  end
+end
+
+local function encodePlayerInfo(player)
+  if (not player) then return nil end
+
+  local encoded = "player-info"
+  encoded = encoded.." name:"..player.name
+  encoded = encoded.." realm:"..player.realm
+  encoded = encoded.." class:"..player.class
+  encoded = encoded.." roles:"..toCSVList(player.roles, keyToString)
+  encoded = encoded.." need-list:"..toCSVList(player["need-list"], keyToString)
+  return encoded
+end
+
+local function decodePlayerInfo(info)
+  local player = {}
+  local split = { strsplit(" ", info) }
+  for _, entry in pairs(split) do
+    local k, v = strsplit(":", entry)
+    player[k] = v
+  end
+  -- check that the player info is complete
+  if (player.name and player.realm and player.class) then
+    -- decode the csv lists
+    local needcsv = player["need-list"]
+    local needList = {}
+    if (needcsv) then
+      fromCSVList(needcsv, function(l, element)
+        local index = tonumber(element)
+        if (index) then needList[index] = true end
+      end)
+    end
+    player["need-list"] = needList
+    
+    local rolescsv = player.roles
+    local roles = {}
+    if (rolescsv) then
+      fromCSVList(rolescsv, function(l, element) roles[element] = true end)
+    end
+    player.roles = roles
+    return player
+  end
+end
+
 local function shuffle( tInput )
     local tReturn = {}
     for i = #tInput, 1, -1 do
@@ -274,6 +351,13 @@ local function createPlayer(name, realm, class)
       ["roles"] = getRolesForClass(class),
       ["need-list"] = createNeedList(class)
   }
+end
+
+local function announceMemberInfo(player)
+  local target = player.name
+  local message = encodePlayerInfo(player)
+--  C_ChatInfo.SendAddonMessage("PRLMemberInfo", msg, "WHISPER", receiver)
+  AddonMessage_Send("PRLMemberInfo", message, "WHISPER", target)
 end
 
 -- ------------------------------------------------------- --
@@ -484,7 +568,7 @@ local COMMANDS = {
       local name, realm = getPlayerNameAndRealm(member)
       local player = PLAYER_LIST[name]
       if (player) then
-        printPlayerInfo(player, name)
+        announceMemberInfo(player)
       else
         SendChatMessage("> You are not registered for Personal Roll Loot.", "WHISPER", nil, name)
       end
@@ -495,10 +579,17 @@ local COMMANDS = {
 -- ------------------------------------------------------- --
 -- register the slash commands and call the command table  --
 -- ------------------------------------------------------- --
-local toggleUI
-SLASH_PersonalRollLoot1 = "/prl"
-SLASH_PersonalRollLoot2 = "/personal"
-SlashCmdList["PersonalRollLoot"] = function(s)
+local toggleMasterUI
+local toggleMemberUI
+SLASH_PersonalRollLootMember1 = "/prl"
+SLASH_PersonalRollLootMember2 = "/personal"
+SlashCmdList["PersonalRollLootMember"] = function(s)
+  -- no command specified, open the UI
+  toggleMemberUI()
+end
+SLASH_PersonalRollLootMaster1 = "/prlm"
+SLASH_PersonalRollLootMaster2 = "/personalmaster"
+SlashCmdList["PersonalRollLootMaster"] = function(s)
   local cmd, args = strsplit(" ", s, 2)
   local c = COMMANDS[cmd]
   if c then
@@ -506,7 +597,7 @@ SlashCmdList["PersonalRollLoot"] = function(s)
     if (not status) then print(err) end
   else
     -- no command specified, open the UI
-    toggleUI()
+    toggleMasterUI()
   end
   
   PersonalRollLootDB["PLAYER_LIST"] = PLAYER_LIST
@@ -523,7 +614,7 @@ SlashCmdList["PersonalRollLootTest"] = function(s) test(s) end
 -- ------------------------------------------------------- --
 -- create the UI                                           --
 -- ------------------------------------------------------- --
-local UIFrame
+local MasterUIFrame
 local playerNameField
 local roleButtons = {}
 local playerItemScrollList
@@ -538,29 +629,29 @@ local instanceRaidField
 local instanceCreatedField
 local instancePlayersScrollList
 
-UIFrame = CreateFrame("Frame", "PersonalRollLootConfig", UIParent, "UIPanelDialogTemplate")
-UIFrame:SetAttribute("UIPanelLayout-defined", true)
-UIFrame:SetAttribute("UIPanelLayout-enabled", true)
-UIFrame:SetAttribute("UIPanelLayout-area", "left")
-UIFrame:SetAttribute("UIPanelLayout-pushable", 5)
-UIFrame:SetAttribute("UIPanelLayout-width", 660)
-UIFrame:SetAttribute("UIPanelLayout-whileDead", true)
-UIFrame:SetSize(390, 485)
-UIFrame:SetPoint("CENTER")
-UIFrame.Title:SetText("Personal Roll Loot")
-UIFrame.numTabs = numTabs
-HideUIPanel(UIFrame)
+MasterUIFrame = CreateFrame("Frame", "PersonalRollLootMaster", UIParent, "UIPanelDialogTemplate")
+MasterUIFrame:SetAttribute("UIPanelLayout-defined", true)
+MasterUIFrame:SetAttribute("UIPanelLayout-enabled", true)
+MasterUIFrame:SetAttribute("UIPanelLayout-area", "left")
+MasterUIFrame:SetAttribute("UIPanelLayout-pushable", 5)
+MasterUIFrame:SetAttribute("UIPanelLayout-width", 390)
+MasterUIFrame:SetAttribute("UIPanelLayout-whileDead", true)
+MasterUIFrame:SetSize(390, 485)
+MasterUIFrame:SetPoint("CENTER")
+MasterUIFrame.Title:SetText("Personal Roll Loot - Master")
+MasterUIFrame.numTabs = numTabs
+HideUIPanel(MasterUIFrame)
 -- create tabs
 for tabIndex = 1, numTabs do
-  local tabButton = CreateFrame("Button", UIFrame:GetName().."Tab"..tabIndex, UIFrame, "CharacterFrameTabButtonTemplate")
-  local tabFrame = CreateFrame("Frame", nil, UIFrame)
+  local tabButton = CreateFrame("Button", MasterUIFrame:GetName().."Tab"..tabIndex, MasterUIFrame, "CharacterFrameTabButtonTemplate")
+  local tabFrame = CreateFrame("Frame", nil, MasterUIFrame)
   tabButton.contentFrame = tabFrame
   tabs[tabIndex] = tabButton
   
   tabButton:SetID(tabIndex)
   tabButton:SetText("Tab"..tabIndex)
   tabButton:SetScript("OnClick", function()
-    PanelTemplates_SetTab(UIFrame, tabIndex)
+    PanelTemplates_SetTab(MasterUIFrame, tabIndex)
     for index, tab in pairs(tabs) do
       if (index == tabIndex) then
         tab.contentFrame:Show()
@@ -570,16 +661,16 @@ for tabIndex = 1, numTabs do
     end
   end)  
   if (tabIndex == 1) then
-    tabButton:SetPoint("TOPLEFT", UIFrame, "BOTTOMLEFT", 5, 7)
+    tabButton:SetPoint("TOPLEFT", MasterUIFrame, "BOTTOMLEFT", 5, 7)
   else
     tabButton:SetPoint("TOPLEFT", tabs[tabIndex - 1], "TOPRIGHT", -14, 0)
   end
   
-  tabFrame:SetPoint("TOPLEFT", PersonalRollLootConfigDialogBG, "TOPLEFT", 0, 0)
-  tabFrame:SetPoint("BOTTOMRIGHT", PersonalRollLootConfigDialogBG, "BOTTOMRIGHT", 0, 0)
+  tabFrame:SetPoint("TOPLEFT", PersonalRollLootMasterDialogBG, "TOPLEFT", 0, 0)
+  tabFrame:SetPoint("BOTTOMRIGHT", PersonalRollLootMasterDialogBG, "BOTTOMRIGHT", 0, 0)
   if (tabIndex ~= 1) then tabFrame:Hide() end
 end
-PanelTemplates_SetTab(UIFrame, 1)
+PanelTemplates_SetTab(MasterUIFrame, 1)
 -- set the tab names
 tabs[1]:SetText("Players")
 tabs[2]:SetText("Instances")
@@ -611,6 +702,9 @@ playerScrollList:SetButtonScript("OnClick", function(index, button, name, player
   end
   playerNameField.player = player
   playerItemScrollList:Update()
+  
+  -- announce player TODO for testing, remove this later
+  announceMemberInfo(player)  
 end)
 CreateFrame("Frame", nil, playerScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
 
@@ -631,6 +725,7 @@ for role in pairs(ROLES) do
   roleButton.role = role
   roleButton:SetScript("OnClick", function()
     local player = playerNameField.player
+    local name = player.name
     if (player) then
       local checked = roleButton:GetChecked()
       if (checked) then
@@ -917,103 +1012,156 @@ rollItemsScrollList:SetFilter(function(itemId, item)
   end
 end)
 
+-- ------------------------------------------------------- --
+-- create the member UI                                    --
+-- ------------------------------------------------------- --
+local MemberUIFrame
+local memberTabFrame
+local memberNameField
+local memberRoleButtons = {}
+local memberItemScrollList
+local memberInfo
+local updateMemberInfo
+local createMemberInfo
 
-toggleUI = function()
-  if (UIFrame:IsShown()) then
-    HideUIPanel(UIFrame)
+MemberUIFrame = CreateFrame("Frame", "PersonalRollLootMember", UIParent, "UIPanelDialogTemplate")
+MemberUIFrame:SetAttribute("UIPanelLayout-defined", true)
+MemberUIFrame:SetAttribute("UIPanelLayout-enabled", true)
+MemberUIFrame:SetAttribute("UIPanelLayout-area", "left")
+MemberUIFrame:SetAttribute("UIPanelLayout-pushable", 6)
+MemberUIFrame:SetAttribute("UIPanelLayout-width", 390)
+MemberUIFrame:SetAttribute("UIPanelLayout-whileDead", true)
+MemberUIFrame:SetSize(390, 485)
+MemberUIFrame:SetPoint("CENTER")
+MemberUIFrame.Title:SetText("Personal Roll Loot")
+HideUIPanel(MemberUIFrame)
+
+memberTabFrame = CreateFrame("Frame", nil, MemberUIFrame)
+memberTabFrame:SetPoint("TOPLEFT", PersonalRollLootMemberDialogBG, "TOPLEFT", 0, 0)
+memberTabFrame:SetPoint("BOTTOMRIGHT", PersonalRollLootMemberDialogBG, "BOTTOMRIGHT", 0, 0)
+memberTabFrame:SetScript("OnShow", function() updateMemberInfo() end)
+
+memberNameField = memberTabFrame:CreateFontString(nil, "OVERLAY")
+memberNameField:SetPoint("TOPLEFT", memberTabFrame, "TOPLEFT", 12, -12)
+memberNameField:SetFontObject("GameFontHighlightLEFT")
+memberNameField:SetText("Player Name")
+memberNameField:SetSize(155, 20)
+
+-- role buttons
+local roleIndex = 0
+for role in pairs(ROLES) do
+  local roleButton = CreateFrame("CheckButton", nil, memberTabFrame, "UICheckButtonTemplate")
+  roleButton:SetPoint("TOPLEFT", memberNameField, "BOTTOMLEFT", 0, (-6 - 20 * roleIndex))
+  roleButton.text:SetText(role)
+  roleButton.text:SetFontObject("GameFontDisable")
+  roleButton:SetEnabled(false)
+  roleButton.role = role
+  memberRoleButtons[role] = roleButton
+  roleIndex = roleIndex + 1
+end
+
+-- item list
+memberItemScrollList = ScrollList.new("PersonalRollLootMemberItemListScrollFrame", memberTabFrame, 6, "LargeItemButtonTemplate")
+memberItemScrollList:SetPoint("BOTTOMLEFT", memberTabFrame, "BOTTOMLEFT", 6, 36)
+memberItemScrollList:SetSize(155, 250)
+memberItemScrollList:SetButtonHeight(41)
+memberItemScrollList:SetContentProvider(function() return ITEM_LIST end)
+memberItemScrollList:SetLabelProvider(function(itemId, item, button)
+  local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType,
+        itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(item.itemId)
+
+  local disabled = true
+  local player = memberInfo
+  if (player) then
+    if (player["need-list"][item.itemId]) then disabled = false end
+  end
+
+  if (itemName) then
+    button.Icon:SetTexture(itemTexture)
+    button.Name:SetText(itemName)
+    if (disabled) then
+      button.Name:SetFontObject("GameFontDisable")
+    else
+      button.Name:SetFontObject("GameFontHighlight")
+    end
+  end
+end)
+memberItemScrollList:SetFilter(function(itemId, item)
+  local classes = item.classes
+  local player = memberInfo
+  if (player) then
+    return item.classes[player.class]
+  end
+  return true
+end)
+memberItemScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
+  GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
+  GameTooltip:SetItemByID(itemId)
+end)
+memberItemScrollList:SetButtonScript("OnLeave", function()
+  GameTooltip:Hide()
+end)
+CreateFrame("Frame", nil, memberItemScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
+
+
+createMemberInfo = function()
+  if (not memberInfo) then
+    local name, realm = UnitName("player")
+    local _, class = UnitClass("player")
+    memberInfo = createPlayer(name,realm,class)
+    memberInfo.roles = {}
+    memberInfo["need-list"] = {}
+  end
+end
+
+updateMemberInfo = function()
+  -- create the member info if not present
+  createMemberInfo()
+  local class = memberInfo.class
+  memberNameField:SetText(memberInfo.name..", "..class)
+  for role in pairs(ROLES) do
+    local roleButton = memberRoleButtons[role]
+    if (memberInfo.roles[role]) then
+      roleButton:SetChecked(true)
+    else
+      roleButton:SetChecked(false)
+    end
+    if (CLASS_ROLES[class][role]) then
+      roleButton.text:SetFontObject("GameFontNormal")
+    end
+  end
+  memberItemScrollList:Update()
+end
+
+local toggleUI = function(frame)
+  if (frame:IsShown()) then
+    HideUIPanel(frame)
   else
-    ShowUIPanel(UIFrame)
+    ShowUIPanel(frame)
   end
 end
+toggleMasterUI = function() toggleUI(MasterUIFrame) end
+toggleMemberUI = function() toggleUI(MemberUIFrame) end
 
-local function keyToString(key, value) return tostring(key) end
-
-local function toCSVList(list, enc)
-  local csv = ""
-  if (not list) then return csv end
-  local first = true
-  for key, value in pairs(list) do
-    if (not first) then csv = csv.."," end
-    csv = csv..enc(key, value)
-    first = false
-  end
-  return csv
-end
-
-local function fromCSVList(csv, dec)
-  if (csv) then
-    local list = {}
-    local split = { strsplit(",", csv) }
-    for _, element in pairs(split) do
-      dec(list, element)
-    end
-    return list 
-  end
-end
-
-local function encodePlayerInfo(player)
-  if (not player) then return nil end
-  
-  local encoded = "player-info"
-  encoded = encoded.." name:"..player.name
-  encoded = encoded.." realm:"..player.realm
-  encoded = encoded.." class:"..player.class
-  encoded = encoded.." roles:"..toCSVList(player.roles, keyToString)
-  encoded = encoded.." need-list:"..toCSVList(player["need-list"], keyToString)
-  return encoded
-end
-
-local function decodePlayerInfo(info)
-  local player = {}
-  local split = { strsplit(" ", info) }
-  for _, entry in pairs(split) do
-    local k, v = strsplit(":", entry)
-    player[k] = v
-  end
-  -- check that the player info is complete
-  if (player.name and player.realm and player.class) then
-    -- decode the csv lists
-    local needcsv = player["need-list"]
-    local needList = {}
-    if (needcsv) then
-      fromCSVList(needcsv, function(l, element) needList[tonumber(element)] = true end)
-    end
-    player["need-list"] = needList
-    
-    local rolescsv = player.roles
-    local roles = {}
-    if (rolescsv) then
-      fromCSVList(rolescsv, function(l, element) roles[element] = true end)
-    end
-    player.roles = roles
-    return player
-  end
-end
-
-local function tblsize(tbl)
-  local size = 0
-  if (tbl) then
-    for _ in pairs(tbl) do
-      size = size + 1
-    end
-  end
-  return size
-end
 
 test = function()
-  local name = GetUnitName("player")
-  if (name) then
-    local player = PLAYER_LIST[name]
-    print("size before:"..tblsize(player["need-list"]))
-    local csv = encodePlayerInfo(player)
-    print(csv)
-    player = decodePlayerInfo(csv)
-    print("size after:"..tblsize(player["need-list"]))
-    printPlayerInfo(player)
---      local msg = encodePlayerInfo(player)
---      if (msg) then
---        C_ChatInfo.SendAddonMessage("PersonalRollLoot", msg, "WHISPER", name)
---      end
+  local a, b = strsplit("#", "a#", 2)
+  print(a)
+  print(b)
+  print(strlen(b))
+end
+
+local function receiveMemberInfo(msg)
+  -- create the member info if not present
+  createMemberInfo()
+  if (msg) then
+    local player = decodePlayerInfo(msg)
+    if (player) then
+      memberInfo.roles = player.roles or {}
+      memberInfo["need-list"] = player["need-list"] or {}
+      -- update the member info
+      updateMemberInfo()
+    end
   end
 end
 
@@ -1021,14 +1169,20 @@ end
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("ADDON_LOADED")
 eventFrame:RegisterEvent("CHAT_MSG_ADDON")
-C_ChatInfo.RegisterAddonMessagePrefix("PersonalRollLoot")
+C_ChatInfo.RegisterAddonMessagePrefix("PRLMemberInfo")
 function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4)
   if (event == "ADDON_LOADED") then
     PLAYER_LIST = PersonalRollLootDB["PLAYER_LIST"] or {}
     INSTANCE_LIST = PersonalRollLootDB["INSTANCE_LIST"] or {}
     activateInstance = PersonalRollLootDB["activateInstance"]
   elseif (event == "CHAT_MSG_ADDON") then
-    print("received addon message: "..arg2)
+--    print("received addon message: "..arg2)
+--    print("from: "..arg4)
+    AddonMessage_Receive(arg1, arg2, arg3, arg4, function(prefix, message, type, sender)
+      if (prefix == "PRLMemberInfo") then
+        receiveMemberInfo(message)
+      end
+    end)
   end
 end
 eventFrame:SetScript("OnEvent", eventFrame.OnEvent)

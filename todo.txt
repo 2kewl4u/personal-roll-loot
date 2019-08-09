@@ -1,0 +1,5 @@
+- inspect to automatically deactivate items for a player that he has equipped
+- announcement of the current player-info (maybe via whisper)
+- announcement of the loot rounds to roll for the items
+
+-- only announce if you are leader of master looter and only to grp members that exist

@@ -4,6 +4,8 @@
 ## Author: Ben
 ## SavedVariables: PersonalRollLootDB
 
+Libs\AceComm-3.0\ChatThrottleLib.lua
+AddonMessage.lua
 ScrollList.lua
 Items.lua
 PersonalRollLoot.lua
