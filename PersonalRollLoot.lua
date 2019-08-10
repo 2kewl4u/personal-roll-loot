@@ -376,9 +376,8 @@ local function createPlayer(name, realm, class)
   }
 end
 
-local function isInGroup(player)
-  if (player) then
-    local name = player.name
+local function isInGroup(name)
+  if (name) then
     local playerName = UnitName("player")
     if (name == playerName or UnitInRaid(name) or UnitInParty(name)) then
       return true
@@ -387,16 +386,27 @@ local function isInGroup(player)
 end
 
 local function announceMemberInfo(player)
-  if (isInGroup(player)) then
-    local target = player.name
+  if (player and isInGroup(player.name)) then
     local message = encodePlayerInfo(player)
-    AddonMessage_Send("PRLMemberInfo", message, "WHISPER", target)
+    AddonMessage_Send("PRLMemberInfo", message, "WHISPER", player.name)
   end
 end
 
 local function announceRollOrderInfo(itemId, rollOrder)
-  local message = encodeRollOrderInfo(itemId, rollOrder)
-  AddonMessage_Send("PRLRollOrderInfo", message, "WHISPER", "Rabbis")
+  if (activateInstance) then
+    local instance = INSTANCE_LIST[activateInstance]
+    if (instance) then
+      local playerName = UnitName("player")
+      local message = encodeRollOrderInfo(itemId, rollOrder)
+--      AddonMessage_Send("PRLRollOrderInfo", message, "WHISPER", playerName) -- for testing purposes
+      for name in pairs(instance.players) do
+        if ((name ~= playerName) and isInGroup(name)) then
+          AddonMessage_Send("PRLRollOrderInfo", message, "WHISPER", name)
+        end
+      end
+    end
+  end
+  
 end
 
 -- the roll algorithm
@@ -408,7 +418,7 @@ local function roll(itemIdOrName)
   local item = getItem(itemIdOrName)
   local itemId = item.itemId
   rollItem = item
-  print("> Rolling item '"..item.name.."' ("..item.itemId..")")
+--  print("> Rolling item '"..item.name.."' ("..item.itemId..")")
   local round = 1
   local roll
   local rollOrderList = {}
@@ -427,7 +437,7 @@ local function roll(itemIdOrName)
        end
       end
     end
-    if (playerList) then print(playerList) end
+--    if (playerList) then print(playerList) end
     round = round + 1
   until(not roll)
   rollOrder = rollOrderList
@@ -1470,7 +1480,8 @@ function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4)
         receiveRollOrderInfo(message)
         if (not MemberUIFrame:IsShown()) then
           print("> Received a personal roll announcement. Type /prl to see the order.")
-          -- TODO maybe open the UI automatically: ShowUIPanel(MemberUIFrame)
+          -- TODO maybe open the UI automatically:
+          ShowUIPanel(MemberUIFrame)
         end
       end
     end)
