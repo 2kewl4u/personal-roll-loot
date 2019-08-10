@@ -581,30 +581,6 @@ local COMMANDS = {
   
   ["roll"] = function(arg)
     roll(arg)
---    local instance = getInstance(activateInstance)
---    local item = getItem(arg)
---    local itemId = item["itemId"]
---    
---    print("> Rolling item '"..item.name.."' ("..item.itemId..")")
---    local lootIndex = 1
---    local roll
---    repeat
---      roll = false
---      local playerList
---      for name, lootlist in pairs(instance["players"]) do
---        local lootId = lootlist[lootIndex]
---        if (lootId) then
---         -- keep on rolling
---         roll = true
---         if (itemId == lootId) then
---          playerList = playerList or "Round "..lootIndex..":"
---          playerList = playerList.." "..name
---         end
---        end
---      end
---      if (playerList) then print(playerList) end
---      lootIndex = lootIndex + 1
---    until(not roll)
   end,
   
   ["announce"] = function(arg)
@@ -678,14 +654,42 @@ local lootItems = {}
 local rollItemField
 local rollOrderScrollList
 
+-- layout constants
+local COLUMN_WIDTH = 155
+local TEXT_FIELD_HEIGHT = 20
+local ITEM_BUTTON_HEIGHT = 41
+local WINDOW_WIDTH = 410
+local WINDOW_HEIGHT = 485
+local MARGIN = 12
+local SPACING = 6
+
+-- menu functions
+local function hideTooltip()
+  GameTooltip:Hide()
+end
+
+local function showPlayerTooltip(button, playerName)
+  local unitName = playerName
+  local name, realm = UnitName(playerName)
+  if (name and realm) then
+    unitName = name.."-"..realm
+  end
+  GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
+  GameTooltip:SetUnit(unitName)
+end
+
+local function createBorder(frame)
+  CreateFrame("Frame", nil, frame, "InsetFrameTemplate"):SetAllPoints()
+end
+
 MasterUIFrame = CreateFrame("Frame", "PersonalRollLootMaster", UIParent, "UIPanelDialogTemplate")
 MasterUIFrame:SetAttribute("UIPanelLayout-defined", true)
 MasterUIFrame:SetAttribute("UIPanelLayout-enabled", true)
 MasterUIFrame:SetAttribute("UIPanelLayout-area", "left")
 MasterUIFrame:SetAttribute("UIPanelLayout-pushable", 5)
-MasterUIFrame:SetAttribute("UIPanelLayout-width", 390)
+MasterUIFrame:SetAttribute("UIPanelLayout-width", WINDOW_WIDTH)
 MasterUIFrame:SetAttribute("UIPanelLayout-whileDead", true)
-MasterUIFrame:SetSize(390, 485)
+MasterUIFrame:SetSize(WINDOW_WIDTH, WINDOW_HEIGHT)
 MasterUIFrame:SetPoint("CENTER")
 MasterUIFrame.Title:SetText("Personal Roll Loot - Master")
 MasterUIFrame.numTabs = numTabs
@@ -728,11 +732,14 @@ playerTabFrame = tabs[1].contentFrame
 instancesTabFrame = tabs[2].contentFrame
 rollTabFrame = tabs[3].contentFrame
 
-local playerScrollList = ScrollList.new("PersonalRollLootPlayerListScrollFrame", playerTabFrame, 20)
-playerScrollList:SetPoint("TOPLEFT", playerTabFrame, "TOPLEFT", 6, -6)
-playerScrollList:SetPoint("BOTTOMLEFT", playerTabFrame, "BOTTOMLEFT", 6, 36)
-playerScrollList:SetWidth(155)
-playerScrollList:SetButtonHeight(20)
+-- --------------------------------------------------------- --
+-- the player list to add and remove players to the tracking --
+-- --------------------------------------------------------- --
+local playerScrollList = ScrollList.new("PersonalRollLootPlayerListScrollFrame", playerTabFrame, 19)
+playerScrollList:SetPoint("TOPLEFT", playerTabFrame, "TOPLEFT", MARGIN, -MARGIN)
+playerScrollList:SetPoint("BOTTOMLEFT", playerTabFrame, "BOTTOMLEFT", MARGIN, TEXT_FIELD_HEIGHT + MARGIN + SPACING)
+playerScrollList:SetWidth(COLUMN_WIDTH)
+playerScrollList:SetButtonHeight(TEXT_FIELD_HEIGHT)
 playerScrollList:SetLabelProvider(function(k, v) return k end)
 playerScrollList:SetContentProvider(function() return PLAYER_LIST end)
 playerScrollList:SetButtonScript("OnClick", function(index, button, name, player)
@@ -755,19 +762,38 @@ playerScrollList:SetButtonScript("OnClick", function(index, button, name, player
   -- announce player TODO for testing, remove this later
   announceMemberInfo(player)  
 end)
-CreateFrame("Frame", nil, playerScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
+playerScrollList:SetButtonScript("OnEnter", function(index, button, name, player)
+  showPlayerTooltip(button, name)
+end)
+playerScrollList:SetButtonScript("OnLeave", hideTooltip)
+createBorder(playerScrollList:GetFrame())
+
+local addPlayerButton = CreateFrame("Button", nil, playerTabFrame, "GameMenuButtonTemplate")
+addPlayerButton:SetPoint("BOTTOMLEFT", playerTabFrame, "BOTTOMLEFT", MARGIN, MARGIN)
+addPlayerButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
+addPlayerButton:SetText("Add Player(s)")
+addPlayerButton:SetScript("OnClick", function()
+  local cmd = COMMANDS["add-player"]
+  local name = UnitName("target")
+  local status, err = pcall(cmd, name)
+  if (not status) then
+    print(err)
+  else
+    playerScrollList:Update()
+  end
+end)
 
 playerNameField = playerTabFrame:CreateFontString(nil, "OVERLAY")
-playerNameField:SetPoint("TOPLEFT", playerScrollList:GetFrame(), "TOPRIGHT", 40, -6)
+playerNameField:SetPoint("TOPLEFT", playerTabFrame, "TOPLEFT", WINDOW_WIDTH / 2 + SPACING, -MARGIN)
 playerNameField:SetFontObject("GameFontHighlightLEFT")
 playerNameField:SetText("Player Name")
-playerNameField:SetSize(155, 20)
+playerNameField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 
 -- role buttons
 local roleIndex = 0
 for role in pairs(ROLES) do
   local roleButton = CreateFrame("CheckButton", nil, playerTabFrame, "UICheckButtonTemplate")
-  roleButton:SetPoint("TOPLEFT", playerNameField, "BOTTOMLEFT", 0, (-6 - 20 * roleIndex))
+  roleButton:SetPoint("TOPLEFT", playerNameField, "BOTTOMLEFT", 0, (-SPACING - TEXT_FIELD_HEIGHT * roleIndex))
   roleButton.text:SetText(role)
   roleButton.text:SetFontObject("GameFontDisable")
   roleButton:SetEnabled(false)
@@ -790,9 +816,9 @@ end
 
 -- item list
 playerItemScrollList = ScrollList.new("PersonalRollLootPlayerItemListScrollFrame", playerTabFrame, 6, "LargeItemButtonTemplate")
-playerItemScrollList:SetPoint("BOTTOMLEFT", playerScrollList:GetFrame(), "BOTTOMRIGHT", 34, 0)
-playerItemScrollList:SetSize(155, 250)
-playerItemScrollList:SetButtonHeight(41)
+playerItemScrollList:SetPoint("BOTTOMLEFT", playerTabFrame, "BOTTOMLEFT", WINDOW_WIDTH / 2 + SPACING, TEXT_FIELD_HEIGHT + MARGIN + SPACING)
+playerItemScrollList:SetSize(COLUMN_WIDTH, 6 * ITEM_BUTTON_HEIGHT + SPACING)
+playerItemScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
 playerItemScrollList:SetContentProvider(function() return ITEM_LIST end)
 playerItemScrollList:SetLabelProvider(function(itemId, item, button)
   local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType,
@@ -836,31 +862,13 @@ playerItemScrollList:SetButtonScript("OnEnter", function(index, button, itemId, 
   GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
   GameTooltip:SetItemByID(itemId)
 end)
-playerItemScrollList:SetButtonScript("OnLeave", function()
-  GameTooltip:Hide()
-end)
+playerItemScrollList:SetButtonScript("OnLeave", hideTooltip)
 -- border frame for the list
-CreateFrame("Frame", nil, playerItemScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
-
--- add and remove player buttons
-local addPlayerButton = CreateFrame("Button", nil, playerTabFrame, "GameMenuButtonTemplate")
-addPlayerButton:SetPoint("TOPLEFT", playerScrollList:GetFrame(), "BOTTOMLEFT", 10, -6)
-addPlayerButton:SetPoint("TOPRIGHT", playerScrollList:GetFrame(), "BOTTOMRIGHT", -10, -6)
-addPlayerButton:SetText("Add Player(s)")
-addPlayerButton:SetScript("OnClick", function()
-  local cmd = COMMANDS["add-player"]
-  local name = UnitName("target")
-  local status, err = pcall(cmd, name)
-  if (not status) then
-    print(err)
-  else
-    playerScrollList:Update()
-  end
-end)
+createBorder(playerItemScrollList:GetFrame())
 
 local removePlayerButton = CreateFrame("Button", nil, playerTabFrame, "GameMenuButtonTemplate")
-removePlayerButton:SetPoint("TOPLEFT", playerItemScrollList:GetFrame(), "BOTTOMLEFT", 10, -6)
-removePlayerButton:SetPoint("TOPRIGHT", playerItemScrollList:GetFrame(), "BOTTOMRIGHT", -10, -6)
+removePlayerButton:SetPoint("BOTTOMLEFT", playerTabFrame, "BOTTOMLEFT", WINDOW_WIDTH / 2 + SPACING, MARGIN)
+removePlayerButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 removePlayerButton:SetText("Remove Player")
 removePlayerButton:SetScript("OnClick", function()
   local player = playerNameField.player
@@ -878,11 +886,11 @@ removePlayerButton:SetScript("OnClick", function()
 end)
 
 -- instances tab
-local instanceScrollList = ScrollList.new("PersonalRollLootInstanceListScrollFrame", instancesTabFrame, 16)
-instanceScrollList:SetPoint("TOPLEFT", instancesTabFrame, "TOPLEFT", 6, -6)
-instanceScrollList:SetPoint("BOTTOMLEFT", instancesTabFrame, "TOPLEFT", 6, -335)
-instanceScrollList:SetWidth(155)
-instanceScrollList:SetButtonHeight(20)
+local instanceScrollList = ScrollList.new("PersonalRollLootInstanceListScrollFrame", instancesTabFrame, 15)
+instanceScrollList:SetPoint("TOPLEFT", instancesTabFrame, "TOPLEFT", MARGIN, -MARGIN)
+instanceScrollList:SetPoint("BOTTOMLEFT", instancesTabFrame, "BOTTOMLEFT", MARGIN, MARGIN + 4 * (TEXT_FIELD_HEIGHT + SPACING) + 10)
+instanceScrollList:SetWidth(COLUMN_WIDTH)
+instanceScrollList:SetButtonHeight(TEXT_FIELD_HEIGHT)
 instanceScrollList:SetLabelProvider(function(k, v) return k end)
 instanceScrollList:SetContentProvider(function() return INSTANCE_LIST end)
 instanceScrollList:SetButtonScript("OnClick", function(index, button, name, instance)
@@ -892,22 +900,22 @@ instanceScrollList:SetButtonScript("OnClick", function(index, button, name, inst
   instanceCreatedField:SetText(instance.created)
   instancePlayersScrollList:Update()
 end)
-CreateFrame("Frame", nil, instanceScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
+createBorder(instanceScrollList:GetFrame())
 
 local newInstanceLabel = instancesTabFrame:CreateFontString(nil, "OVERLAY")
-newInstanceLabel:SetPoint("TOPLEFT", instanceScrollList:GetFrame(), "BOTTOMLEFT", 6, -6)
+newInstanceLabel:SetPoint("TOPLEFT", instanceScrollList:GetFrame(), "BOTTOMLEFT", SPACING, -SPACING)
 newInstanceLabel:SetFontObject("GameFontNormalLEFT")
 newInstanceLabel:SetText("New Instance")
-newInstanceLabel:SetSize(155, 20)
+newInstanceLabel:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 
 local newInstanceEditBox = CreateFrame("Editbox", nil, instancesTabFrame, "InputBoxTemplate")
 newInstanceEditBox:SetPoint("TOPLEFT", newInstanceLabel, "BOTTOMLEFT", 0, 0)
-newInstanceEditBox:SetSize(155, 25)
+newInstanceEditBox:SetSize(COLUMN_WIDTH, 25)
 newInstanceEditBox:SetAutoFocus(false)
 newInstanceEditBox:ClearFocus()
 
 local newInstanceRaidDropDown = CreateFrame("Frame", nil, instancesTabFrame, "UIDropDownMenuTemplate")
-newInstanceRaidDropDown:SetPoint("TOPLEFT", newInstanceEditBox, "BOTTOMLEFT", -23, -6)
+newInstanceRaidDropDown:SetPoint("TOPLEFT", newInstanceEditBox, "BOTTOMLEFT", -23, -SPACING)
 newInstanceRaidDropDown:SetHeight(25)
 UIDropDownMenu_SetWidth(newInstanceRaidDropDown, 145) -- Use in place :SetWidth
 UIDropDownMenu_Initialize(newInstanceRaidDropDown, function(self, level, menuList)
@@ -923,8 +931,8 @@ UIDropDownMenu_Initialize(newInstanceRaidDropDown, function(self, level, menuLis
 end)
 
 local addInstanceButton = CreateFrame("Button", nil, instancesTabFrame, "GameMenuButtonTemplate")
-addInstanceButton:SetPoint("TOPLEFT", newInstanceEditBox, "BOTTOMLEFT", 10, -37)
-addInstanceButton:SetPoint("TOPRIGHT", newInstanceEditBox, "BOTTOMRIGHT", -10, -37)
+addInstanceButton:SetPoint("BOTTOMLEFT", instancesTabFrame, "BOTTOMLEFT", MARGIN, MARGIN)
+addInstanceButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 addInstanceButton:SetText("Add Instance")
 addInstanceButton:SetScript("OnClick", function()
   local name = newInstanceEditBox:GetText()
@@ -943,22 +951,22 @@ addInstanceButton:SetScript("OnClick", function()
 end)
 
 instanceNameField = instancesTabFrame:CreateFontString(nil, "OVERLAY")
-instanceNameField:SetPoint("TOPLEFT", instanceScrollList:GetFrame(), "TOPRIGHT", 40, -6)
+instanceNameField:SetPoint("TOPLEFT", instancesTabFrame, "TOPLEFT", WINDOW_WIDTH / 2 + SPACING, -MARGIN)
 instanceNameField:SetFontObject("GameFontHighlightLEFT")
 instanceNameField:SetText("Instance:")
-instanceNameField:SetSize(155, 20)
+instanceNameField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 
 instanceRaidField = instancesTabFrame:CreateFontString(nil, "OVERLAY")
 instanceRaidField:SetPoint("TOPLEFT", instanceNameField, "BOTTOMLEFT", 0, 0)
 instanceRaidField:SetFontObject("GameFontHighlightLEFT")
 instanceRaidField:SetText("Raid:")
-instanceRaidField:SetSize(155, 20)
+instanceRaidField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 
 instanceCreatedField = instancesTabFrame:CreateFontString(nil, "OVERLAY")
 instanceCreatedField:SetPoint("TOPLEFT", instanceRaidField, "BOTTOMLEFT", 0, 0)
 instanceCreatedField:SetFontObject("GameFontHighlightLEFT")
 --instanceCreatedField:SetText("Created:")
-instanceCreatedField:SetSize(155, 20)
+instanceCreatedField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 
 instancesTabFrame:SetScript("OnShow", function()
   if (activateInstance) then
@@ -972,16 +980,16 @@ instancesTabFrame:SetScript("OnShow", function()
 end)
 
 local instancePlayersField = instancesTabFrame:CreateFontString(nil, "OVERLAY")
-instancePlayersField:SetPoint("TOPLEFT", instanceCreatedField, "BOTTOMLEFT", 0, -6)
+instancePlayersField:SetPoint("TOPLEFT", instanceCreatedField, "BOTTOMLEFT", 0, -SPACING)
 instancePlayersField:SetFontObject("GameFontNormalLEFT")
 instancePlayersField:SetText("Players")
-instancePlayersField:SetSize(155, 20)
+instancePlayersField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 
-instancePlayersScrollList = ScrollList.new("PersonalRollLootInstancePlayerListScrollFrame", instancesTabFrame, 20)
-instancePlayersScrollList:SetPoint("TOPLEFT", instancePlayersField, "BOTTOMLEFT", -6, -6)
-instancePlayersScrollList:SetPoint("BOTTOMLEFT", instancePlayersField, "BOTTOMLEFT", -6, -292)
-instancePlayersScrollList:SetWidth(155)
-instancePlayersScrollList:SetButtonHeight(20)
+instancePlayersScrollList = ScrollList.new("PersonalRollLootInstancePlayerListScrollFrame", instancesTabFrame, 13)
+instancePlayersScrollList:SetPoint("TOPLEFT", instancePlayersField, "BOTTOMLEFT", 0, -SPACING)
+instancePlayersScrollList:SetPoint("BOTTOMLEFT", instancePlayersField, "BOTTOMLEFT", -6, -288)
+instancePlayersScrollList:SetWidth(COLUMN_WIDTH)
+instancePlayersScrollList:SetButtonHeight(TEXT_FIELD_HEIGHT)
 instancePlayersScrollList:SetLabelProvider(function(name, lootlist) return name end)
 instancePlayersScrollList:SetContentProvider(function()
   if (activateInstance) then
@@ -992,25 +1000,15 @@ instancePlayersScrollList:SetContentProvider(function()
   end
   return {}
 end)
-CreateFrame("Frame", nil, instancePlayersScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
-
-local inviteButton = CreateFrame("Button", nil, instancesTabFrame, "GameMenuButtonTemplate")
-inviteButton:SetPoint("TOPLEFT", instancePlayersScrollList:GetFrame(), "BOTTOMLEFT", 10, -6)
-inviteButton:SetPoint("TOPRIGHT", instancePlayersScrollList:GetFrame(), "BOTTOMRIGHT", -10, -6)
-inviteButton:SetText("Invite")
-inviteButton:SetScript("OnClick", function()
-  local cmd = COMMANDS["invite"]
-  local status, err = pcall(cmd)
-  if (not status) then
-    print(err)
-  else
-    instancePlayersScrollList:Update()
-  end
+instancePlayersScrollList:SetButtonScript("OnEnter", function(index, button, name, lootlist)
+  showPlayerTooltip(button, name)
 end)
+instancePlayersScrollList:SetButtonScript("OnLeave", hideTooltip)
+createBorder(instancePlayersScrollList:GetFrame())
 
 local deleteInstanceButton = CreateFrame("Button", nil, instancesTabFrame, "GameMenuButtonTemplate")
-deleteInstanceButton:SetPoint("TOPLEFT", inviteButton, "BOTTOMLEFT", 0, -6)
-deleteInstanceButton:SetPoint("TOPRIGHT", inviteButton, "BOTTOMRIGHT", 0, -6)
+deleteInstanceButton:SetPoint("BOTTOMLEFT", instancesTabFrame, "BOTTOMLEFT", WINDOW_WIDTH / 2 + SPACING, MARGIN)
+deleteInstanceButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 deleteInstanceButton:SetText("Delete Instance")
 deleteInstanceButton:SetScript("OnClick", function()
   local cmd = COMMANDS["delete-instance"]
@@ -1022,6 +1020,20 @@ deleteInstanceButton:SetScript("OnClick", function()
     instanceRaidField:SetText("Raid:")
 --    instanceCreatedField:SetText("Created:")
     instanceScrollList:Update()
+    instancePlayersScrollList:Update()
+  end
+end)
+
+local inviteButton = CreateFrame("Button", nil, instancesTabFrame, "GameMenuButtonTemplate")
+inviteButton:SetPoint("BOTTOMLEFT", deleteInstanceButton, "TOPLEFT", 0, SPACING)
+inviteButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
+inviteButton:SetText("Invite")
+inviteButton:SetScript("OnClick", function()
+  local cmd = COMMANDS["invite"]
+  local status, err = pcall(cmd)
+  if (not status) then
+    print(err)
+  else
     instancePlayersScrollList:Update()
   end
 end)
@@ -1040,10 +1052,9 @@ local function updateRollOrderFields(index, button, itemId, item)
 end
 
 local rollItemsScrollList = ScrollList.new("PersonalRollLootRollItemScrollFrame", rollTabFrame, 10, "LargeItemButtonTemplate")
-rollItemsScrollList:SetPoint("TOPLEFT", rollTabFrame, "TOPLEFT", 6, -6)
-rollItemsScrollList:SetPoint("BOTTOMLEFT", rollTabFrame, "BOTTOMLEFT", 6, 30)
-rollItemsScrollList:SetWidth(155)
-rollItemsScrollList:SetButtonHeight(41)
+rollItemsScrollList:SetPoint("TOPLEFT", rollTabFrame, "TOPLEFT", MARGIN, -MARGIN)
+rollItemsScrollList:SetSize(COLUMN_WIDTH, 10 * ITEM_BUTTON_HEIGHT + SPACING)
+rollItemsScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
 rollItemsScrollList:SetContentProvider(function() return ITEM_LIST end)
 rollItemsScrollList:SetLabelProvider(function(itemId, item, button)
   local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType,
@@ -1054,14 +1065,12 @@ rollItemsScrollList:SetLabelProvider(function(itemId, item, button)
     button.Name:SetText(itemName)
   end
 end)
-CreateFrame("Frame", nil, rollItemsScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
+createBorder(rollItemsScrollList:GetFrame())
 rollItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
   GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
   GameTooltip:SetItemByID(itemId)
 end)
-rollItemsScrollList:SetButtonScript("OnLeave", function()
-  GameTooltip:Hide()
-end)
+rollItemsScrollList:SetButtonScript("OnLeave", hideTooltip)
 rollItemsScrollList:SetButtonScript("OnClick", updateRollOrderFields)
 rollItemsScrollList:SetFilter(function(itemId, item)
   if (activateInstance) then
@@ -1071,15 +1080,16 @@ rollItemsScrollList:SetFilter(function(itemId, item)
 end)
 
 local lootItemsField = rollTabFrame:CreateFontString(nil, "OVERLAY")
-lootItemsField:SetPoint("TOPLEFT", rollItemsScrollList:GetFrame(), "TOPRIGHT", 40, -6)
+lootItemsField:SetPoint("TOPLEFT", rollTabFrame, "TOPLEFT", WINDOW_WIDTH / 2 + SPACING, -MARGIN)
 lootItemsField:SetFontObject("GameFontNormalLEFT")
 lootItemsField:SetText("Loot")
-lootItemsField:SetSize(155, 20)
+lootItemsField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 
 local lootItemsScrollList = ScrollList.new("PersonalRollLootLootItemScrollFrame", rollTabFrame, 3, "LargeItemButtonTemplate")
-lootItemsScrollList:SetPoint("TOPLEFT", lootItemsField, "BOTTOMLEFT", -6, -6)
-lootItemsScrollList:SetSize(155, 127)
-lootItemsScrollList:SetButtonHeight(41)
+lootItemsScrollList:SetPoint("TOPLEFT", lootItemsField, "BOTTOMLEFT", 0, -SPACING)
+lootItemsScrollList:SetSize(COLUMN_WIDTH, 3 * ITEM_BUTTON_HEIGHT + SPACING)
+lootItemsScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
+createBorder(lootItemsScrollList:GetFrame())
 lootItemsScrollList:SetContentProvider(function() return lootItems end)
 lootItemsScrollList:SetLabelProvider(function(itemId, item, button)
   local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType,
@@ -1091,52 +1101,51 @@ lootItemsScrollList:SetLabelProvider(function(itemId, item, button)
     button.Name:SetFontObject("GameFontHighlight")
   end
 end)
-CreateFrame("Frame", nil, lootItemsScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
 lootItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
   GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
   GameTooltip:SetItemByID(itemId)
 end)
-lootItemsScrollList:SetButtonScript("OnLeave", function()
-  GameTooltip:Hide()
-end)
+lootItemsScrollList:SetButtonScript("OnLeave", hideTooltip)
 lootItemsScrollList:SetButtonScript("OnClick", updateRollOrderFields)
 
 local lootPrioField = rollTabFrame:CreateFontString(nil, "OVERLAY")
-lootPrioField:SetPoint("TOPLEFT", lootItemsScrollList:GetFrame(), "BOTTOMLEFT", 6, -6)
+lootPrioField:SetPoint("TOPLEFT", lootItemsScrollList:GetFrame(), "BOTTOMLEFT", 0, -SPACING)
 lootPrioField:SetFontObject("GameFontNormalLEFT")
 lootPrioField:SetText("Loot Priority Order")
-lootPrioField:SetSize(155, 20)
+lootPrioField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 
 rollItemField = rollTabFrame:CreateFontString(nil, "OVERLAY")
 rollItemField:SetPoint("TOPLEFT", lootPrioField, "BOTTOMLEFT", 0, 0)
 rollItemField:SetFontObject("GameFontHighlightLEFT")
 rollItemField:SetText("Item: -")
-rollItemField:SetSize(155, 20)
+rollItemField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 local rollItemFieldButton = CreateFrame("Button", rollItemField)
 rollItemFieldButton:SetPoint("TOPLEFT", rollItemField, "TOPLEFT", 0, 0)
-rollItemFieldButton:SetSize(155, 20)
+rollItemFieldButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 rollItemFieldButton:SetScript("OnEnter", function()
   if (rollItem) then
     GameTooltip:SetOwner(rollItemField, "ANCHOR_BOTTOMRIGHT")
     GameTooltip:SetItemByID(rollItem.itemId)
   end
 end)
-rollItemFieldButton:SetScript("OnLeave", function()
-  GameTooltip:Hide()
-end)
+rollItemFieldButton:SetScript("OnLeave", hideTooltip)
 
-rollOrderScrollList = ScrollList.new("PersonalRollLootLootOrderScrollFrame", rollTabFrame, 11)
-rollOrderScrollList:SetPoint("TOPLEFT", rollItemField, "BOTTOMLEFT", -6, -6)
-rollOrderScrollList:SetPoint("BOTTOMLEFT", rollTabFrame, "BOTTOM", 0, 6)
-rollOrderScrollList:SetWidth(155)
-rollOrderScrollList:SetButtonHeight(20)
+rollOrderScrollList = ScrollList.new("PersonalRollLootLootOrderScrollFrame", rollTabFrame, 10)
+rollOrderScrollList:SetPoint("TOPLEFT", rollItemField, "BOTTOMLEFT", 0, -SPACING)
+rollOrderScrollList:SetPoint("BOTTOM", rollItemsScrollList:GetFrame(), "BOTTOM", 0, 0)
+rollOrderScrollList:SetWidth(COLUMN_WIDTH)
+rollOrderScrollList:SetButtonHeight(TEXT_FIELD_HEIGHT)
 rollOrderScrollList:SetContentProvider(function() return rollOrder end)
 rollOrderScrollList:SetLabelProvider(function(index, roundAndPlayerName)
   local round = roundAndPlayerName[1]
   local playerName = roundAndPlayerName[2]
   return round.." - "..playerName
 end)
-CreateFrame("Frame", nil, rollOrderScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
+rollOrderScrollList:SetButtonScript("OnEnter", function(index, button, roundIndex, roundAndPlayerName)
+  showPlayerTooltip(button, roundAndPlayerName[2])
+end)
+rollOrderScrollList:SetButtonScript("OnLeave", hideTooltip)
+createBorder(rollOrderScrollList:GetFrame())
 
 
 -- ------------------------------------------------------- --
@@ -1156,9 +1165,9 @@ MemberUIFrame:SetAttribute("UIPanelLayout-defined", true)
 MemberUIFrame:SetAttribute("UIPanelLayout-enabled", true)
 MemberUIFrame:SetAttribute("UIPanelLayout-area", "left")
 MemberUIFrame:SetAttribute("UIPanelLayout-pushable", 6)
-MemberUIFrame:SetAttribute("UIPanelLayout-width", 390)
+MemberUIFrame:SetAttribute("UIPanelLayout-width", WINDOW_WIDTH)
 MemberUIFrame:SetAttribute("UIPanelLayout-whileDead", true)
-MemberUIFrame:SetSize(390, 485)
+MemberUIFrame:SetSize(WINDOW_WIDTH, WINDOW_HEIGHT)
 MemberUIFrame:SetPoint("CENTER")
 MemberUIFrame.Title:SetText("Personal Roll Loot")
 HideUIPanel(MemberUIFrame)
@@ -1169,16 +1178,16 @@ memberTabFrame:SetPoint("BOTTOMRIGHT", PersonalRollLootMemberDialogBG, "BOTTOMRI
 memberTabFrame:SetScript("OnShow", function() updateMemberInfo() end)
 
 memberNameField = memberTabFrame:CreateFontString(nil, "OVERLAY")
-memberNameField:SetPoint("TOPLEFT", memberTabFrame, "TOPLEFT", 12, -12)
+memberNameField:SetPoint("TOPLEFT", memberTabFrame, "TOPLEFT", MARGIN, -MARGIN)
 memberNameField:SetFontObject("GameFontHighlightLEFT")
 memberNameField:SetText("Player Name")
-memberNameField:SetSize(155, 20)
+memberNameField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 
 -- role buttons
 local roleIndex = 0
 for role in pairs(ROLES) do
   local roleButton = CreateFrame("CheckButton", nil, memberTabFrame, "UICheckButtonTemplate")
-  roleButton:SetPoint("TOPLEFT", memberNameField, "BOTTOMLEFT", 0, (-6 - 20 * roleIndex))
+  roleButton:SetPoint("TOPLEFT", memberNameField, "BOTTOMLEFT", 0, -(SPACING + TEXT_FIELD_HEIGHT * roleIndex))
   roleButton.text:SetText(role)
   roleButton.text:SetFontObject("GameFontDisable")
   roleButton:SetEnabled(false)
@@ -1189,9 +1198,9 @@ end
 
 -- item list
 memberItemScrollList = ScrollList.new("PersonalRollLootMemberItemListScrollFrame", memberTabFrame, 6, "LargeItemButtonTemplate")
-memberItemScrollList:SetPoint("BOTTOMLEFT", memberTabFrame, "BOTTOMLEFT", 6, 36)
-memberItemScrollList:SetSize(155, 250)
-memberItemScrollList:SetButtonHeight(41)
+memberItemScrollList:SetPoint("BOTTOMLEFT", memberTabFrame, "BOTTOMLEFT", MARGIN, TEXT_FIELD_HEIGHT + MARGIN + SPACING)
+memberItemScrollList:SetSize(COLUMN_WIDTH, 6 * ITEM_BUTTON_HEIGHT + SPACING)
+memberItemScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
 memberItemScrollList:SetContentProvider(function() return ITEM_LIST end)
 memberItemScrollList:SetLabelProvider(function(itemId, item, button)
   local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType,
@@ -1225,11 +1234,75 @@ memberItemScrollList:SetButtonScript("OnEnter", function(index, button, itemId, 
   GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
   GameTooltip:SetItemByID(itemId)
 end)
-memberItemScrollList:SetButtonScript("OnLeave", function()
-  GameTooltip:Hide()
-end)
-CreateFrame("Frame", nil, memberItemScrollList:GetFrame(), "InsetFrameTemplate"):SetAllPoints()
+memberItemScrollList:SetButtonScript("OnLeave", hideTooltip)
+createBorder(memberItemScrollList:GetFrame())
 
+local memberLootItemsField = memberTabFrame:CreateFontString(nil, "OVERLAY")
+memberLootItemsField:SetPoint("TOPLEFT", memberTabFrame, "TOPLEFT", WINDOW_WIDTH / 2 + SPACING, -MARGIN)
+memberLootItemsField:SetFontObject("GameFontNormalLEFT")
+memberLootItemsField:SetText("Loot")
+memberLootItemsField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
+
+local memberLootItemsScrollList = ScrollList.new("PersonalRollLootMemberLootItemScrollFrame", memberTabFrame, 3, "LargeItemButtonTemplate")
+memberLootItemsScrollList:SetPoint("TOPLEFT", memberLootItemsField, "BOTTOMLEFT", 0, -SPACING)
+memberLootItemsScrollList:SetSize(COLUMN_WIDTH, 3 * ITEM_BUTTON_HEIGHT + SPACING)
+memberLootItemsScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
+createBorder(memberLootItemsScrollList:GetFrame())
+memberLootItemsScrollList:SetContentProvider(function() return lootItems end)
+memberLootItemsScrollList:SetLabelProvider(function(itemId, item, button)
+  local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType,
+        itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(itemId)
+
+  if (itemName) then
+    button.Icon:SetTexture(itemTexture)
+    button.Name:SetText(itemName)
+    button.Name:SetFontObject("GameFontHighlight")
+  end
+end)
+memberLootItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
+  GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
+  GameTooltip:SetItemByID(itemId)
+end)
+memberLootItemsScrollList:SetButtonScript("OnLeave", hideTooltip)
+
+local memberLootPrioField = memberTabFrame:CreateFontString(nil, "OVERLAY")
+memberLootPrioField:SetPoint("TOPLEFT", memberLootItemsScrollList:GetFrame(), "BOTTOMLEFT", 0, -SPACING)
+memberLootPrioField:SetFontObject("GameFontNormalLEFT")
+memberLootPrioField:SetText("Loot Priority Order")
+memberLootPrioField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
+
+local memberRollItemField = memberTabFrame:CreateFontString(nil, "OVERLAY")
+memberRollItemField:SetPoint("TOPLEFT", memberLootPrioField, "BOTTOMLEFT", 0, 0)
+memberRollItemField:SetFontObject("GameFontHighlightLEFT")
+memberRollItemField:SetText("Item: -")
+memberRollItemField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
+local memberRollItemFieldButton = CreateFrame("Button", memberRollItemField)
+memberRollItemFieldButton:SetPoint("TOPLEFT", memberRollItemField, "TOPLEFT", 0, 0)
+memberRollItemFieldButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
+memberRollItemFieldButton:SetScript("OnEnter", function()
+  if (rollItem) then
+    GameTooltip:SetOwner(memberRollItemField, "ANCHOR_BOTTOMRIGHT")
+    GameTooltip:SetItemByID(rollItem.itemId)
+  end
+end)
+memberRollItemFieldButton:SetScript("OnLeave", hideTooltip)
+
+local memberRollOrderScrollList = ScrollList.new("PersonalRollLootMemberLootOrderScrollFrame", memberTabFrame, 9)
+memberRollOrderScrollList:SetPoint("TOPLEFT", memberRollItemField, "BOTTOMLEFT", 0, -SPACING)
+memberRollOrderScrollList:SetPoint("BOTTOMLEFT", memberTabFrame, "BOTTOMLEFT", WINDOW_WIDTH / 2 + SPACING, TEXT_FIELD_HEIGHT + MARGIN + SPACING)
+memberRollOrderScrollList:SetWidth(COLUMN_WIDTH)
+memberRollOrderScrollList:SetButtonHeight(TEXT_FIELD_HEIGHT)
+memberRollOrderScrollList:SetContentProvider(function() return rollOrder end)
+memberRollOrderScrollList:SetLabelProvider(function(index, roundAndPlayerName)
+  local round = roundAndPlayerName[1]
+  local playerName = roundAndPlayerName[2]
+  return round.." - "..playerName
+end)
+memberRollOrderScrollList:SetButtonScript("OnEnter", function(index, button, roundIndex, roundAndPlayerName)
+  showPlayerTooltip(button, roundAndPlayerName[2])
+end)
+memberRollOrderScrollList:SetButtonScript("OnLeave", hideTooltip)
+createBorder(memberRollOrderScrollList:GetFrame())
 
 createMemberInfo = function()
   if (not memberInfo) then
@@ -1258,6 +1331,7 @@ updateMemberInfo = function()
     end
   end
   memberItemScrollList:Update()
+  memberRollOrderScrollList:Update()
 end
 
 local toggleUI = function(frame)
@@ -1307,6 +1381,7 @@ local function updateLootItems()
   end
   lootItems = items
   lootItemsScrollList:Update()
+  memberLootItemsScrollList:Update()
 end
 
 local function receiveMemberInfo(msg)
