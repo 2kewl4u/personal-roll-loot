@@ -138,7 +138,7 @@ end
 local function encodePlayerInfo(player)
   if (not player) then return nil end
 
-  local encoded = "player-info"
+  local encoded = ""
   encoded = encoded.." name:"..player.name
   encoded = encoded.." realm:"..player.realm
   encoded = encoded.." class:"..player.class
@@ -174,6 +174,29 @@ local function decodePlayerInfo(info)
     end
     player.roles = roles
     return player
+  end
+end
+
+local function encodeRollOrderInfo(itemId, rollOrder)
+  local ordercsv = toCSVList(rollOrder, function(index, roundAndplayerName)
+    return roundAndplayerName[1].."-"..roundAndplayerName[2]
+  end)
+  return itemId..":"..ordercsv
+end
+
+local function decodeRollOrderInfo(info)
+  local itemId, rollOrderCSV = strsplit(":", info)
+  itemId = tonumber(itemId)
+  if (itemId) then
+    local rollOrder = fromCSVList(rollOrderCSV, function(list, element)
+      local round, playerName = strsplit("-", element)
+      round = tonumber(round)
+      if (playerName and round) then
+        table.insert(list, { round, playerName })
+      end
+    end)
+    -- TODO sort the roll order
+    return itemId, (rollOrder or {})
   end
 end
 
@@ -369,6 +392,11 @@ local function announceMemberInfo(player)
     local message = encodePlayerInfo(player)
     AddonMessage_Send("PRLMemberInfo", message, "WHISPER", target)
   end
+end
+
+local function announceRollOrderInfo(itemId, rollOrder)
+  local message = encodeRollOrderInfo(itemId, rollOrder)
+  AddonMessage_Send("PRLRollOrderInfo", message, "WHISPER", "Rabbis")
 end
 
 -- the roll algorithm
@@ -1047,6 +1075,8 @@ local function updateRollOrderFields(index, button, itemId, item)
       local itemName = GetItemInfo(rollItem.itemId) or rollItem.name
       rollItemField:SetText("Item: "..itemName)
       rollOrderScrollList:Update()
+      -- announce roll order info
+      announceRollOrderInfo(rollItem.itemId, rollOrder)
     end
   end
 end
@@ -1271,6 +1301,10 @@ memberLootPrioField:SetFontObject("GameFontNormalLEFT")
 memberLootPrioField:SetText("Loot Priority Order")
 memberLootPrioField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 
+-- these values will be submitted by the raid lead or master looter
+local memberRollItem
+local memberRollOrder = {}
+
 local memberRollItemField = memberTabFrame:CreateFontString(nil, "OVERLAY")
 memberRollItemField:SetPoint("TOPLEFT", memberLootPrioField, "BOTTOMLEFT", 0, 0)
 memberRollItemField:SetFontObject("GameFontHighlightLEFT")
@@ -1280,9 +1314,9 @@ local memberRollItemFieldButton = CreateFrame("Button", memberRollItemField)
 memberRollItemFieldButton:SetPoint("TOPLEFT", memberRollItemField, "TOPLEFT", 0, 0)
 memberRollItemFieldButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 memberRollItemFieldButton:SetScript("OnEnter", function()
-  if (rollItem) then
+  if (memberRollItem) then
     GameTooltip:SetOwner(memberRollItemField, "ANCHOR_BOTTOMRIGHT")
-    GameTooltip:SetItemByID(rollItem.itemId)
+    GameTooltip:SetItemByID(memberRollItem.itemId)
   end
 end)
 memberRollItemFieldButton:SetScript("OnLeave", hideTooltip)
@@ -1292,7 +1326,7 @@ memberRollOrderScrollList:SetPoint("TOPLEFT", memberRollItemField, "BOTTOMLEFT",
 memberRollOrderScrollList:SetPoint("BOTTOMLEFT", memberTabFrame, "BOTTOMLEFT", WINDOW_WIDTH / 2 + SPACING, TEXT_FIELD_HEIGHT + MARGIN + SPACING)
 memberRollOrderScrollList:SetWidth(COLUMN_WIDTH)
 memberRollOrderScrollList:SetButtonHeight(TEXT_FIELD_HEIGHT)
-memberRollOrderScrollList:SetContentProvider(function() return rollOrder end)
+memberRollOrderScrollList:SetContentProvider(function() return memberRollOrder end)
 memberRollOrderScrollList:SetLabelProvider(function(index, roundAndPlayerName)
   local round = roundAndPlayerName[1]
   local playerName = roundAndPlayerName[2]
@@ -1398,6 +1432,21 @@ local function receiveMemberInfo(msg)
   end
 end
 
+local function receiveRollOrderInfo(msg)
+  if (msg) then
+    local itemId, rollOrder = decodeRollOrderInfo(msg)
+    if (itemId) then
+      memberRollItem = ITEM_LIST[itemId]
+      if (memberRollItem) then
+        local itemName = GetItemInfo(itemId) or memberRollItem.name
+        memberRollItemField:SetText("Item: "..itemName)
+      end
+    end
+    memberRollOrder = rollOrder or {}
+    memberRollOrderScrollList:Update()
+  end
+end
+
 -- create an event frame
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("ADDON_LOADED")
@@ -1405,6 +1454,7 @@ eventFrame:RegisterEvent("CHAT_MSG_ADDON")
 eventFrame:RegisterEvent("LOOT_OPENED")
 eventFrame:RegisterEvent("LOOT_SLOT_CLEARED")
 C_ChatInfo.RegisterAddonMessagePrefix("PRLMemberInfo")
+C_ChatInfo.RegisterAddonMessagePrefix("PRLRollOrderInfo")
 function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4)
   if (event == "ADDON_LOADED") then
     PLAYER_LIST = PersonalRollLootDB["PLAYER_LIST"] or {}
@@ -1416,6 +1466,12 @@ function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4)
     AddonMessage_Receive(arg1, arg2, arg3, arg4, function(prefix, message, type, sender)
       if (prefix == "PRLMemberInfo") then
         receiveMemberInfo(message)
+      elseif (prefix == "PRLRollOrderInfo") then
+        receiveRollOrderInfo(message)
+        if (not MemberUIFrame:IsShown()) then
+          print("> Received a personal roll announcement. Type /prl to see the order.")
+          -- TODO maybe open the UI automatically: ShowUIPanel(MemberUIFrame)
+        end
       end
     end)
   elseif (event == "LOOT_OPENED" or event == "LOOT_SLOT_CLEARED") then
