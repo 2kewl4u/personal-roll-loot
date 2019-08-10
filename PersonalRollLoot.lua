@@ -1379,10 +1379,12 @@ updateMemberInfo = function()
 end
 
 local toggleUI = function(frame)
-  if (frame:IsShown()) then
-    HideUIPanel(frame)
-  else
-    ShowUIPanel(frame)
+  if (not UnitAffectingCombat("player")) then
+    if (frame:IsShown()) then
+      HideUIPanel(frame)
+    else
+      ShowUIPanel(frame)
+    end
   end
 end
 toggleMasterUI = function() toggleUI(MasterUIFrame) end
