@@ -592,8 +592,8 @@ ns.ITEM_LIST = {
   [17107] = {
     itemId = 17107,
     name = "Dragon's Blood Cape",
-    roles = { [ROLE_RANGED_DPS] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
-    classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
+    roles = { [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
   [17109] = {
@@ -685,7 +685,7 @@ ns.ITEM_LIST = {
     itemId = 18823,
     name = "Aged Core Leather Gloves",
     roles = { [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
-    classes = { [CLASS_ROGUE] = true, [CLASS_DRUID] = true },
+    classes = { [CLASS_ROGUE] = true, [CLASS_DRUID] = true, [CLASS_SHAMAN] = true, [CLASS_WARRIOR] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
   [18824] = {

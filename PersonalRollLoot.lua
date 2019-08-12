@@ -3,6 +3,7 @@ local _, ns = ...;
 -- imports
 local ScrollList = ns.ScrollList
 local ITEM_LIST = ns.ITEM_LIST
+local utils = ns.utils
 
 -- constants
 local ROLE_CASTER_DPS = "caster-dps"
@@ -94,46 +95,13 @@ local CLASS_ROLES = {
   }
 }
 
+-- basic utilities
+
 -- saved variables
 PersonalRollLootDB = {}
 local PLAYER_LIST = {}
 local INSTANCE_LIST = {}
 local activateInstance
-
-local function tblsize(tbl)
-  local size = 0
-  if (tbl) then
-    for _ in pairs(tbl) do
-      size = size + 1
-    end
-  end
-  return size
-end
-
-local function keyToString(key, value) return tostring(key) end
-
-local function toCSVList(list, enc)
-  local csv = ""
-  if (not list) then return csv end
-  local first = true
-  for key, value in pairs(list) do
-    if (not first) then csv = csv.."," end
-    csv = csv..enc(key, value)
-    first = nil
-  end
-  return csv
-end
-
-local function fromCSVList(csv, dec)
-  if (csv) then
-    local list = {}
-    local split = { strsplit(",", csv) }
-    for _, element in pairs(split) do
-      dec(list, element)
-    end
-    return list 
-  end
-end
 
 local function encodePlayerInfo(player)
   if (not player) then return nil end
@@ -142,8 +110,8 @@ local function encodePlayerInfo(player)
   encoded = encoded.." name:"..player.name
   encoded = encoded.." realm:"..player.realm
   encoded = encoded.." class:"..player.class
-  encoded = encoded.." roles:"..toCSVList(player.roles, keyToString)
-  encoded = encoded.." need-list:"..toCSVList(player["need-list"], keyToString)
+  encoded = encoded.." roles:"..utils.toCSV(player.roles, tostring)
+  encoded = encoded.." needlist:"..utils.toCSV(player.needlist, tostring)
   return encoded
 end
 
@@ -157,20 +125,20 @@ local function decodePlayerInfo(info)
   -- check that the player info is complete
   if (player.name and player.realm and player.class) then
     -- decode the csv lists
-    local needcsv = player["need-list"]
+    local needcsv = player.needlist
     local needList = {}
     if (needcsv) then
-      fromCSVList(needcsv, function(l, element)
+      utils.fromCSV(needcsv, function(l, element)
         local index = tonumber(element)
         if (index) then needList[index] = true end
       end)
     end
-    player["need-list"] = needList
+    player.needlist = needList
     
     local rolescsv = player.roles
     local roles = {}
     if (rolescsv) then
-      fromCSVList(rolescsv, function(l, element) roles[element] = true end)
+      utils.fromCSV(rolescsv, function(l, element) roles[element] = true end)
     end
     player.roles = roles
     return player
@@ -178,7 +146,7 @@ local function decodePlayerInfo(info)
 end
 
 local function encodeRollOrderInfo(itemId, rollOrder)
-  local ordercsv = toCSVList(rollOrder, function(index, roundAndplayerName)
+  local ordercsv = utils.toCSV(rollOrder, function(index, roundAndplayerName)
     return roundAndplayerName[1].."-"..roundAndplayerName[2]
   end)
   return itemId..":"..ordercsv
@@ -188,7 +156,7 @@ local function decodeRollOrderInfo(info)
   local itemId, rollOrderCSV = strsplit(":", info)
   itemId = tonumber(itemId)
   if (itemId) then
-    local rollOrder = fromCSVList(rollOrderCSV, function(list, element)
+    local rollOrder = utils.fromCSV(rollOrderCSV, function(list, element)
       local round, playerName = strsplit("-", element)
       round = tonumber(round)
       if (playerName and round) then
@@ -303,7 +271,7 @@ local function isItemForPlayer(item, player)
   -- check if the item can be used by the players class
   if (item["classes"][class]) then
     -- check if the item is on the players need-list
-    if (player["need-list"][itemId]) then
+    if (player.needlist[itemId]) then
       -- check if the item is assigned the players role
       for role,_ in pairs(item["roles"]) do
         if (player["roles"][role]) then
@@ -359,7 +327,7 @@ local function printPlayerInfo(player, receiver)
   end
 
   printMessage("Need-list:", type, receiver)
-  local needlist = player["need-list"]
+  local needlist = player.needlist
   for itemId,_ in pairs(needlist) do
     local item = ITEM_LIST[itemId]
     if (item) then printMessage("  "..item.name, type, receiver) end
@@ -368,11 +336,11 @@ end
 
 local function createPlayer(name, realm, class)
   return {
-      ["name"] = name,
-      ["realm"] = realm,
-      ["class"] = class,
-      ["roles"] = getRolesForClass(class),
-      ["need-list"] = createNeedList(class)
+      name = name,
+      realm = realm,
+      class = class,
+      roles = getRolesForClass(class),
+      needlist = createNeedList(class)
   }
 end
 
@@ -385,10 +353,34 @@ local function isInGroup(name)
   end
 end
 
-local function announceMemberInfo(player)
-  if (player and isInGroup(player.name)) then
-    local message = encodePlayerInfo(player)
-    AddonMessage_Send("PRLMemberInfo", message, "WHISPER", player.name)
+local memberInfo
+local updateMemberInfo
+local createMemberInfo
+local setMemberInfo
+
+local function announceMemberInfo()
+  -- TODO only announce if you are the raid/group leader
+  local playerName = UnitName("player")
+  local memberCount = GetNumGroupMembers()
+  for index = 1, memberCount do
+    local member = GetRaidRosterInfo(index)
+    if (member ~= playerName) then
+      local name, realm = getPlayerNameAndRealm(member)
+      local player = PLAYER_LIST[name]
+      if (player) then
+        local message = encodePlayerInfo(player)
+        AddonMessage_Send("PRLMemberInfo", message, "WHISPER", player.name)
+      else
+        SendChatMessage("> You are not registered for Personal Roll Loot.", "WHISPER", nil, name)
+      end
+    end
+  end
+  -- we always can announce to ourselves without sending a message
+  local player = PLAYER_LIST[playerName]
+  if (player) then
+    -- TODO make a deep copy instead of simply encoding the player
+    player = decodePlayerInfo(encodePlayerInfo(player))
+    setMemberInfo(player)
   end
 end
 
@@ -398,15 +390,15 @@ local function announceRollOrderInfo(itemId, rollOrder)
     if (instance) then
       local playerName = UnitName("player")
       local message = encodeRollOrderInfo(itemId, rollOrder)
---      AddonMessage_Send("PRLRollOrderInfo", message, "WHISPER", playerName) -- for testing purposes
       for name in pairs(instance.players) do
         if ((name ~= playerName) and isInGroup(name)) then
           AddonMessage_Send("PRLRollOrderInfo", message, "WHISPER", name)
         end
       end
+      -- TODO we always can announce to ourselves without sending a message
+      
     end
   end
-  
 end
 
 -- the roll algorithm
@@ -526,7 +518,7 @@ local COMMANDS = {
     local name = player["name"]
 
     -- add item to player
-    player["need-list"][item.itemId] = true
+    player.needlist[item.itemId] = true
     print("> Added item '"..item.name.."' ("..item.itemId..") to player '"..name.."'.")
   end,
   
@@ -538,8 +530,8 @@ local COMMANDS = {
     local name = player["name"]
 
     -- remove role from player
-    if (player["need-list"][item.itemId]) then
-      player["need-list"][item.itemId] = nil
+    if (player.needlist[item.itemId]) then
+      player.needlist[item.itemId] = nil
       print("> Removed item '"..item.name.."' ("..item.itemId..") from player '"..name.."'.")
     else
       print("> The item '"..item.name.."' ("..item.itemId..") was not on the need-list for player '"..name.."'.")
@@ -617,23 +609,8 @@ local COMMANDS = {
     end
   end,
   
-  ["roll"] = function(arg)
-    roll(arg)
-  end,
-  
-  ["announce"] = function(arg)
-    local memberCount = GetNumGroupMembers()
-    for index = 1, memberCount do
-      local member = GetRaidRosterInfo(index)
-      local name, realm = getPlayerNameAndRealm(member)
-      local player = PLAYER_LIST[name]
-      if (player) then
-        announceMemberInfo(player)
-      else
-        SendChatMessage("> You are not registered for Personal Roll Loot.", "WHISPER", nil, name)
-      end
-    end
-  end
+  ["roll"] = roll,
+  ["announce"] = announceMemberInfo
 }
 
 -- ------------------------------------------------------- --
@@ -796,9 +773,6 @@ playerScrollList:SetButtonScript("OnClick", function(index, button, name, player
   end
   playerNameField.player = player
   playerItemScrollList:Update()
-  
-  -- announce player TODO for testing, remove this later
-  announceMemberInfo(player)  
 end)
 playerScrollList:SetButtonScript("OnEnter", function(index, button, name, player)
   showPlayerTooltip(button, name)
@@ -865,7 +839,7 @@ playerItemScrollList:SetLabelProvider(function(itemId, item, button)
   local disabled = true
   local player = playerNameField.player
   if (player) then
-    if (player["need-list"][item.itemId]) then disabled = false end
+    if (player.needlist[item.itemId]) then disabled = false end
   end
 
   if (itemName) then
@@ -881,10 +855,10 @@ end)
 playerItemScrollList:SetButtonScript("OnClick", function(index, button, itemId, item)
   local player = playerNameField.player
   if (player) then
-    local state = player["need-list"][itemId]
+    local state = player.needlist[itemId]
     -- toggle the item state
     if (state) then state = nil else state = true end
-    player["need-list"][itemId] = state
+    player.needlist[itemId] = state
     playerItemScrollList:Update()
   end
 end)
@@ -1023,9 +997,9 @@ instancePlayersField:SetFontObject("GameFontNormalLEFT")
 instancePlayersField:SetText("Players")
 instancePlayersField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 
-instancePlayersScrollList = ScrollList.new("PersonalRollLootInstancePlayerListScrollFrame", instancesTabFrame, 13)
+instancePlayersScrollList = ScrollList.new("PersonalRollLootInstancePlayerListScrollFrame", instancesTabFrame, 12)
 instancePlayersScrollList:SetPoint("TOPLEFT", instancePlayersField, "BOTTOMLEFT", 0, -SPACING)
-instancePlayersScrollList:SetPoint("BOTTOMLEFT", instancePlayersField, "BOTTOMLEFT", -6, -288)
+instancePlayersScrollList:SetPoint("BOTTOMLEFT", instancePlayersField, "BOTTOMLEFT", -6, -262)
 instancePlayersScrollList:SetWidth(COLUMN_WIDTH)
 instancePlayersScrollList:SetButtonHeight(TEXT_FIELD_HEIGHT)
 instancePlayersScrollList:SetLabelProvider(function(name, lootlist) return name end)
@@ -1076,7 +1050,14 @@ inviteButton:SetScript("OnClick", function()
   end
 end)
 
+local announceButton = CreateFrame("Button", nil, instancesTabFrame, "GameMenuButtonTemplate")
+announceButton:SetPoint("BOTTOMLEFT", inviteButton, "TOPLEFT", 0, SPACING)
+announceButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
+announceButton:SetText("Announce")
+announceButton:SetScript("OnClick", announceMemberInfo)
+
 local function updateRollOrderFields(index, button, itemId, item)
+  -- perform the roll before
   local status, err = pcall(roll, itemId)
   if (not status) then
     print(err)
@@ -1196,9 +1177,6 @@ local memberTabFrame
 local memberNameField
 local memberRoleButtons = {}
 local memberItemScrollList
-local memberInfo
-local updateMemberInfo
-local createMemberInfo
 
 MemberUIFrame = CreateFrame("Frame", "PersonalRollLootMember", UIParent, "UIPanelDialogTemplate")
 MemberUIFrame:SetAttribute("UIPanelLayout-defined", true)
@@ -1215,7 +1193,7 @@ HideUIPanel(MemberUIFrame)
 memberTabFrame = CreateFrame("Frame", nil, MemberUIFrame)
 memberTabFrame:SetPoint("TOPLEFT", PersonalRollLootMemberDialogBG, "TOPLEFT", 0, 0)
 memberTabFrame:SetPoint("BOTTOMRIGHT", PersonalRollLootMemberDialogBG, "BOTTOMRIGHT", 0, 0)
-memberTabFrame:SetScript("OnShow", function() updateMemberInfo() end)
+memberTabFrame:SetScript("OnShow", updateMemberInfo)
 
 memberNameField = memberTabFrame:CreateFontString(nil, "OVERLAY")
 memberNameField:SetPoint("TOPLEFT", memberTabFrame, "TOPLEFT", MARGIN, -MARGIN)
@@ -1249,7 +1227,7 @@ memberItemScrollList:SetLabelProvider(function(itemId, item, button)
   local disabled = true
   local player = memberInfo
   if (player) then
-    if (player["need-list"][item.itemId]) then disabled = false end
+    if (player.needlist[item.itemId]) then disabled = false end
   end
 
   if (itemName) then
@@ -1354,7 +1332,7 @@ createMemberInfo = function()
     local _, class = UnitClass("player")
     memberInfo = createPlayer(name,realm,class)
     memberInfo.roles = {}
-    memberInfo["need-list"] = {}
+    memberInfo.needlist = {}
   end
 end
 
@@ -1430,16 +1408,20 @@ local function updateLootItems()
   memberLootItemsScrollList:Update()
 end
 
-local function receiveMemberInfo(msg)
+setMemberInfo = function(player)
   -- create the member info if not present
   createMemberInfo()
+  memberInfo.roles = player.roles or {}
+  memberInfo.needlist = player.needlist or {}
+  -- update the member info
+  updateMemberInfo()
+end
+
+local function receiveMemberInfo(msg)
   if (msg) then
     local player = decodePlayerInfo(msg)
     if (player) then
-      memberInfo.roles = player.roles or {}
-      memberInfo["need-list"] = player["need-list"] or {}
-      -- update the member info
-      updateMemberInfo()
+      setMemberInfo(player)
     end
   end
 end
@@ -1469,12 +1451,14 @@ C_ChatInfo.RegisterAddonMessagePrefix("PRLMemberInfo")
 C_ChatInfo.RegisterAddonMessagePrefix("PRLRollOrderInfo")
 function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4)
   if (event == "ADDON_LOADED") then
+    -- load the saved variables
     PLAYER_LIST = PersonalRollLootDB["PLAYER_LIST"] or {}
     INSTANCE_LIST = PersonalRollLootDB["INSTANCE_LIST"] or {}
     activateInstance = PersonalRollLootDB["activateInstance"]
   elseif (event == "CHAT_MSG_ADDON") then
 --    print("received addon message: "..arg2)
 --    print("from: "..arg4)
+    -- TODO only accept announcements from raid/group leader
     AddonMessage_Receive(arg1, arg2, arg3, arg4, function(prefix, message, type, sender)
       if (prefix == "PRLMemberInfo") then
         receiveMemberInfo(message)

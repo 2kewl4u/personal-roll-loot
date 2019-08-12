@@ -1,9 +1,10 @@
 ## Interface: 80200
 ## Title: Personal Roll Loot
-## Version: 0.0.2
+## Version: 0.0.3
 ## Author: Ben
 ## SavedVariables: PersonalRollLootDB
 
+Utils.lua
 Libs\AceComm-3.0\ChatThrottleLib.lua
 AddonMessage.lua
 ScrollList.lua
