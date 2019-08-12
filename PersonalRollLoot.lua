@@ -39,25 +39,15 @@ local function decodeRollOrderInfo(info)
     end
 end
 
-local function shuffle( tInput )
-    local tReturn = {}
-    for i = #tInput, 1, -1 do
-        local j = random(i)
-        tInput[i], tInput[j] = tInput[j], tInput[i]
-        tinsert(tReturn, tInput[i])
-    end
-    return tReturn
-end
-
-local function createNeedList(class)
-    local needlist = {}
-    for itemId,item in pairs(ITEM_LIST) do
-        if (item.classes[class]) then
-            needlist[itemId] = true
-        end
-    end
-    return needlist
-end
+--local function shuffle( tInput )
+--    local tReturn = {}
+--    for i = #tInput, 1, -1 do
+--        local j = random(i)
+--        tInput[i], tInput[j] = tInput[j], tInput[i]
+--        tinsert(tReturn, tInput[i])
+--    end
+--    return tReturn
+--end
 
 local function getPlayerNameAndRealm(arg)
     if (not arg) then error("> No player name specified.", 0) end
@@ -88,15 +78,6 @@ local function getRole(arg)
     end
 
     return role
-end
-
-local function getRolesForClass(class)
-    local classRoles = {}
-    -- copy the roles
-    for role,_ in pairs(CLASS_ROLES[class] or {}) do
-        classRoles[role] = true
-    end
-    return classRoles
 end
 
 local function getItem(arg)
@@ -134,23 +115,6 @@ local function isItemForInstance(item, instance)
     return item["raids"][raid]
 end
 
-local function isItemForPlayer(item, player)
-    local class = player["class"]
-    local itemId = item["itemId"]
-    -- check if the item can be used by the players class
-    if (item["classes"][class]) then
-        -- check if the item is on the players need-list
-        if (player.needlist[itemId]) then
-            -- check if the item is assigned the players role
-            for role,_ in pairs(item["roles"]) do
-                if (player["roles"][role]) then
-                    return true
-                end
-            end
-        end
-    end
-end
-
 local function createLootList(instance, player)
     local name = player["name"]
     local items = {}
@@ -158,13 +122,13 @@ local function createLootList(instance, player)
     -- create a loot list
     local class = player["class"]
     for itemId, item in pairs(ITEM_LIST) do
-        if (isItemForInstance(item,instance) and isItemForPlayer(item,player)) then
+        if (isItemForInstance(item,instance) and player:needsItem(item)) then
             items[itemIndex] = itemId
             itemIndex = itemIndex + 1
         end
     end
     -- shuffle the items
-    items = shuffle(items)
+    items = utils.shuffle(items)
     print("> Created loot table for player '"..name.."'.")
     return items
 end

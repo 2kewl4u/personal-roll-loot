@@ -33,6 +33,19 @@ utils.copy = function(tbl)
 end
 
 ---
+-- Returns a list containing the elements of the given list in random order.
+-- @param #table list a list with the elements to be shuffled
+-- @return #table a new list containing the shuffled elements
+utils.shuffle = function(list)
+    local shuffled = {}
+    for i, v in ipairs(list) do
+        local pos = math.random(1, #shuffled+1)
+        table.insert(shuffled, pos, v)
+    end
+    return shuffled
+end
+
+---
 -- Returns a comma-separated list string containing the elements of the given list.
 -- The elements are passed as key-value pairs to the encoding function to provide a
 -- string representation.

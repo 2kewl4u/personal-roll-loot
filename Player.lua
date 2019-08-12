@@ -131,4 +131,26 @@ function Player.decode(encoded)
     end
 end
 
+---
+-- Indicates whether this player needs the given item, thus has the item on its
+-- need-list, has the right class and also has the corresponding role selected
+-- for the item.
+-- @param #Item item the item to check if it is needed by this player
+-- @return #boolean true if the player needs the item, nil otherwise
+function Player:needsItem(item)
+    local player = self
+    -- check if the item can be used by the players class
+    if (item.classes[player.class]) then
+        -- check if the item is on the players need-list
+        if (player.needlist[item.itemId]) then
+            -- check if the item is assigned the players role
+            for role in pairs(item.roles) do
+                if (player.roles[role]) then
+                    return true
+                end
+            end
+        end
+    end
+end
+
 ns.Player = Player
