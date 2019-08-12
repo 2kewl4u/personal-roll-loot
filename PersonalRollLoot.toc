@@ -5,8 +5,10 @@
 ## SavedVariables: PersonalRollLootDB
 
 Utils.lua
+Constants.lua
+Items.lua
+Player.lua
 Libs\AceComm-3.0\ChatThrottleLib.lua
 AddonMessage.lua
 ScrollList.lua
-Items.lua
 PersonalRollLoot.lua

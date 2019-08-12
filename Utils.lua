@@ -7,13 +7,29 @@ local utils = {}
 -- @param #table tbl the table to compute the size for
 -- @return #number the size of the table
 utils.tblsize = function(tbl)
-  local size = 0
-  if (tbl) then
-    for _ in pairs(tbl) do
-      size = size + 1
+    local size = 0
+    if (tbl) then
+        for _ in pairs(tbl) do
+            size = size + 1
+        end
     end
-  end
-  return size
+    return size
+end
+
+---
+-- Copies the key-value pairs from the given table into a new table. Note that
+-- the returned table is not a deep copy of the given table! Returns nil if the
+-- given table is nil.
+-- @param #table tbl the table to be copied
+-- @return #table the copy of the table or nil
+utils.copy = function(tbl)
+    if (tbl) then
+        local copy = {}
+        for k,v in pairs(tbl) do
+            copy[k] = v
+        end
+        return copy
+    end
 end
 
 ---
@@ -26,16 +42,16 @@ end
 -- @param #string delimiter the delimiter, may be nil
 -- @return #string the comma-separated string list, not nil
 utils.toCSV = function(list, enc, delimiter)
-  local csv = ""
-  delimiter = delimiter or ","
-  if (list) then
-    local key, value = next(list)
-    if (key) then csv = enc(key, value) end
-    for key, value in next, list, key do
-      csv = csv..delimiter..enc(key, value)
+    local csv = ""
+    delimiter = delimiter or ","
+    if (list) then
+        local key, value = next(list)
+        if (key) then csv = enc(key, value) end
+        for key, value in next, list, key do
+            csv = csv..delimiter..enc(key, value)
+        end
     end
-  end
-  return csv
+    return csv
 end
 
 ---
@@ -47,14 +63,14 @@ end
 -- @param #string delimiter the delimiter, may be nil
 -- @return #table the table containing the elements, not nil
 utils.fromCSV = function(csv, dec, delimiter)
-  local list = {}
-  if (csv) then
-    local split = { strsplit(delimiter or ",", csv) }
-    for _, element in pairs(split) do
-      dec(list, element)
+    local list = {}
+    if (csv) then
+        local split = { strsplit(delimiter or ",", csv) }
+        for _, element in pairs(split) do
+            dec(list, element)
+        end
     end
-  end
-  return list 
+    return list
 end
 
 ns.utils = utils
@@ -62,15 +78,15 @@ ns.utils = utils
 
 -- UNIT TESTS
 local function assertEquals(arg1, arg2)
-  if (arg1 ~= arg2) then error("'"..tostring(arg1).."' ~= '"..tostring(arg2).."'", 2) end
+    if (arg1 ~= arg2) then error("'"..tostring(arg1).."' ~= '"..tostring(arg2).."'", 2) end
 end
 local function tests()
-  assertEquals(utils.tblsize({ 1, 2, 3 }), 3)
-  assertEquals(utils.tblsize({ 1 }), 1)
-  assertEquals(utils.tblsize({}), 0)
-  assertEquals(utils.tblsize(nil), 0)
-  
-  assertEquals(utils.toCSVList({ "a", "b", "c" }, function(k,v) return v end), "a,b,c")
+    assertEquals(utils.tblsize({ 1, 2, 3 }), 3)
+    assertEquals(utils.tblsize({ 1 }), 1)
+    assertEquals(utils.tblsize({}), 0)
+    assertEquals(utils.tblsize(nil), 0)
+
+    assertEquals(utils.toCSV({ "a", "b", "c" }, function(k,v) return v end), "a,b,c")
 end
 
 local status, result = pcall(tests)
