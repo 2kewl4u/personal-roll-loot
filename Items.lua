@@ -63,6 +63,13 @@ ns.ITEM_LIST = {
     classes = { [CLASS_MAGE] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
+  [16799] = { 
+    itemId = 16799,
+    name = "Arcanist Bindings",
+    roles = { [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_MAGE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
   [16800] = { 
     itemId = 16800,
     name = "Arcanist Boots",
@@ -77,6 +84,13 @@ ns.ITEM_LIST = {
     classes = { [CLASS_MAGE] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
+  [16802] = { 
+    itemId = 16802,
+    name = "Arcanist Belt",
+    roles = { [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_MAGE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
   [16803] = {
     itemId = 16803,
     name = "Felheart Slippers",
@@ -84,9 +98,23 @@ ns.ITEM_LIST = {
     classes = { [CLASS_WARLOCK] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
+  [16804] = {
+    itemId = 16804,
+    name = "Felheart Bracers",
+    roles = { [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_WARLOCK] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
   [16805] = {
     itemId = 16805,
     name = "Felheart Gloves",
+    roles = { [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_WARLOCK] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16806] = {
+    itemId = 16806,
+    name = "Felheart Belt",
     roles = { [ROLE_CASTER_DPS] = true },
     classes = { [CLASS_WARLOCK] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
@@ -161,6 +189,20 @@ ns.ITEM_LIST = {
     classes = { [CLASS_PRIEST] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
+  [16817] = {
+    itemId = 16817,
+    name = "Girdle of Prophecy",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_PRIEST] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16819] = {
+    itemId = 16819,
+    name = "Vambraces of Prophecy",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_PRIEST] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
   [16820] = {
     itemId = 16820,
     name = "Nightslayer Chestpiece",
@@ -196,6 +238,13 @@ ns.ITEM_LIST = {
     classes = { [CLASS_ROGUE] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
+  [16825] = {
+    itemId = 16825,
+    name = "Nightslayer Bracelets",
+    roles = { [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_ROGUE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
   [16826] = {
     itemId = 16826,
     name = "Nightslayer Gloves",
@@ -203,10 +252,31 @@ ns.ITEM_LIST = {
     classes = { [CLASS_ROGUE] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
+  [16827] = {
+    itemId = 16827,
+    name = "Nightslayer Belt",
+    roles = { [ROLE_MELEE_DPS] = true },
+    classes = { [CLASS_ROGUE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16828] = {
+    itemId = 16828,
+    name = "Cenarion Belt",
+    roles = { [ROLE_CASTER_DPS] = true, [ROLE_HEALER] = true },
+    classes = { [CLASS_DRUID] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
   [16829] = {
     itemId = 16829,
     name = "Cenarion Boots",
     roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_DRUID] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16830] = {
+    itemId = 16830,
+    name = "Cenarion Bracers",
+    roles = { [ROLE_CASTER_DPS] = true, [ROLE_HEALER] = true },
     classes = { [CLASS_DRUID] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
@@ -252,9 +322,23 @@ ns.ITEM_LIST = {
     classes = { [CLASS_SHAMAN] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
+  [16838] = {
+    itemId = 16838,
+    name = "Earthfury Belt",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_SHAMAN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
   [16839] = {
     itemId = 16839,
     name = "Earthfury Gauntlets",
+    roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_SHAMAN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16840] = {
+    itemId = 16840,
+    name = "Earthfury Bracers",
     roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
     classes = { [CLASS_SHAMAN] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
@@ -322,6 +406,20 @@ ns.ITEM_LIST = {
     classes = { [CLASS_HUNTER] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
+  [16850] = {
+    itemId = 16850,
+    name = "Giantstalker's Bracers",
+    roles = { [ROLE_RANGED_DPS] = true },
+    classes = { [CLASS_HUNTER] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16851] = {
+    itemId = 16851,
+    name = "Giantstalker's Belt",
+    roles = { [ROLE_RANGED_DPS] = true },
+    classes = { [CLASS_HUNTER] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
   [16852] = {
     itemId = 16852,
     name = "Giantstalker's Gloves",
@@ -357,6 +455,20 @@ ns.ITEM_LIST = {
     classes = { [CLASS_PALADIN] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
+  [16857] = {
+    itemId = 16857,
+    name = "Lawbringer Bracers",
+    roles = { [ROLE_HEALER] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_PALADIN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16858] = {
+    itemId = 16858,
+    name = "Lawbringer Belt",
+    roles = { [ROLE_HEALER] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+    classes = { [CLASS_PALADIN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
   [16859] = {
     itemId = 16859,
     name = "Lawbringer Boots",
@@ -371,6 +483,13 @@ ns.ITEM_LIST = {
     classes = { [CLASS_PALADIN] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
+  [16861] = {
+    itemId = 16861,
+    name = "Bracers of Might",
+    roles = { [ROLE_TANK] = true },
+    classes = { [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
   [16862] = {
     itemId = 16862,
     name = "Sabatons of Might",
@@ -381,6 +500,13 @@ ns.ITEM_LIST = {
   [16863] = {
     itemId = 16863,
     name = "Gauntlets of Might",
+    roles = { [ROLE_TANK] = true },
+    classes = { [CLASS_WARRIOR] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [16864] = {
+    itemId = 16864,
+    name = "Belt of Might",
     roles = { [ROLE_TANK] = true },
     classes = { [CLASS_WARRIOR] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
@@ -631,6 +757,48 @@ ns.ITEM_LIST = {
     classes = { [CLASS_PALADIN] = true, [CLASS_ROGUE] = true, [CLASS_HUNTER] = true, [CLASS_WARRIOR] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
+  [18646] = {
+    itemId = 18646,
+    name = "The Eye of Divinity",
+    roles = { [ROLE_CASTER_DPS] = true, [ROLE_HEALER] = true },
+    classes = { [CLASS_PRIEST] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [18703] = {
+    itemId = 18703,
+    name = "Ancient Petrified Leaf",
+    roles = { [ROLE_RANGED_DPS] = true },
+    classes = { [CLASS_HUNTER] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [18806] = {
+    itemId = 18806,
+    name = "Core Forged Greaves",
+    roles = { [ROLE_TANK] = true },
+    classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [18809] = {
+    itemId = 18809,
+    name = "Sash of Whispered Secrets",
+    roles = { [ROLE_CASTER_DPS] = true },
+    classes = { [CLASS_WARLOCK] = true, [CLASS_PRIEST] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [18810] = {
+    itemId = 18810,
+    name = "Wild Growth Spaulders",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_DRUID] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [18812] = {
+    itemId = 18812,
+    name = "Wristguards of True Flight",
+    roles = { [ROLE_MELEE_DPS] = true, [ROLE_RANGED_DPS] = true },
+    classes = { [CLASS_HUNTER] = true, [CLASS_SHAMAN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
   [18814] = {
     itemId = 18814,
     name = "Choker of the Fire Lord",
@@ -723,6 +891,13 @@ ns.ITEM_LIST = {
     classes = { [CLASS_PALADIN] = true, [CLASS_WARRIOR] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
+  [18870] = {
+    itemId = 18870,
+    name = "Helm of the Lifegiver",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_SHAMAN] = true, [CLASS_PALADIN] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
   [18872] = {
     itemId = 18872,
     name = "Manastorm Leggings",
@@ -770,6 +945,13 @@ ns.ITEM_LIST = {
     name = "Band of Sulfuras",
     roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
     classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+    raids = { [RAID_MOLTEN_CORE] = true }
+  },
+  [19140] = {
+    itemId = 19140,
+    name = "Cauterizing Band",
+    roles = { [ROLE_HEALER] = true },
+    classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true },
     raids = { [RAID_MOLTEN_CORE] = true }
   },
   [19142] = {
