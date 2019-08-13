@@ -9,6 +9,7 @@ local RAIDS = ns.RAIDS
 local ROLES = ns.ROLES
 local ScrollList = ns.ScrollList
 local utils = ns.utils
+local utilsUI = ns.utilsUI
 
 -- saved variables
 PersonalRollLootDB = {}
@@ -1138,17 +1139,8 @@ updateMemberInfo = function()
     memberRollOrderScrollList:Update()
 end
 
-local toggleUI = function(frame)
-    if (not UnitAffectingCombat("player")) then
-        if (frame:IsShown()) then
-            HideUIPanel(frame)
-        else
-            ShowUIPanel(frame)
-        end
-    end
-end
-toggleMasterUI = function() toggleUI(MasterUIFrame) end
-toggleMemberUI = function() toggleUI(MemberUIFrame) end
+toggleMasterUI = function() utilsUI.toggleUI(MasterUIFrame) end
+toggleMemberUI = function() utilsUI.toggleUI(MemberUIFrame) end
 
 
 local function getItemIDForName(name)

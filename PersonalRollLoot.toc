@@ -12,5 +12,6 @@ Player.lua
 Instance.lua
 Libs\AceComm-3.0\ChatThrottleLib.lua
 AddonMessage.lua
+UtilsUI.lua
 ScrollList.lua
 PersonalRollLoot.lua
