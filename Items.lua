@@ -1,5 +1,7 @@
 -- namespace
 local _, ns = ...;
+-- imports
+local Item = ns.Item
 
 -- constants
 local ROLE_CASTER_DPS = "caster-dps"
@@ -1008,7 +1010,7 @@ local ITEM_LIST = {
         raids = { [RAID_ONYXIA] = true }
     },
 
-    -- for testing purposes
+-- for testing purposes
 
 --    [2589] = {
 --        itemId = 2589,
@@ -1028,8 +1030,9 @@ local ITEM_LIST = {
 }
 
 -- cache the items in the client
-for itemId in pairs(ITEM_LIST) do
-    GetItemInfo(itemId)
+for itemId, itemInfo in pairs(ITEM_LIST) do
+    ITEM_LIST[itemId] = Item.of(itemInfo)
 end
+
 
 ns.ITEM_LIST = ITEM_LIST

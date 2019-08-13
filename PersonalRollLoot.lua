@@ -48,6 +48,7 @@ local function getPlayerNameAndRealm(arg)
     return name, realm
 end
 
+-- move to cmd file
 local function getPlayer(arg)
     local name, realm = getPlayerNameAndRealm(arg)
     local player = PLAYER_LIST[name]
@@ -55,6 +56,7 @@ local function getPlayer(arg)
     return player
 end
 
+-- move to cmd file
 local function getRole(arg)
     if (not arg) then error("> No role specified.", 0) end
 
@@ -87,14 +89,6 @@ local function getInstance(name)
     local instance = INSTANCE_LIST[name]
     if (not instance) then error("> No instance with the name '"..name.."' found.", 0) end
     return instance
-end
-
--- move to Item
-local function checkPlayerItem(player, item)
-    local class = player["class"]
-    if (not item.classes[class]) then
-        error("> Item '"..item.name.."' ("..item.itemId..") is not assigned to the class '"..class.."'.", 0)
-    end
 end
 
 local function checkRaidName(raidName)
@@ -136,40 +130,36 @@ local function printPlayerInfo(player, receiver)
     end
 end
 
-local function isInGroup(name)
-    if (name) then
-        local playerName = UnitName("player")
-        if (name == playerName or UnitInRaid(name) or UnitInParty(name)) then
-            return true
-        end
-    end
-end
-
 local memberInfo
 local updateMemberInfo
 local createMemberInfo
 local setMemberInfo
 local setRollOrderInfo
 
-local function announceMemberInfo()
-    -- TODO only announce if you are the raid/group leader
-    local playerName = UnitName("player")
+local function forEachRaidMember(action)
     local memberCount = GetNumGroupMembers()
     for index = 1, memberCount do
         local member = GetRaidRosterInfo(index)
-        if (member ~= playerName) then
-            local name, realm = getPlayerNameAndRealm(member)
-            local player = PLAYER_LIST[name]
-            if (player) then
-                local message = player:encode()
-                AddonMessage_Send("PRLMemberInfo", message, "WHISPER", player.name)
-            else
-                SendChatMessage("> You are not registered for Personal Roll Loot.", "WHISPER", nil, name)
-            end
+        if (UnitExists(member)) then
+            local name, realm = UnitName(member)
+            action(name, realm)
         end
     end
+end
+
+local function announceMemberInfo()
+    -- TODO only announce if you are the raid/group leader
+    forEachRaidMember(function(name)
+        local player = PLAYER_LIST[name]
+        if (player) then
+            local message = player:encode()
+            AddonMessage_Send("PRLMemberInfo", message, "WHISPER", player.name)
+        else
+            print("> Player '"..name.."' is not registered for Personal Roll Loot.")
+        end
+    end)
     -- we always can announce to ourselves without sending a message
-    local player = PLAYER_LIST[playerName]
+    local player = PLAYER_LIST[UnitName("player")]
     if (player) then
         -- TODO make a deep copy instead of simply encoding the player
         player = Player.decode(player:encode())
@@ -178,20 +168,26 @@ local function announceMemberInfo()
 end
 
 local function announceRollOrderInfo(itemId, rollOrder)
-    if (activateInstance) then
-        local instance = INSTANCE_LIST[activateInstance]
-        if (instance) then
-            local playerName = UnitName("player")
-            local message = encodeRollOrderInfo(itemId, rollOrder)
-            for name in pairs(instance.players) do
-                if ((name ~= playerName) and isInGroup(name)) then
+    local instance = INSTANCE_LIST[activateInstance]
+    if (instance) then
+        local message = encodeRollOrderInfo(itemId, rollOrder)
+        forEachRaidMember(function(name)
+            local player = PLAYER_LIST[name]
+            if (player) then
+                if (instance.players[name]) then
                     AddonMessage_Send("PRLRollOrderInfo", message, "WHISPER", name)
+                else
+                    print("> Player '"..name.."' is not invited to the currently active instance.")
                 end
+            else
+                print("> Player '"..name.."' is not registered for Personal Roll Loot.")
             end
-            -- we always can announce to ourselves without sending a message
-            itemId, rollOrder = decodeRollOrderInfo(message)
-            setRollOrderInfo(itemId, rollOrder)
-        end
+        end)
+        -- we always can announce to ourselves without sending a message
+        itemId, rollOrder = decodeRollOrderInfo(message)
+        setRollOrderInfo(itemId, rollOrder)
+    else
+        print("> No active instance.")
     end
 end
 
@@ -308,12 +304,10 @@ local COMMANDS = {
         local arg1, arg2 = strsplit(" ", arg, 2)
         local player = getPlayer(arg1)
         local item = getItem(arg2)
-        checkPlayerItem(player,item)
-        local name = player["name"]
 
         -- add item to player
-        player.needlist[item.itemId] = true
-        print("> Added item '"..item.name.."' ("..item.itemId..") to player '"..name.."'.")
+        player:addItem(item)
+        print("> Added item '"..item.name.."' ("..item.itemId..") to player '"..player.name.."'.")
     end,
 
     ["remove-item"] = function(arg)
@@ -345,7 +339,7 @@ local COMMANDS = {
 
     ["delete-instance"] = function(arg)
         local instance = getInstance(arg)
-        local name = instance["name"]
+        local name = instance.name
         INSTANCE_LIST[name] = nil
         print("> Removed instance '"..name.."'.")
         if (activateInstance == name) then activateInstance = nil end

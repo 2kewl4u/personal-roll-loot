@@ -59,6 +59,7 @@ function Instance:addPlayer(player, force)
         instance.players[player.name] = createLootList(instance, player)
         return true
     end
+    return false
 end
 
 

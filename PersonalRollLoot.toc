@@ -1,11 +1,12 @@
 ## Interface: 80200
 ## Title: Personal Roll Loot
-## Version: 0.0.3
+## Version: 0.0.4
 ## Author: Ben
 ## SavedVariables: PersonalRollLootDB
 
 Utils.lua
 Constants.lua
+Item.lua
 Items.lua
 Player.lua
 Instance.lua

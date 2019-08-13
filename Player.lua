@@ -79,6 +79,59 @@ function Player.copy(player)
     return copy
 end
 
+function Player:addItem(item)
+    local player = self
+    -- check that the item is for the players class
+    if (item.classes[player.class]) then
+        -- add item to player
+        player.needlist[item.itemId] = true
+        return true
+    else
+        error("> Item '"..item.name.."' ("..item.itemId..") is not assigned to the class '"..player.class.."'.", 0)
+    end
+end
+
+---
+-- Indicates whether this player needs the given item, thus has the item on its
+-- need-list, has the right class and also has the corresponding role selected
+-- for the item.
+-- @param #Item item the item to check if it is needed by this player
+-- @return #boolean true if the player needs the item, false otherwise
+function Player:needsItem(item)
+    local player = self
+    -- check if the item can be used by the players class
+    if (item.classes[player.class]) then
+        -- check if the item is on the players need-list
+        if (player.needlist[item.itemId]) then
+            -- check if the item is assigned the players role
+            for role in pairs(item.roles) do
+                if (player.roles[role]) then
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
+
+function Player:isInGroup()
+    local player = self
+    if (UnitInRaid(player.name) or UnitInParty(player.name)) then
+        return true
+    else
+        return false
+    end
+end
+
+function Player:isGroupLeader()
+    local player = self
+    if (UnitIsGroupLeader(player.name)) then
+        return true
+    else
+        return false
+    end
+end
+
 ---
 -- Encodes the given player into a string representation to be serialized. The
 -- string can be decoded back into a player using the decode() function.
@@ -128,28 +181,6 @@ function Player.decode(encoded)
         end
         player.roles = roles
         return player
-    end
-end
-
----
--- Indicates whether this player needs the given item, thus has the item on its
--- need-list, has the right class and also has the corresponding role selected
--- for the item.
--- @param #Item item the item to check if it is needed by this player
--- @return #boolean true if the player needs the item, nil otherwise
-function Player:needsItem(item)
-    local player = self
-    -- check if the item can be used by the players class
-    if (item.classes[player.class]) then
-        -- check if the item is on the players need-list
-        if (player.needlist[item.itemId]) then
-            -- check if the item is assigned the players role
-            for role in pairs(item.roles) do
-                if (player.roles[role]) then
-                    return true
-                end
-            end
-        end
     end
 end
 
