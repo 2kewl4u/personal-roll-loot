@@ -1034,5 +1034,33 @@ for itemId, itemInfo in pairs(ITEM_LIST) do
     ITEM_LIST[itemId] = Item.of(itemInfo)
 end
 
+-- item utilities
+local Items = {}
 
+Items.forName = function(name)
+    if (name) then
+        for itemId, item in pairs(ITEM_LIST) do
+            local itemName = GetItemInfo(itemId)
+            if (name == itemName) then
+                return item
+            end
+        end
+    end
+end
+
+Items.getLootItems = function()
+    local items = {}
+    local lootCount = GetNumLootItems()
+    for index = 1, lootCount do
+        local lootIcon, lootName, lootQuantity, rarity, locked,
+            isQuestItem, questId, isActive = GetLootSlotInfo(index)
+        local itemId = Items.forName(lootName)
+        if (itemId) then
+            items[itemId] = ITEM_LIST[itemId]
+        end
+    end
+    return items
+end
+
+ns.Items = Items
 ns.ITEM_LIST = ITEM_LIST

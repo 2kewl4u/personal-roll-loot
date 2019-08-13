@@ -4,6 +4,7 @@ local _, ns = ...;
 local CLASS_ROLES = ns.CLASS_ROLES
 local Instance = ns.Instance
 local ITEM_LIST = ns.ITEM_LIST
+local Items = ns.Items
 local Player = ns.Player
 local RAIDS = ns.RAIDS
 local ROLES = ns.ROLES
@@ -465,20 +466,6 @@ local function hideTooltip()
     GameTooltip:Hide()
 end
 
-local function showPlayerTooltip(button, playerName)
-    local unitName = playerName
-    local name, realm = UnitName(playerName)
-    if (name and realm) then
-        unitName = name.."-"..realm
-    end
-    GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
-    GameTooltip:SetUnit(unitName)
-end
-
-local function createBorder(frame)
-    CreateFrame("Frame", nil, frame, "InsetFrameTemplate"):SetAllPoints()
-end
-
 MasterUIFrame = CreateFrame("Frame", "PersonalRollLootMaster", UIParent, "UIPanelDialogTemplate")
 MasterUIFrame:SetAttribute("UIPanelLayout-defined", true)
 MasterUIFrame:SetAttribute("UIPanelLayout-enabled", true)
@@ -557,10 +544,10 @@ playerScrollList:SetButtonScript("OnClick", function(index, button, name, player
     playerItemScrollList:Update()
 end)
 playerScrollList:SetButtonScript("OnEnter", function(index, button, name, player)
-    showPlayerTooltip(button, name)
+    utilsUI.showPlayerTooltip(button, name)
 end)
 playerScrollList:SetButtonScript("OnLeave", hideTooltip)
-createBorder(playerScrollList:GetFrame())
+utilsUI.createBorder(playerScrollList:GetFrame())
 
 local addPlayerButton = CreateFrame("Button", nil, playerTabFrame, "GameMenuButtonTemplate")
 addPlayerButton:SetPoint("BOTTOMLEFT", playerTabFrame, "BOTTOMLEFT", MARGIN, MARGIN)
@@ -658,7 +645,7 @@ playerItemScrollList:SetButtonScript("OnEnter", function(index, button, itemId, 
 end)
 playerItemScrollList:SetButtonScript("OnLeave", hideTooltip)
 -- border frame for the list
-createBorder(playerItemScrollList:GetFrame())
+utilsUI.createBorder(playerItemScrollList:GetFrame())
 
 local removePlayerButton = CreateFrame("Button", nil, playerTabFrame, "GameMenuButtonTemplate")
 removePlayerButton:SetPoint("BOTTOMLEFT", playerTabFrame, "BOTTOMLEFT", WINDOW_WIDTH / 2 + SPACING, MARGIN)
@@ -694,7 +681,7 @@ instanceScrollList:SetButtonScript("OnClick", function(index, button, name, inst
     instanceCreatedField:SetText(instance.created)
     instancePlayersScrollList:Update()
 end)
-createBorder(instanceScrollList:GetFrame())
+utilsUI.createBorder(instanceScrollList:GetFrame())
 
 local newInstanceLabel = instancesTabFrame:CreateFontString(nil, "OVERLAY")
 newInstanceLabel:SetPoint("TOPLEFT", instanceScrollList:GetFrame(), "BOTTOMLEFT", SPACING, -SPACING)
@@ -796,10 +783,10 @@ instancePlayersScrollList:SetContentProvider(function()
     return {}
 end)
 instancePlayersScrollList:SetButtonScript("OnEnter", function(index, button, name, lootlist)
-    showPlayerTooltip(button, name)
+    utilsUI.showPlayerTooltip(button, name)
 end)
 instancePlayersScrollList:SetButtonScript("OnLeave", hideTooltip)
-createBorder(instancePlayersScrollList:GetFrame())
+utilsUI.createBorder(instancePlayersScrollList:GetFrame())
 
 local deleteInstanceButton = CreateFrame("Button", nil, instancesTabFrame, "GameMenuButtonTemplate")
 deleteInstanceButton:SetPoint("BOTTOMLEFT", instancesTabFrame, "BOTTOMLEFT", WINDOW_WIDTH / 2 + SPACING, MARGIN)
@@ -869,7 +856,7 @@ rollItemsScrollList:SetLabelProvider(function(itemId, item, button)
         button.Name:SetText(itemName)
     end
 end)
-createBorder(rollItemsScrollList:GetFrame())
+utilsUI.createBorder(rollItemsScrollList:GetFrame())
 rollItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
     GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
     GameTooltip:SetItemByID(itemId)
@@ -893,7 +880,7 @@ local lootItemsScrollList = ScrollList.new("PersonalRollLootLootItemScrollFrame"
 lootItemsScrollList:SetPoint("TOPLEFT", lootItemsField, "BOTTOMLEFT", 0, -SPACING)
 lootItemsScrollList:SetSize(COLUMN_WIDTH, 3 * ITEM_BUTTON_HEIGHT + SPACING)
 lootItemsScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
-createBorder(lootItemsScrollList:GetFrame())
+utilsUI.createBorder(lootItemsScrollList:GetFrame())
 lootItemsScrollList:SetContentProvider(function() return lootItems end)
 lootItemsScrollList:SetLabelProvider(function(itemId, item, button)
     local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType,
@@ -946,10 +933,10 @@ rollOrderScrollList:SetLabelProvider(function(index, roundAndPlayerName)
     return round.." - "..playerName
 end)
 rollOrderScrollList:SetButtonScript("OnEnter", function(index, button, roundIndex, roundAndPlayerName)
-    showPlayerTooltip(button, roundAndPlayerName[2])
+    utilsUI.showPlayerTooltip(button, roundAndPlayerName[2])
 end)
 rollOrderScrollList:SetButtonScript("OnLeave", hideTooltip)
-createBorder(rollOrderScrollList:GetFrame())
+utilsUI.createBorder(rollOrderScrollList:GetFrame())
 
 
 -- ------------------------------------------------------- --
@@ -1036,7 +1023,7 @@ memberItemScrollList:SetButtonScript("OnEnter", function(index, button, itemId, 
     GameTooltip:SetItemByID(itemId)
 end)
 memberItemScrollList:SetButtonScript("OnLeave", hideTooltip)
-createBorder(memberItemScrollList:GetFrame())
+utilsUI.createBorder(memberItemScrollList:GetFrame())
 
 local memberLootItemsField = memberTabFrame:CreateFontString(nil, "OVERLAY")
 memberLootItemsField:SetPoint("TOPLEFT", memberTabFrame, "TOPLEFT", WINDOW_WIDTH / 2 + SPACING, -MARGIN)
@@ -1048,7 +1035,7 @@ local memberLootItemsScrollList = ScrollList.new("PersonalRollLootMemberLootItem
 memberLootItemsScrollList:SetPoint("TOPLEFT", memberLootItemsField, "BOTTOMLEFT", 0, -SPACING)
 memberLootItemsScrollList:SetSize(COLUMN_WIDTH, 3 * ITEM_BUTTON_HEIGHT + SPACING)
 memberLootItemsScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
-createBorder(memberLootItemsScrollList:GetFrame())
+utilsUI.createBorder(memberLootItemsScrollList:GetFrame())
 memberLootItemsScrollList:SetContentProvider(function() return lootItems end)
 memberLootItemsScrollList:SetLabelProvider(function(itemId, item, button)
     local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType,
@@ -1104,10 +1091,10 @@ memberRollOrderScrollList:SetLabelProvider(function(index, roundAndPlayerName)
     return round.." - "..playerName
 end)
 memberRollOrderScrollList:SetButtonScript("OnEnter", function(index, button, roundIndex, roundAndPlayerName)
-    showPlayerTooltip(button, roundAndPlayerName[2])
+    utilsUI.showPlayerTooltip(button, roundAndPlayerName[2])
 end)
 memberRollOrderScrollList:SetButtonScript("OnLeave", hideTooltip)
-createBorder(memberRollOrderScrollList:GetFrame())
+utilsUI.createBorder(memberRollOrderScrollList:GetFrame())
 
 createMemberInfo = function()
     if (not memberInfo) then
@@ -1143,41 +1130,9 @@ toggleMasterUI = function() utilsUI.toggleUI(MasterUIFrame) end
 toggleMemberUI = function() utilsUI.toggleUI(MemberUIFrame) end
 
 
-local function getItemIDForName(name)
-    if (name) then
-        for itemId in pairs(ITEM_LIST) do
-            local itemName = GetItemInfo(itemId)
-            if (name == itemName) then return itemId end
-        end
-    end
-end
-
-test = function()
-    local lootCount = GetNumLootItems()
-    for index = 1, lootCount do
-        local lootIcon, lootName, lootQuantity, rarity, locked,
-            isQuestItem, questId, isActive = GetLootSlotInfo(index)
-        local itemId = getItemIDForName(lootName)
-        if (itemId) then
-            print("I know this item:")
-            print(GetItemInfo(itemId))
-        end
-    end
-end
-
 local function updateLootItems()
-    local items = {}
     -- TODO update only when in raid environment
-    local lootCount = GetNumLootItems()
-    for index = 1, lootCount do
-        local lootIcon, lootName, lootQuantity, rarity, locked,
-            isQuestItem, questId, isActive = GetLootSlotInfo(index)
-        local itemId = getItemIDForName(lootName)
-        if (itemId) then
-            items[itemId] = ITEM_LIST[itemId]
-        end
-    end
-    lootItems = items
+    lootItems = Items.getLootItems()
     lootItemsScrollList:Update()
     memberLootItemsScrollList:Update()
 end
@@ -1231,6 +1186,11 @@ local function loadSavedVariables()
     end
 
     activateInstance = PersonalRollLootDB["activateInstance"]
+end
+
+test = function()
+    print("test function")
+    updateLootItems()
 end
 
 -- create an event frame
