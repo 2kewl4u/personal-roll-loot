@@ -22,13 +22,6 @@ local ITEM_LIST = ns.ITEM_LIST
 local MemberUI = {}
 MemberUI.__index = MemberUI
 
--- UI components
-local MemberUIFrame
-local memberTabFrame
-local memberNameField
-local memberRoleButtons = {}
-local memberItemScrollList
-
 -- data
 local memberInfo
 local lootItems = {}
@@ -47,7 +40,8 @@ local createMemberInfo = function()
     end
 end
 
-MemberUIFrame = CreateFrame("Frame", "PersonalRollLootMember", UIParent, "UIPanelDialogTemplate")
+-- UI components
+local  MemberUIFrame = CreateFrame("Frame", "PersonalRollLootMember", UIParent, "UIPanelDialogTemplate")
 MemberUIFrame:SetAttribute("UIPanelLayout-defined", true)
 MemberUIFrame:SetAttribute("UIPanelLayout-enabled", true)
 MemberUIFrame:SetAttribute("UIPanelLayout-area", "left")
@@ -59,12 +53,12 @@ MemberUIFrame:SetPoint("CENTER")
 MemberUIFrame.Title:SetText("Personal Roll Loot")
 HideUIPanel(MemberUIFrame)
 
-memberTabFrame = CreateFrame("Frame", nil, MemberUIFrame)
+local memberTabFrame = CreateFrame("Frame", nil, MemberUIFrame)
 memberTabFrame:SetPoint("TOPLEFT", PersonalRollLootMemberDialogBG, "TOPLEFT", 0, 0)
 memberTabFrame:SetPoint("BOTTOMRIGHT", PersonalRollLootMemberDialogBG, "BOTTOMRIGHT", 0, 0)
 memberTabFrame:SetScript("OnShow", updateMemberInfo)
 
-memberNameField = memberTabFrame:CreateFontString(nil, "OVERLAY")
+local memberNameField = memberTabFrame:CreateFontString(nil, "OVERLAY")
 memberNameField:SetPoint("TOPLEFT", memberTabFrame, "TOPLEFT", MARGIN, -MARGIN)
 memberNameField:SetFontObject("GameFontHighlightLEFT")
 memberNameField:SetText("Player Name")
@@ -72,6 +66,7 @@ memberNameField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 
 -- role buttons
 local roleIndex = 0
+local memberRoleButtons = {}
 for role in pairs(ROLES) do
     local roleButton = CreateFrame("CheckButton", nil, memberTabFrame, "UICheckButtonTemplate")
     roleButton:SetPoint("TOPLEFT", memberNameField, "BOTTOMLEFT", 0, -(SPACING + TEXT_FIELD_HEIGHT * roleIndex))
@@ -84,7 +79,7 @@ for role in pairs(ROLES) do
 end
 
 -- item list
-memberItemScrollList = ScrollList.new("PersonalRollLootMemberItemListScrollFrame", memberTabFrame, 6, "LargeItemButtonTemplate")
+local memberItemScrollList = ScrollList.new("PersonalRollLootMemberItemListScrollFrame", memberTabFrame, 6, "LargeItemButtonTemplate")
 memberItemScrollList:SetPoint("BOTTOMLEFT", memberTabFrame, "BOTTOMLEFT", MARGIN, TEXT_FIELD_HEIGHT + MARGIN + SPACING)
 memberItemScrollList:SetSize(COLUMN_WIDTH, 6 * ITEM_BUTTON_HEIGHT + SPACING)
 memberItemScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
@@ -224,5 +219,17 @@ MemberUI.setMemberInfo = function(player)
     -- update the member info
     updateMemberInfo()
 end
+
+MemberUI.setRollOrderInfo = function(itemId, rollOrder)
+        memberRollItem = ITEM_LIST[itemId]
+    if (memberRollItem) then
+        local itemName = GetItemInfo(itemId) or memberRollItem.name
+        memberRollItemField:SetText("Item: "..itemName)
+    end
+    memberRollOrder = rollOrder or {}
+    memberRollOrderScrollList:Update()
+end
+
+MemberUI.toggleUI = function() utilsUI.toggleUI(MemberUIFrame) end
 
 ns.MemberUI = MemberUI
