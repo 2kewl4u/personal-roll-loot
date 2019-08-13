@@ -2,6 +2,7 @@
 local _, ns = ...;
 -- imports
 local CLASS_ROLES = ns.CLASS_ROLES
+local Instance = ns.Instance
 local ITEM_LIST = ns.ITEM_LIST
 local Player = ns.Player
 local RAIDS = ns.RAIDS
@@ -38,16 +39,6 @@ local function decodeRollOrderInfo(info)
         return itemId, (rollOrder or {})
     end
 end
-
---local function shuffle( tInput )
---    local tReturn = {}
---    for i = #tInput, 1, -1 do
---        local j = random(i)
---        tInput[i], tInput[j] = tInput[j], tInput[i]
---        tinsert(tReturn, tInput[i])
---    end
---    return tReturn
---end
 
 local function getPlayerNameAndRealm(arg)
     if (not arg) then error("> No player name specified.", 0) end
@@ -98,6 +89,7 @@ local function getInstance(name)
     return instance
 end
 
+-- move to Item
 local function checkPlayerItem(player, item)
     local class = player["class"]
     if (not item.classes[class]) then
@@ -108,29 +100,6 @@ end
 local function checkRaidName(raidName)
     if (not raidName) then error("> No raid name specified.", 0) end
     if (not RAIDS[raidName]) then error("> No raid with the name '"..raidName.."' found.", 0) end
-end
-
-local function isItemForInstance(item, instance)
-    local raid = instance["raid"]
-    return item["raids"][raid]
-end
-
-local function createLootList(instance, player)
-    local name = player["name"]
-    local items = {}
-    local itemIndex = 1
-    -- create a loot list
-    local class = player["class"]
-    for itemId, item in pairs(ITEM_LIST) do
-        if (isItemForInstance(item,instance) and player:needsItem(item)) then
-            items[itemIndex] = itemId
-            itemIndex = itemIndex + 1
-        end
-    end
-    -- shuffle the items
-    items = utils.shuffle(items)
-    print("> Created loot table for player '"..name.."'.")
-    return items
 end
 
 local function printInstanceInfo(instance)
@@ -370,13 +339,7 @@ local COMMANDS = {
         checkRaidName(raidName)
 
         if (INSTANCE_LIST[name]) then error("> An instance with the name '"..name.."' is already registered.", 0) end
-        local creationTime = date("%y-%m-%d %H:%M:%S")
-        INSTANCE_LIST[name] = {
-            ["name"] = name,
-            ["raid"] = raidName,
-            ["created"] = creationTime,
-            ["players"] = {}
-        }
+        INSTANCE_LIST[name] = Instance.new(name, raidName)
         print("> Created new instance '"..name.."'.")
     end,
 
@@ -421,16 +384,15 @@ local COMMANDS = {
                 local name, realm = getPlayerNameAndRealm(member)
                 local player = getPlayer(name)
 
-                if (not instance["players"][name]) then
-                    instance["players"][name] = createLootList(instance,player)
+                if (instance:addPlayer(player)) then
                     invited = invited + 1
                 end
             end
             print("> Invited "..invited.." players.")
         else
             local player = getPlayer(arg)
-            local name = player["name"]
-            instance["players"][name] = createLootList(instance,player)
+            instance:addPlayer(player, true)
+            print("> Created loot table for player '"..player.name.."'.")
         end
     end,
 
@@ -784,6 +746,7 @@ addInstanceButton:SetScript("OnClick", function()
         end
         -- clear name
         newInstanceEditBox:SetText("")
+        newInstanceEditBox:ClearFocus()
     end
 end)
 
@@ -1275,6 +1238,13 @@ local function loadSavedVariables()
     for name, player in pairs(PersonalRollLootDB["PLAYER_LIST"]) do
         PLAYER_LIST[name] = Player.copy(player)
     end
+
+    INSTANCE_LIST = {}
+    for name, instance in pairs(PersonalRollLootDB["INSTANCE_LIST"]) do
+        INSTANCE_LIST[name] = Instance.copy(instance)
+    end
+
+    activateInstance = PersonalRollLootDB["activateInstance"]
 end
 
 -- create an event frame
@@ -1289,8 +1259,6 @@ function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4)
     if (event == "ADDON_LOADED") then
         -- load the saved variables
         loadSavedVariables()
-        INSTANCE_LIST = PersonalRollLootDB["INSTANCE_LIST"] or {}
-        activateInstance = PersonalRollLootDB["activateInstance"]
     elseif (event == "CHAT_MSG_ADDON") then
         --    print("received addon message: "..arg2)
         --    print("from: "..arg4)

@@ -8,6 +8,7 @@ Utils.lua
 Constants.lua
 Items.lua
 Player.lua
+Instance.lua
 Libs\AceComm-3.0\ChatThrottleLib.lua
 AddonMessage.lua
 ScrollList.lua
