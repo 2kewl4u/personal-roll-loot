@@ -965,12 +965,12 @@ end
 
 local function loadSavedVariables()
     PLAYER_LIST = {}
-    for name, player in pairs(PersonalRollLootDB["PLAYER_LIST"]) do
+    for name, player in pairs(PersonalRollLootDB["PLAYER_LIST"] or {}) do
         PLAYER_LIST[name] = Player.copy(player)
     end
 
     INSTANCE_LIST = {}
-    for name, instance in pairs(PersonalRollLootDB["INSTANCE_LIST"]) do
+    for name, instance in pairs(PersonalRollLootDB["INSTANCE_LIST"] or {}) do
         INSTANCE_LIST[name] = Instance.copy(instance)
     end
 
