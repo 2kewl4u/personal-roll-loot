@@ -1,6 +1,6 @@
-## Interface: 80200
+## Interface: 11302
 ## Title: Personal Roll Loot
-## Version: 0.0.4
+## Version: 0.0.5
 ## Author: Ben
 ## SavedVariables: PersonalRollLootDB
 
