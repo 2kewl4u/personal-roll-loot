@@ -1012,20 +1012,20 @@ local ITEM_LIST = {
 
 -- for testing purposes
 
---    [2589] = {
---        itemId = 2589,
---        name = "Linen Cloth",
---        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
---        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
---        raids = {}
---    },
---    [2592] = {
---        itemId = 2592,
---        name = "Wool Cloth",
---        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
---        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
---        raids = {}
---    }
+    [2589] = {
+        itemId = 2589,
+        name = "Linen Cloth",
+        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+        raids = {}
+    },
+    [2592] = {
+        itemId = 2592,
+        name = "Wool Cloth",
+        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+        raids = {}
+    }
 
 }
 
@@ -1054,9 +1054,9 @@ Items.getLootItems = function()
     for index = 1, lootCount do
         local lootIcon, lootName, lootQuantity, rarity, locked,
             isQuestItem, questId, isActive = GetLootSlotInfo(index)
-        local itemId = Items.forName(lootName)
-        if (itemId) then
-            items[itemId] = ITEM_LIST[itemId]
+        local item = Items.forName(lootName)
+        if (item) then
+            items[item.itemId] = item
         end
     end
     return items

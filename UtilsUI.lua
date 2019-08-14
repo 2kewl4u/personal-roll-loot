@@ -25,18 +25,20 @@ utilsUI.createBorder = function(frame)
     CreateFrame("Frame", nil, frame, "InsetFrameTemplate"):SetAllPoints()
 end
 
-utilsUI.showPlayerTooltip = function(owner, playerName)
-    local unitName = playerName
-    local name, realm = UnitName(playerName)
-    if (name and realm) then
-        unitName = name.."-"..realm
-    end
-    GameTooltip:SetOwner(owner, "ANCHOR_BOTTOMRIGHT")
-    GameTooltip:SetUnit(unitName)
-end
-
 utilsUI.hideTooltip = function()
+	GameTooltip:ClearLines()
     GameTooltip:Hide()
 end
+
+utilsUI.showPlayerTooltip = function(owner, playerName)
+	local unitName = playerName
+	local name, realm = UnitName(playerName)
+	if (name and realm) then
+		unitName = name.."-"..realm
+	end
+	GameTooltip:SetOwner(owner, "ANCHOR_BOTTOMRIGHT")
+	GameTooltip:SetUnit(unitName)
+end
+
 
 ns.utilsUI = utilsUI

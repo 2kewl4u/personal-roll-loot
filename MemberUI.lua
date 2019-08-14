@@ -158,7 +158,7 @@ memberRollItemField:SetPoint("TOPLEFT", memberLootPrioField, "BOTTOMLEFT", 0, 0)
 memberRollItemField:SetFontObject("GameFontHighlightLEFT")
 memberRollItemField:SetText("Item: -")
 memberRollItemField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
-local memberRollItemFieldButton = CreateFrame("Button", memberRollItemField)
+local memberRollItemFieldButton = CreateFrame("Button", nil, memberTabFrame)
 memberRollItemFieldButton:SetPoint("TOPLEFT", memberRollItemField, "TOPLEFT", 0, 0)
 memberRollItemFieldButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 memberRollItemFieldButton:SetScript("OnEnter", function()
@@ -231,5 +231,6 @@ MemberUI.setRollOrderInfo = function(itemId, rollOrder)
 end
 
 MemberUI.toggleUI = function() utilsUI.toggleUI(MemberUIFrame) end
+MemberUI.isShown = function() return MemberUIFrame:IsShown() end
 
 ns.MemberUI = MemberUI

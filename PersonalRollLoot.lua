@@ -44,7 +44,7 @@ local function decodeRollOrderInfo(info)
 end
 
 local function getPlayerNameAndRealm(arg)
-    if (not arg) then error("> No player name specified.", 0) end
+	if (not arg) then error("> No player name specified.", 0) end
     local name, realm = UnitName(arg)
     if not name then error("> No player found with the name '"..arg.."'.", 0) end
     if not realm then realm = GetRealmName() end
@@ -138,12 +138,13 @@ local updateMemberInfo
 local createMemberInfo
 
 local function forEachRaidMember(action)
+	-- TODO if we are not in a group, we execute the action on ourselves 
     local memberCount = GetNumGroupMembers()
     for index = 1, memberCount do
-        local member = GetRaidRosterInfo(index)
-        if (UnitExists(member)) then
-            local name, realm = UnitName(member)
-            action(name, realm)
+		local name, rank, subgroup, level, class, fileName, 
+			  zone, online, isDead, role, isML = GetRaidRosterInfo(index)
+        if (online) then
+            action(name)
         end
     end
 end
@@ -461,6 +462,7 @@ local SPACING = 6
 
 -- menu functions
 local function hideTooltip()
+	GameTooltip:ClearLines()
     GameTooltip:Hide()
 end
 
@@ -554,6 +556,7 @@ addPlayerButton:SetText("Add Player(s)")
 addPlayerButton:SetScript("OnClick", function()
     local cmd = COMMANDS["add-player"]
     local name = UnitName("target")
+	if (name) then name = "target" end
     local status, err = pcall(cmd, name)
     if (not status) then
         print(err)
@@ -908,13 +911,14 @@ rollItemField:SetPoint("TOPLEFT", lootPrioField, "BOTTOMLEFT", 0, 0)
 rollItemField:SetFontObject("GameFontHighlightLEFT")
 rollItemField:SetText("Item: -")
 rollItemField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
-local rollItemFieldButton = CreateFrame("Button", rollItemField)
+local rollItemFieldButton = CreateFrame("Button", nil, rollTabFrame)
 rollItemFieldButton:SetPoint("TOPLEFT", rollItemField, "TOPLEFT", 0, 0)
 rollItemFieldButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 rollItemFieldButton:SetScript("OnEnter", function()
     if (rollItem) then
-        GameTooltip:SetOwner(rollItemField, "ANCHOR_BOTTOMRIGHT")
-        GameTooltip:SetItemByID(rollItem.itemId)
+		-- TODO extract into utilsUI.showItemTooltip
+		GameTooltip:SetOwner(rollItemFieldButton, "ANCHOR_BOTTOMRIGHT")
+		GameTooltip:SetItemByID(rollItem.itemId)
     end
 end)
 rollItemFieldButton:SetScript("OnLeave", hideTooltip)
@@ -979,7 +983,6 @@ end
 
 test = function()
     print("test function")
-    updateLootItems()
 end
 
 -- create an event frame
@@ -995,18 +998,16 @@ function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4)
         -- load the saved variables
         loadSavedVariables()
     elseif (event == "CHAT_MSG_ADDON") then
-        --    print("received addon message: "..arg2)
-        --    print("from: "..arg4)
         -- TODO only accept announcements from raid/group leader
         AddonMessage_Receive(arg1, arg2, arg3, arg4, function(prefix, message, type, sender)
             if (prefix == "PRLMemberInfo") then
                 receiveMemberInfo(message)
             elseif (prefix == "PRLRollOrderInfo") then
                 receiveRollOrderInfo(message)
-                if (not MemberUIFrame:IsShown()) then
+                if (not MemberUI.isShown()) then
                     print("> Received a personal roll announcement. Type /prl to see the order.")
                     -- TODO maybe open the UI automatically:
-                    ShowUIPanel(MemberUIFrame)
+                    -- MemberUI.toggleUI()
                 end
             end
         end)
