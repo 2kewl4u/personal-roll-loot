@@ -138,15 +138,17 @@ local updateMemberInfo
 local createMemberInfo
 
 local function forEachRaidMember(action)
-	-- TODO if we are not in a group, we execute the action on ourselves 
+	local playerName = UnitName("player")
     local memberCount = GetNumGroupMembers()
     for index = 1, memberCount do
 		local name, rank, subgroup, level, class, fileName, 
 			  zone, online, isDead, role, isML = GetRaidRosterInfo(index)
-        if (online) then
+        if (playerName ~= name and online) then
             action(name)
         end
     end
+	-- if we are not in a group, we still execute the action on ourselves
+    action(playerName)
 end
 
 local function announceMemberInfo()
@@ -160,13 +162,6 @@ local function announceMemberInfo()
             print("> Player '"..name.."' is not registered for Personal Roll Loot.")
         end
     end)
-    -- we always can announce to ourselves without sending a message
-    local player = PLAYER_LIST[UnitName("player")]
-    if (player) then
-        -- TODO make a deep copy instead of simply encoding the player
-        player = Player.decode(player:encode())
-        MemberUI.setMemberInfo(player)
-    end
 end
 
 local function announceRollOrderInfo(itemId, rollOrder)
@@ -185,9 +180,6 @@ local function announceRollOrderInfo(itemId, rollOrder)
                 print("> Player '"..name.."' is not registered for Personal Roll Loot.")
             end
         end)
-        -- we always can announce to ourselves without sending a message
-        itemId, rollOrder = decodeRollOrderInfo(message)
-        MemberUI.setRollOrderInfo(itemId, rollOrder)
     else
         print("> No active instance.")
     end
