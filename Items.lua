@@ -1012,20 +1012,20 @@ local ITEM_LIST = {
 
 -- for testing purposes
 
-    [2589] = {
-        itemId = 2589,
-        name = "Linen Cloth",
-        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
-        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
-        raids = {}
-    },
-    [2592] = {
-        itemId = 2592,
-        name = "Wool Cloth",
-        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
-        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
-        raids = {}
-    }
+--    [2589] = {
+--        itemId = 2589,
+--        name = "Linen Cloth",
+--        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+--        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+--        raids = {}
+--    },
+--    [2592] = {
+--        itemId = 2592,
+--        name = "Wool Cloth",
+--        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+--        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+--        raids = {}
+--    }
 
 }
 

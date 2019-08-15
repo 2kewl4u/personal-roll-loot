@@ -200,7 +200,7 @@ local function roll(itemIdOrName)
     local rollOrderList = {}
     repeat
         roll = false
-        local playerList
+--        local playerList
         for name, lootlist in pairs(instance.players) do
             local lootId = lootlist[round]
             if (lootId) then
@@ -208,8 +208,8 @@ local function roll(itemIdOrName)
                 roll = true
                 if (itemId == lootId) then
                     table.insert(rollOrderList, { round, name })
-                    playerList = playerList or "Round "..round..":"
-                    playerList = playerList.." "..name
+--                    playerList = playerList or "Round "..round..":"
+--                    playerList = playerList.." "..name
                 end
             end
         end
@@ -226,17 +226,14 @@ local COMMANDS = {
     ["add-player"] = function(arg)
         if (not arg) then
             local added = 0
-            local memberCount = GetNumGroupMembers()
-            for index = 1, memberCount do
-                local member = GetRaidRosterInfo(index)
-                local name, realm = getPlayerNameAndRealm(member)
-
-                if (not PLAYER_LIST[name]) and UnitIsPlayer(member) then
-                    local _,class,_ = UnitClass(member)
+            forEachRaidMember(function(name)
+                local name, realm = getPlayerNameAndRealm(name)
+                if (name and (not PLAYER_LIST[name])) then
+                    local _,class,_ = UnitClass(name)
                     PLAYER_LIST[name] = Player.new(name,realm,class)
                     added = added + 1
                 end
-            end
+            end)
             print("> Added "..added.." players.")
         else
             local name, realm = getPlayerNameAndRealm(arg)
@@ -366,16 +363,12 @@ local COMMANDS = {
 
         if (not arg) then
             local invited = 0
-            local memberCount = GetNumGroupMembers()
-            for index = 1, memberCount do
-                local member = GetRaidRosterInfo(index)
-                local name, realm = getPlayerNameAndRealm(member)
+            forEachRaidMember(function(name)
                 local player = getPlayer(name)
-
                 if (instance:addPlayer(player)) then
                     invited = invited + 1
                 end
-            end
+            end)
             print("> Invited "..invited.." players.")
         else
             local player = getPlayer(arg)
