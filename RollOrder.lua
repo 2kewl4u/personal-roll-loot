@@ -73,7 +73,7 @@ end
 
 function RollOrder:print()
     local rollOrder = self
-    print("> Roll order for '"..rollOrder.item.name.."'")
+    print("> Roll order for '"..rollOrder.item:getName().."'")
     for index, round in pairs(rollOrder.rounds) do
         print("   "..round[1].." - "..round[2])
     end

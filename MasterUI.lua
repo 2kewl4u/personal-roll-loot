@@ -44,7 +44,7 @@ local function updateRollOrderFields(index, button, itemId, item)
     else
         rollOrder = result
         if (rollOrder) then
-            local itemName = GetItemInfo(rollOrder.item.itemId) or rollOrder.item.name
+            local itemName = rollOrder.item:getName()
             rollItemField:SetText("Item: "..itemName)
             rollOrderScrollList:Update()
             -- announce roll order
@@ -192,23 +192,18 @@ playerItemScrollList:SetSize(COLUMN_WIDTH, 6 * ITEM_BUTTON_HEIGHT + SPACING)
 playerItemScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
 playerItemScrollList:SetContentProvider(function() return ITEM_LIST end)
 playerItemScrollList:SetLabelProvider(function(itemId, item, button)
-    local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType,
-        itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(item.itemId)
-
     local disabled = true
     local player = playerNameField.player
     if (player) then
-        if (player.needlist[item.itemId]) then disabled = false end
+        if (player.needlist[itemId]) then disabled = false end
     end
 
-    if (itemName) then
-        button.Icon:SetTexture(itemTexture)
-        button.Name:SetText(itemName)
-        if (disabled) then
-            button.Name:SetFontObject("GameFontDisable")
-        else
-            button.Name:SetFontObject("GameFontHighlight")
-        end
+    button.Icon:SetTexture(item:getTexture())
+    button.Name:SetText(item:getName())
+    if (disabled) then
+        button.Name:SetFontObject("GameFontDisable")
+    else
+        button.Name:SetFontObject("GameFontHighlight")
     end
 end)
 playerItemScrollList:SetButtonScript("OnClick", function(index, button, itemId, item)
@@ -222,10 +217,9 @@ playerItemScrollList:SetButtonScript("OnClick", function(index, button, itemId, 
     end
 end)
 playerItemScrollList:SetFilter(function(itemId, item)
-    local classes = item.classes
     local player = playerNameField.player
     if (player) then
-        return item.classes[player.class]
+        return item:isForClass(player.class)
     end
     return true
 end)
@@ -425,13 +419,8 @@ rollItemsScrollList:SetSize(COLUMN_WIDTH, 10 * ITEM_BUTTON_HEIGHT + SPACING)
 rollItemsScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
 rollItemsScrollList:SetContentProvider(function() return ITEM_LIST end)
 rollItemsScrollList:SetLabelProvider(function(itemId, item, button)
-    local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType,
-        itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(item.itemId)
-    -- in case we got no info
-    if (itemName) then
-        button.Icon:SetTexture(itemTexture)
-        button.Name:SetText(itemName)
-    end
+    button.Name:SetText(item:getName())
+    button.Icon:SetTexture(item:getTexture())
 end)
 utilsUI.createBorder(rollItemsScrollList:GetFrame())
 rollItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
@@ -443,7 +432,7 @@ rollItemsScrollList:SetButtonScript("OnClick", updateRollOrderFields)
 rollItemsScrollList:SetFilter(function(itemId, item)
     if (ns.DB.activeInstance) then
         local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
-        return item.raids[instance.raid]
+        return item:dropsIn(instance)
     end
 end)
 
@@ -460,14 +449,9 @@ lootItemsScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
 utilsUI.createBorder(lootItemsScrollList:GetFrame())
 lootItemsScrollList:SetContentProvider(function() return lootItems end)
 lootItemsScrollList:SetLabelProvider(function(itemId, item, button)
-    local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType,
-        itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(itemId)
-
-    if (itemName) then
-        button.Icon:SetTexture(itemTexture)
-        button.Name:SetText(itemName)
-        button.Name:SetFontObject("GameFontHighlight")
-    end
+    button.Icon:SetTexture(item:getTexture())
+    button.Name:SetText(item:getName())
+    button.Name:SetFontObject("GameFontHighlight")
 end)
 lootItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
     GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")

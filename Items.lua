@@ -1029,32 +1029,49 @@ local ITEM_LIST = {
 
 }
 
--- cache the items in the client
+-- creates Item's from the itemInfo above
 for itemId, itemInfo in pairs(ITEM_LIST) do
     ITEM_LIST[itemId] = Item.fromInfo(itemInfo)
 end
 
--- item utilities
+---
+-- Contains utility methods for the items.
+--
 local Items = {}
 
-local getItemforName = function(name)
+---
+-- Returns the item from the ITEM_LIST with the given localized name if present
+-- or nil if no such item was found.
+-- 
+-- @param #string name
+--          the name of the item to look for
+--          
+-- @return #Item
+--          the item with the given name
+-- 
+Items.forName = function(name)
     if (name) then
         for itemId, item in pairs(ITEM_LIST) do
-            local itemName = GetItemInfo(itemId)
-            if (name == itemName) then
+            if (name == item:getName()) then
                 return item
             end
         end
     end
 end
 
+---
+-- Returns a list of Item's that are currently in the loot window.
+-- 
+-- @return #table
+--          a list of Item's in the loot window
+-- 
 Items.getLootItems = function()
     local items = {}
     local lootCount = GetNumLootItems()
     for index = 1, lootCount do
         local lootIcon, lootName, lootQuantity, rarity, locked,
             isQuestItem, questId, isActive = GetLootSlotInfo(index)
-        local item = getItemforName(lootName)
+        local item = Items.forName(lootName)
         if (item) then
             items[item.itemId] = item
         end

@@ -81,30 +81,24 @@ memberItemScrollList:SetSize(COLUMN_WIDTH, 6 * ITEM_BUTTON_HEIGHT + SPACING)
 memberItemScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
 memberItemScrollList:SetContentProvider(function() return ITEM_LIST end)
 memberItemScrollList:SetLabelProvider(function(itemId, item, button)
-    local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType,
-        itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(item.itemId)
-
     local disabled = true
     local player = memberInfo
     if (player) then
-        if (player.needlist[item.itemId]) then disabled = false end
+        if (player.needlist[itemId]) then disabled = false end
     end
 
-    if (itemName) then
-        button.Icon:SetTexture(itemTexture)
-        button.Name:SetText(itemName)
-        if (disabled) then
-            button.Name:SetFontObject("GameFontDisable")
-        else
-            button.Name:SetFontObject("GameFontHighlight")
-        end
+    button.Icon:SetTexture(item:getTexture())
+    button.Name:SetText(item:getName())
+    if (disabled) then
+        button.Name:SetFontObject("GameFontDisable")
+    else
+        button.Name:SetFontObject("GameFontHighlight")
     end
 end)
 memberItemScrollList:SetFilter(function(itemId, item)
-    local classes = item.classes
     local player = memberInfo
     if (player) then
-        return item.classes[player.class]
+        return item:isForClass(player.class)
     end
     return true
 end)
@@ -128,14 +122,9 @@ memberLootItemsScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
 utilsUI.createBorder(memberLootItemsScrollList:GetFrame())
 memberLootItemsScrollList:SetContentProvider(function() return lootItems end)
 memberLootItemsScrollList:SetLabelProvider(function(itemId, item, button)
-    local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType,
-        itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(itemId)
-
-    if (itemName) then
-        button.Icon:SetTexture(itemTexture)
-        button.Name:SetText(itemName)
-        button.Name:SetFontObject("GameFontHighlight")
-    end
+    button.Icon:SetTexture(item:getTexture())
+    button.Name:SetText(item:getName())
+    button.Name:SetFontObject("GameFontHighlight")
 end)
 memberLootItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
     GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
@@ -226,7 +215,7 @@ MemberUI.setMemberInfo = function(player)
 end
 
 MemberUI.setRollOrder = function(rollOrder)
-    local itemName = GetItemInfo(rollOrder.item.itemId) or rollOrder.item.name
+    local itemName = rollOrder.item:getName()
     memberRollItemField:SetText("Item: "..itemName)
     memberRollOrder = rollOrder
     memberRollOrderScrollList:Update()

@@ -15,6 +15,7 @@ local ROLES = {
     [ROLE_TANK] = true
 }
 
+-- classes
 local CLASS_WARRIOR = "WARRIOR"
 local CLASS_PALADIN = "PALADIN"
 local CLASS_HUNTER = "HUNTER"
@@ -28,6 +29,7 @@ local CLASS_MONK = "MONK"
 local CLASS_DRUID = "DRUID"
 local CLASS_DEMON_HUNTER = "DEMONHUNTER"
 
+-- the roles for each class
 local CLASS_ROLES = {
     [CLASS_WARRIOR] = {
         [ROLE_MELEE_DPS] = true,
@@ -80,6 +82,7 @@ local CLASS_ROLES = {
     }
 }
 
+-- raids
 local RAID_MOLTEN_CORE = "Molten Core"
 local RAID_BLACKWING_LAIR = "Blackwing Lair"
 local RAID_ONYXIA = "Onyxia's Lair"

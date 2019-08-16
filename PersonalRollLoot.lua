@@ -50,7 +50,7 @@ local function getItem(arg)
     if (not arg) then error("> No item id or name specified.", 0) end
     local itemId = tonumber(arg) -- will be nil if not a number
     for _, item in pairs(ITEM_LIST) do
-        if (item.itemId == itemId or item.name == arg) then
+        if (item.itemId == itemId or item:getName() == arg) then
             return item
         end
     end
@@ -250,7 +250,9 @@ local COMMANDS = {
         local item = getItem(arg2)
 
         -- add item to player
-        player:addItem(item)
+        if (not player:addItem(item)) then
+            error("> Item '"..item.name.."' ("..item.itemId..") is not assigned to the class '"..player.class.."'.", 0)
+        end
         print("> Added item '"..item.name.."' ("..item.itemId..") to player '"..player.name.."'.")
     end,
 
@@ -364,29 +366,67 @@ local function receive(prefix, message, type, sender)
     end)
 end
 
+local function getItemNameFromChat(msg)
+    if (msg) then
+        local firstPart, itemName, lastPart
+        firstPart, itemName = strsplit("[", msg, 2)
+        if (firstPart and itemName) then
+            itemName, lastPart = strsplit("]", itemName, 2)
+            if (itemName and lastPart) then
+                return itemName
+            end
+        end
+    end
+end
+
+local function receiveLoot(msg, member)
+    if (msg and member) then
+        -- remove the realm part from the member
+        local playerName = strsplit("-", member, 2)
+        local player = ns.DB.PLAYER_LIST[playerName]
+        if (player) then
+            local itemName = getItemNameFromChat(msg)
+            if (itemName) then
+                local item = Items.forName(itemName)
+                if (item) then
+                    if (player:removeItem(item)) then
+                        print("> Removed item '"..item:getName().."' ("..item.itemId..") from player '"..playerName.."'.")
+                    end
+                end
+            end            
+        end
+    end
+end
+
 -- for testing
 local test
 SLASH_PersonalRollLootTest1 = "/test"
 SlashCmdList["PersonalRollLootTest"] = function(s) test(s) end
 test = function()
     print("test function")
+    local name, icon = GetMacroInfo(1)
+    print(icon)
+    print(type(icon))
 end
 
 -- create an event frame
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("VARIABLES_LOADED")
+eventFrame:RegisterEvent("CHAT_MSG_LOOT")
 eventFrame:RegisterEvent("CHAT_MSG_ADDON")
 eventFrame:RegisterEvent("LOOT_OPENED")
 eventFrame:RegisterEvent("LOOT_SLOT_CLEARED")
 C_ChatInfo.RegisterAddonMessagePrefix("PRLMemberInfo")
 C_ChatInfo.RegisterAddonMessagePrefix("PRLRollOrderInfo")
-function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4)
+function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4, ...)
     if (event == "VARIABLES_LOADED") then
         ns.loadSavedVariables()
     elseif (event == "CHAT_MSG_ADDON") then
         receive(arg1, arg2, arg3, arg4)
     elseif (event == "LOOT_OPENED" or event == "LOOT_SLOT_CLEARED") then
         updateLootItems()
+    elseif (event == "CHAT_MSG_LOOT") then
+        receiveLoot(arg1, arg2)
     end
 end
 eventFrame:SetScript("OnEvent", eventFrame.OnEvent)

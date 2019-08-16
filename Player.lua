@@ -6,9 +6,10 @@ local ITEM_LIST = ns.ITEM_LIST
 local utils = ns.utils
 
 ---
--- The player contains the selected role and the equipment progress of the
--- player. It is possible to select more than one role to receive loot for. The
--- needlist contains all the items the player hasn't looted yet.
+-- The player contains the selected role and the equipment progress of a member
+-- It is possible to select more than one role to receive loot for. The needlist
+-- contains all the items the player hasn't looted yet.
+-- 
 local Player = {
     -- the name of the player without realm
     name,
@@ -26,8 +27,13 @@ ns.Player = Player
 
 ---
 -- Creates a set with all the roles the given class can take.
--- @param #string class the class constant, e.g. WARRIOR
--- @return #table a set of roles for the class, not nil
+-- 
+-- @param #string class
+--          the class constant, e.g. WARRIOR
+--          
+-- @return #table
+--          a set of roles for the class, not nil
+--          
 local function getClassRoles(class)
     local classRoles = {}
     -- copy the roles
@@ -39,12 +45,17 @@ end
 
 ---
 -- Creates an initial set with all itemIds that the given class can use.
--- @param #string class the class constant, e.g. WARRIOR
--- @return #table a set of itemIds the class can use, not nil
+-- 
+-- @param #string class
+--          the class constant, e.g. WARRIOR
+--          
+-- @return #table
+--          a set of itemIds the class can use, not nil
+-- 
 local function createNeedList(class)
     local needlist = {}
     for itemId,item in pairs(ITEM_LIST) do
-        if (item.classes[class]) then
+        if (item:isForClass(class)) then
             needlist[itemId] = true
         end
     end
@@ -53,9 +64,17 @@ end
 
 ---
 -- Creates a new player with the given name, realm and class.
--- @param #string name the name of the player without realm
--- @param #string realm the realm of the player
--- @param #string class the English class name in capital letters
+-- 
+-- @param #string name
+--          the name of the player without realm
+-- @param #string realm
+--          the realm of the player
+-- @param #string class
+--          the class constant, e.g. WARRIOR
+-- 
+-- @return #Player
+--          the new player
+-- 
 function Player.new(name, realm, class)
     local self = setmetatable({}, Player)
     self.name = name
@@ -68,8 +87,13 @@ end
 
 ---
 -- Creates a new player based on the contents of the given player.
--- @param #Player player the player to be copied
--- @return #Player a copy of the player, not nil
+-- 
+-- @param #Player player
+--          the player to be copied
+--          
+-- @return #Player
+--          a copy of the player, not nil
+--          
 function Player.copy(player)
     local copy = setmetatable({}, Player)
     copy.name = player.name
@@ -80,6 +104,16 @@ function Player.copy(player)
     return copy
 end
 
+---
+-- Adds the given item to this player's need-list if possible without violating
+-- class or role restrictions.
+-- 
+-- @param #Item item
+--          the item to be added
+-- 
+-- @return #boolean
+--          true if the item was added, nil otherwise
+-- 
 function Player:addItem(item)
     local player = self
     -- check that the item is for the players class
@@ -87,8 +121,14 @@ function Player:addItem(item)
         -- add item to player
         player.needlist[item.itemId] = true
         return true
-    else
-        error("> Item '"..item.name.."' ("..item.itemId..") is not assigned to the class '"..player.class.."'.", 0)
+    end
+end
+
+function Player:removeItem(item)
+    local player = self
+    if (player.needlist[item.itemId]) then
+        player.needlist[item.itemId] = nil
+        return true
     end
 end
 
@@ -96,8 +136,13 @@ end
 -- Indicates whether this player needs the given item, thus has the item on its
 -- need-list, has the right class and also has the corresponding role selected
 -- for the item.
--- @param #Item item the item to check if it is needed by this player
--- @return #boolean true if the player needs the item, false otherwise
+-- 
+-- @param #Item item
+--          the item to check if it is needed by this player
+--          
+-- @return #boolean
+--          true if the player needs the item, false otherwise
+--          
 function Player:needsItem(item)
     local player = self
     -- check if the item can be used by the players class
@@ -115,28 +160,35 @@ function Player:needsItem(item)
     return false
 end
 
+---
+-- Indicates whether this player is in the raid or party group.
+-- 
+-- @return #boolean
+--          true if the player is in the group, nil otherwise
+--          
 function Player:isInGroup()
     local player = self
-    if (UnitInRaid(player.name) or UnitInParty(player.name)) then
-        return true
-    else
-        return false
-    end
-end
-
-function Player:isGroupLeader()
-    local player = self
-    if (UnitIsGroupLeader(player.name)) then
-        return true
-    else
-        return false
-    end
+    return UnitInRaid(player.name) or UnitInParty(player.name)
 end
 
 ---
--- Encodes the given player into a string representation to be serialized. The
+-- Indicates whether this player is the group leader.
+-- 
+-- @return #boolean
+--          true if the player is the group leader
+--          
+function Player:isGroupLeader()
+    local player = self
+    return UnitIsGroupLeader(player.name)
+end
+
+---
+-- Encodes this player into a string representation to be serialized. The
 -- string can be decoded back into a player using the decode() function.
--- @return #string the encoded player
+-- 
+-- @return #string
+--          the encoded player
+-- 
 function Player:encode()
     local player = self
     local encoded = "name:"..player.name
@@ -148,10 +200,15 @@ function Player:encode()
 end
 
 ---
--- Decodes the given string containing the previously encoded player data.
--- Returns nil in case the player could not be decoded.
--- @param #string encoded the encoded player string
--- @return #Player the player read from the encoded data or nil
+-- Decodes the given string containing the previously encoded player data or
+-- returns nil in case the player could not be decoded.
+-- 
+-- @param #string encoded
+--          the encoded player string
+--          
+-- @return #Player
+--          the player read from the encoded data or nil
+--          
 function Player.decode(encoded)
     local player = setmetatable({}, Player)
     -- split the attributes and set them to the player
