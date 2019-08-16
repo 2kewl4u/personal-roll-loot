@@ -86,6 +86,20 @@ utils.fromCSV = function(csv, dec, delimiter)
     return list
 end
 
+utils.forEachRaidMember = function(action)
+    local playerName = UnitName("player")
+    local memberCount = GetNumGroupMembers()
+    for index = 1, memberCount do
+        local name, rank, subgroup, level, class, fileName, 
+              zone, online, isDead, role, isML = GetRaidRosterInfo(index)
+        if (playerName ~= name and online) then
+            action(name)
+        end
+    end
+    -- if we are not in a group, we still execute the action on ourselves
+    action(playerName)
+end
+
 ns.utils = utils
 
 

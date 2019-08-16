@@ -19,14 +19,10 @@ local SPACING = utilsUI.SPACING
 
 local ITEM_LIST = ns.ITEM_LIST
 
-local MemberUI = {}
-MemberUI.__index = MemberUI
-
 -- data
 local memberInfo
 local lootItems = {}
-local memberRollItem
-local memberRollOrder = {}
+local memberRollOrder
 
 -- menu functions
 local updateMemberInfo
@@ -162,9 +158,9 @@ local memberRollItemFieldButton = CreateFrame("Button", nil, memberTabFrame)
 memberRollItemFieldButton:SetPoint("TOPLEFT", memberRollItemField, "TOPLEFT", 0, 0)
 memberRollItemFieldButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 memberRollItemFieldButton:SetScript("OnEnter", function()
-    if (memberRollItem) then
+    if (memberRollOrder) then
         GameTooltip:SetOwner(memberRollItemField, "ANCHOR_BOTTOMRIGHT")
-        GameTooltip:SetItemByID(memberRollItem.itemId)
+        GameTooltip:SetItemByID(memberRollOrder.item.itemId)
     end
 end)
 memberRollItemFieldButton:SetScript("OnLeave", utilsUI.hideTooltip)
@@ -174,7 +170,13 @@ memberRollOrderScrollList:SetPoint("TOPLEFT", memberRollItemField, "BOTTOMLEFT",
 memberRollOrderScrollList:SetPoint("BOTTOMLEFT", memberTabFrame, "BOTTOMLEFT", WINDOW_WIDTH / 2 + SPACING, TEXT_FIELD_HEIGHT + MARGIN + SPACING)
 memberRollOrderScrollList:SetWidth(COLUMN_WIDTH)
 memberRollOrderScrollList:SetButtonHeight(TEXT_FIELD_HEIGHT)
-memberRollOrderScrollList:SetContentProvider(function() return memberRollOrder end)
+memberRollOrderScrollList:SetContentProvider(function()
+    if (memberRollOrder) then
+        return memberRollOrder.rounds or {}
+    else
+        return {}
+    end
+end)
 memberRollOrderScrollList:SetLabelProvider(function(index, roundAndPlayerName)
     local round = roundAndPlayerName[1]
     local playerName = roundAndPlayerName[2]
@@ -206,8 +208,11 @@ updateMemberInfo = function()
     memberRollOrderScrollList:Update()
 end
 
+local MemberUI = {}
+MemberUI.__index = MemberUI
+
 MemberUI.setLootItems = function(items)
-    lootItems = Items.getLootItems()
+    lootItems = items
     memberLootItemsScrollList:Update()
 end
 
@@ -220,13 +225,10 @@ MemberUI.setMemberInfo = function(player)
     updateMemberInfo()
 end
 
-MemberUI.setRollOrderInfo = function(itemId, rollOrder)
-        memberRollItem = ITEM_LIST[itemId]
-    if (memberRollItem) then
-        local itemName = GetItemInfo(itemId) or memberRollItem.name
-        memberRollItemField:SetText("Item: "..itemName)
-    end
-    memberRollOrder = rollOrder or {}
+MemberUI.setRollOrder = function(rollOrder)
+    local itemName = GetItemInfo(rollOrder.item.itemId) or rollOrder.item.name
+    memberRollItemField:SetText("Item: "..itemName)
+    memberRollOrder = rollOrder
     memberRollOrderScrollList:Update()
 end
 

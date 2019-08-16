@@ -10,9 +10,14 @@ Item.lua
 Items.lua
 Player.lua
 Instance.lua
+RollOrder.lua
+
 Libs\AceComm-3.0\ChatThrottleLib.lua
 AddonMessage.lua
+SavedVariables.lua
+
 UtilsUI.lua
 ScrollList.lua
+MasterUI.lua
 MemberUI.lua
 PersonalRollLoot.lua

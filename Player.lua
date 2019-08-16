@@ -22,6 +22,7 @@ local Player = {
     needlist
 }
 Player.__index = Player
+ns.Player = Player
 
 ---
 -- Creates a set with all the roles the given class can take.
@@ -183,6 +184,3 @@ function Player.decode(encoded)
         return player
     end
 end
-
-
-ns.Player = Player
