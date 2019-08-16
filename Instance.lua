@@ -17,7 +17,6 @@ local Instance = {
 }
 Instance.__index = Instance
 
-
 function Instance.new(name, raid)
     local self = setmetatable({}, Instance)
     self.name = name
@@ -62,5 +61,11 @@ function Instance:addPlayer(player, force)
     return false
 end
 
+function Instance:print()
+    local instance = self
+    print("> Instance '"..instance.name.."':")
+    print("  Raid: '"..instance.raid.."'")
+    print("  created: "..instance.created)
+end
 
 ns.Instance = Instance

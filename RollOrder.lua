@@ -70,3 +70,11 @@ function RollOrder.decode(encoded)
         end
     end
 end
+
+function RollOrder:print()
+    local rollOrder = self
+    print("> Roll order for '"..rollOrder.item.name.."'")
+    for index, round in pairs(rollOrder.rounds) do
+        print("   "..round[1].." - "..round[2])
+    end
+end

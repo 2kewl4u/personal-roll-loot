@@ -1031,13 +1031,13 @@ local ITEM_LIST = {
 
 -- cache the items in the client
 for itemId, itemInfo in pairs(ITEM_LIST) do
-    ITEM_LIST[itemId] = Item.of(itemInfo)
+    ITEM_LIST[itemId] = Item.fromInfo(itemInfo)
 end
 
 -- item utilities
 local Items = {}
 
-Items.forName = function(name)
+local getItemforName = function(name)
     if (name) then
         for itemId, item in pairs(ITEM_LIST) do
             local itemName = GetItemInfo(itemId)
@@ -1054,7 +1054,7 @@ Items.getLootItems = function()
     for index = 1, lootCount do
         local lootIcon, lootName, lootQuantity, rarity, locked,
             isQuestItem, questId, isActive = GetLootSlotInfo(index)
-        local item = Items.forName(lootName)
+        local item = getItemforName(lootName)
         if (item) then
             items[item.itemId] = item
         end

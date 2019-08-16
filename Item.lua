@@ -11,17 +11,9 @@ local Item = {
 }
 Item.__index = Item
 
-function Item.of(itemInfo)
+function Item.fromInfo(itemInfo)
     local self = setmetatable(itemInfo, Item)
-    
---    local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType,
---        itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice
---        = GetItemInfo(itemInfo.itemId)
-    
---    self.name = itemName
---    self.texture = itemTexture
     return self
 end
-
 
 ns.Item = Item

@@ -16,16 +16,15 @@ local utilsUI = ns.utilsUI
 local MasterUI = ns.MasterUI
 local MemberUI = ns.MemberUI
 
-
+-- helper functions
 local function getPlayerNameAndRealm(arg)
-	if (not arg) then error("> No player name specified.", 0) end
+    if (not arg) then error("> No player name specified.", 0) end
     local name, realm = UnitName(arg)
     if not name then error("> No player found with the name '"..arg.."'.", 0) end
     if not realm then realm = GetRealmName() end
     return name, realm
 end
 
--- move to cmd file
 local function getPlayer(arg)
     local name, realm = getPlayerNameAndRealm(arg)
     local player = ns.DB.PLAYER_LIST[name]
@@ -33,10 +32,8 @@ local function getPlayer(arg)
     return player
 end
 
--- move to cmd file
 local function getRole(arg)
     if (not arg) then error("> No role specified.", 0) end
-
     local role = arg
     if (not ROLES[role]) then
         local errMsg = "> Undefined role '"..role.."'."
@@ -46,7 +43,6 @@ local function getRole(arg)
         end
         error(errMsg, 0)
     end
-
     return role
 end
 
@@ -68,47 +64,12 @@ local function getInstance(name)
     return instance
 end
 
-local function checkRaidName(raidName)
-    if (not raidName) then error("> No raid name specified.", 0) end
-    if (not RAIDS[raidName]) then error("> No raid with the name '"..raidName.."' found.", 0) end
-end
-
-local function printInstanceInfo(instance)
-    print("> Instance '"..instance["name"].."':")
-    print("  Raid: '"..instance["raid"].."'")
-    print("  created: "..instance["created"])
-end
-
-local function printMessage(text, type, receiver)
-    if (not receiver) then
-        print(text)
-    else
-        if (UnitExists(receiver)) then
-            SendChatMessage(text, type, nil, receiver)
-        end
-    end
-end
-
-local function forEachRaidMember(action)
-	local playerName = UnitName("player")
-    local memberCount = GetNumGroupMembers()
-    for index = 1, memberCount do
-		local name, rank, subgroup, level, class, fileName, 
-			  zone, online, isDead, role, isML = GetRaidRosterInfo(index)
-        if (playerName ~= name and online) then
-            action(name)
-        end
-    end
-	-- if we are not in a group, we still execute the action on ourselves
-    action(playerName)
-end
-
 -- core functions
 ns.addPlayer = function(arg)
     if (not arg) then
         -- no argument given, so add all players in the group
         local added = 0
-        forEachRaidMember(function(name)
+        utils.forEachRaidMember(function(name)
             local name, realm = getPlayerNameAndRealm(name)
             if (name and (not ns.DB.PLAYER_LIST[name])) then
                 local _,class,_ = UnitClass(name)
@@ -119,14 +80,14 @@ ns.addPlayer = function(arg)
         print("> Added "..added.." players.")
     else
         local name, realm = getPlayerNameAndRealm(arg)
-    
+
         -- check if we already have the player
         if (ns.DB.PLAYER_LIST[name]) then error("> Player '"..name.."' already registered.", 0) end
-    
+
         -- add the player to our database
         if (not UnitIsPlayer(arg)) then error("> Unit '"..name.."' is not a player.", 0) end
         local _,class,_ = UnitClass(arg)
-    
+
         ns.DB.PLAYER_LIST[name] = Player.new(name,realm,class)
         print("> Added player '"..name.."-"..realm.."', "..class..".")
     end
@@ -143,20 +104,19 @@ ns.removePlayer = function(arg)
     print("> Removed player '"..name.."'.")
 end
 
-local function printPlayerInfo(player, receiver)
-    local type = "WHISPER"
-    printMessage("> Player '"..player.name.."', Class: "..player.class..",", type, receiver)
+local function printPlayerInfo(player)
+    print("> Player '"..player.name.."', Class: "..player.class..",")
 
-    printMessage("Roles:", type, receiver)
+    print("Roles:")
     for l,_ in pairs(player.roles) do
-        printMessage("  "..l, type, receiver)
+        print("  "..l)
     end
 
-    printMessage("Need-list:", type, receiver)
+    print("Need-list:")
     local needlist = player.needlist
     for itemId,_ in pairs(needlist) do
         local item = ITEM_LIST[itemId]
-        if (item) then printMessage("  "..item.name, type, receiver) end
+        if (item) then print("  "..item.name) end
     end
 end
 
@@ -164,7 +124,8 @@ ns.createInstance = function(arg)
     arg = arg or ""
     local name, raidName = strsplit(" ", arg, 2)
     if (strlen(name) < 1) then error("> Invalid instance name '"..name.."'.", 0) end
-    checkRaidName(raidName)
+    if (not raidName) then error("> No raid name specified.", 0) end
+    if (not RAIDS[raidName]) then error("> No raid with the name '"..raidName.."' found.", 0) end
 
     if (ns.DB.INSTANCE_LIST[name]) then error("> An instance with the name '"..name.."' is already registered.", 0) end
     ns.DB.INSTANCE_LIST[name] = Instance.new(name, raidName)
@@ -179,13 +140,19 @@ ns.deleteInstance = function(arg)
     if (ns.DB.activeInstance == name) then ns.DB.activeInstance = nil end
 end
 
+ns.activeInstance = function(arg)
+    local instance = getInstance(arg)
+    ns.DB.activeInstance = instance.name
+    print("> Instance '"..ns.DB.activeInstance.."' is now the active instance.")
+end
+
 ns.invite = function(arg)
     if (not ns.DB.activeInstance) then error("> No active instance.", 0) end
     local instance = getInstance(ns.DB.activeInstance)
 
     if (not arg) then
         local invited = 0
-        forEachRaidMember(function(name)
+        utils.forEachRaidMember(function(name)
             local player = getPlayer(name)
             if (instance:addPlayer(player)) then
                 invited = invited + 1
@@ -208,7 +175,7 @@ end
 
 ns.announceMemberInfo = function()
     -- TODO only announce if you are the raid/group leader
-    forEachRaidMember(function(name)
+    utils.forEachRaidMember(function(name)
         local player = ns.DB.PLAYER_LIST[name]
         if (player) then
             local message = player:encode()
@@ -223,7 +190,7 @@ ns.announceRollOrder = function(rollOrder)
     local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
     if (instance) then
         local message = rollOrder:encode()
-        forEachRaidMember(function(name)
+        utils.forEachRaidMember(function(name)
             local player = ns.DB.PLAYER_LIST[name]
             if (player) then
                 if (instance.players[name]) then
@@ -249,7 +216,7 @@ local COMMANDS = {
 
     ["player-info"] = function(arg)
         local player = getPlayer(arg)
-        printPlayerInfo(player, nil)
+        printPlayerInfo(player)
     end,
 
     ["add-role"] = function(arg)
@@ -311,24 +278,22 @@ local COMMANDS = {
         if (not arg) then
             local empty = true
             for name,instance in pairs(ns.DB.INSTANCE_LIST) do
-                printInstanceInfo(instance)
+                instance:print()
                 empty = false
             end
             if (empty) then print("> No instances found.") end
         else
             local instance = getInstance(arg)
-            printInstanceInfo(instance)
+            instance:print()
         end
     end,
 
-    ["active-instance"] = function(arg)
-        local instance = getInstance(arg)
-        ns.DB.activeInstance = instance["name"]
-        print("> Instance '"..ns.DB.activeInstance.."' is now the active instance.")
-    end,
-
+    ["active-instance"] = ns.activeInstance,
     ["invite"] = ns.invite,
-    ["roll"] = ns.roll,
+    ["roll"] = function(arg)
+        local rollOrder = ns.roll(arg)
+        rollOrder:print()
+    end,
     ["announce"] = ns.announceMemberInfo
 }
 

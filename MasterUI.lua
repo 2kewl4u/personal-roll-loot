@@ -265,11 +265,15 @@ instanceScrollList:SetButtonHeight(TEXT_FIELD_HEIGHT)
 instanceScrollList:SetLabelProvider(function(k, v) return k end)
 instanceScrollList:SetContentProvider(function() return ns.DB.INSTANCE_LIST end)
 instanceScrollList:SetButtonScript("OnClick", function(index, button, name, instance)
-    ns.DB.activeInstance = name
-    instanceNameField:SetText("Instance: "..name)
-    instanceRaidField:SetText("Raid: "..instance.raid)
-    instanceCreatedField:SetText(instance.created)
-    instancePlayersScrollList:Update()
+    local status, err = pcall(ns.activeInstance, name)
+    if (not status) then
+        print(err)
+    else
+        instanceNameField:SetText("Instance: "..name)
+        instanceRaidField:SetText("Raid: "..instance.raid)
+        instanceCreatedField:SetText(instance.created)
+        instancePlayersScrollList:Update()
+    end
 end)
 utilsUI.createBorder(instanceScrollList:GetFrame())
 
