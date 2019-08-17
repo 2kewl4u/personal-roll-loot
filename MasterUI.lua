@@ -190,7 +190,14 @@ playerItemScrollList = ScrollList.new("PersonalRollLootPlayerItemListScrollFrame
 playerItemScrollList:SetPoint("BOTTOMLEFT", playerTabFrame, "BOTTOMLEFT", WINDOW_WIDTH / 2 + SPACING, TEXT_FIELD_HEIGHT + MARGIN + SPACING)
 playerItemScrollList:SetSize(COLUMN_WIDTH, 6 * ITEM_BUTTON_HEIGHT + SPACING)
 playerItemScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
-playerItemScrollList:SetContentProvider(function() return ITEM_LIST end)
+playerItemScrollList:SetContentProvider(function()
+    local player = playerNameField.player
+    if (player) then
+        return ITEM_LIST
+    else
+        return {}
+    end
+end)
 playerItemScrollList:SetLabelProvider(function(itemId, item, button)
     local disabled = true
     local player = playerNameField.player
@@ -417,7 +424,13 @@ local rollItemsScrollList = ScrollList.new("PersonalRollLootRollItemScrollFrame"
 rollItemsScrollList:SetPoint("TOPLEFT", rollTabFrame, "TOPLEFT", MARGIN, -MARGIN)
 rollItemsScrollList:SetSize(COLUMN_WIDTH, 10 * ITEM_BUTTON_HEIGHT + SPACING)
 rollItemsScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
-rollItemsScrollList:SetContentProvider(function() return ITEM_LIST end)
+rollItemsScrollList:SetContentProvider(function()
+    if (ns.DB.activeInstance) then
+        return ITEM_LIST
+    else
+        return {}
+    end
+end)
 rollItemsScrollList:SetLabelProvider(function(itemId, item, button)
     button.Name:SetText(item:getName())
     button.Icon:SetTexture(item:getTexture())

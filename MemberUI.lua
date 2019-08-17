@@ -79,7 +79,13 @@ local memberItemScrollList = ScrollList.new("PersonalRollLootMemberItemListScrol
 memberItemScrollList:SetPoint("BOTTOMLEFT", memberTabFrame, "BOTTOMLEFT", MARGIN, TEXT_FIELD_HEIGHT + MARGIN + SPACING)
 memberItemScrollList:SetSize(COLUMN_WIDTH, 6 * ITEM_BUTTON_HEIGHT + SPACING)
 memberItemScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
-memberItemScrollList:SetContentProvider(function() return ITEM_LIST end)
+memberItemScrollList:SetContentProvider(function()
+    if (memberInfo) then
+        return ITEM_LIST
+    else
+        return {}
+    end
+end)
 memberItemScrollList:SetLabelProvider(function(itemId, item, button)
     local disabled = true
     local player = memberInfo

@@ -767,11 +767,32 @@ local ITEM_LIST = {
         classes = { [CLASS_HUNTER] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
+    [18803] = {
+        itemId = 18803,
+        name = "Finkle's Lava Dredger",
+        roles = { [ROLE_HEALER] = true, [ROLE_MELEE_DPS] = true },
+        classes = { [CLASS_DRUID] = true, [CLASS_SHAMAN] = true, [CLASS_PALADIN] = true },
+        raids = { [RAID_MOLTEN_CORE] = true }
+    },
+    [18805] = {
+        itemId = 18805,
+        name = "Core Hound Tooth",
+        roles = { [ROLE_MELEE_DPS] = true },
+        classes = { [CLASS_WARRIOR] = true, [CLASS_SHAMAN] = true, [CLASS_ROGUE] = true },
+        raids = { [RAID_MOLTEN_CORE] = true }
+    },
     [18806] = {
         itemId = 18806,
         name = "Core Forged Greaves",
         roles = { [ROLE_TANK] = true },
         classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true },
+        raids = { [RAID_MOLTEN_CORE] = true }
+    },
+    [18808] = {
+        itemId = 18808,
+        name = "Gloves of the Hypnotic Flame",
+        roles = { [ROLE_CASTER_DPS] = true },
+        classes = { [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [18809] = {
@@ -786,6 +807,13 @@ local ITEM_LIST = {
         name = "Wild Growth Spaulders",
         roles = { [ROLE_HEALER] = true },
         classes = { [CLASS_DRUID] = true },
+        raids = { [RAID_MOLTEN_CORE] = true }
+    },
+    [18811] = {
+        itemId = 18811,
+        name = "Fireproof Cloak",
+        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [18812] = {
@@ -943,6 +971,13 @@ local ITEM_LIST = {
         classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
+    [19139] = {
+        itemId = 19139,
+        name = "Fireguard Shoulders",
+        roles = { [ROLE_HEALER] = true, [ROLE_TANK] = true, [ROLE_CASTER_DPS] = true, [ROLE_MELEE_DPS] = true },
+        classes = { [CLASS_DRUID] = true, [CLASS_ROGUE] = true },
+        raids = { [RAID_MOLTEN_CORE] = true }
+    },
     [19140] = {
         itemId = 19140,
         name = "Cauterizing Band",
@@ -994,14 +1029,20 @@ local ITEM_LIST = {
     },
 
     -- ONYXIA
-    [18422] = {
-        itemId = 18422,
-        name = "Head of Onyxia",
-        roles = {  },
-        classes = {  },
+    [16900] = {
+        itemId = 16900,
+        name = "Stormrage Cover",
+        roles = { [ROLE_HEALER] = true },
+        classes = { [CLASS_DRUID] = true },
         raids = { [RAID_ONYXIA] = true }
     },
-
+    [16929] = {
+        itemId = 16929,
+        name = "Nemesis Skullcap",
+        roles = { [ROLE_CASTER_DPS] = true },
+        classes = { [CLASS_WARLOCK] = true },
+        raids = { [RAID_ONYXIA] = true }
+    },
     [17067] = {
         itemId = 17067,
         name = "Ancient Cornerstone Grimoire",
@@ -1009,23 +1050,46 @@ local ITEM_LIST = {
         classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
         raids = { [RAID_ONYXIA] = true }
     },
+    [18422] = {
+        itemId = 18422,
+        name = "Head of Onyxia",
+        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+        classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true,
+                    [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+        raids = { [RAID_ONYXIA] = true }
+    },
+    [18705] = {
+        itemId = 18705,
+        name = "Mature Black Dragon Sinew",
+        roles = { [ROLE_RANGED_DPS] = true },
+        classes = { [CLASS_HUNTER] = true },
+        raids = { [RAID_ONYXIA] = true }
+    },
+    [18813] = {
+        itemId = 18813,
+        name = "Ring of Binding",
+        roles = { [ROLE_TANK] = true },
+        classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_DRUID] = true },
+        raids = { [RAID_ONYXIA] = true }
+    },
+
 
 -- for testing purposes
 
-    [2589] = {
-        itemId = 2589,
-        name = "Linen Cloth",
-        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
-        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
-        raids = { [RAID_MOLTEN_CORE] = true }
-    },
-    [2592] = {
-        itemId = 2592,
-        name = "Wool Cloth",
-        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
-        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
-        raids = { [RAID_MOLTEN_CORE] = true }
-    }
+--    [2589] = {
+--        itemId = 2589,
+--        name = "Linen Cloth",
+--        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+--        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+--        raids = { [RAID_MOLTEN_CORE] = true }
+--    },
+--    [2592] = {
+--        itemId = 2592,
+--        name = "Wool Cloth",
+--        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+--        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+--        raids = { [RAID_MOLTEN_CORE] = true }
+--    }
 
 }
 
@@ -1042,13 +1106,13 @@ local Items = {}
 ---
 -- Returns the item from the ITEM_LIST with the given localized name if present
 -- or nil if no such item was found.
--- 
+--
 -- @param #string name
 --          the name of the item to look for
---          
+--
 -- @return #Item
 --          the item with the given name
--- 
+--
 Items.forName = function(name)
     if (name) then
         for itemId, item in pairs(ITEM_LIST) do
@@ -1061,10 +1125,10 @@ end
 
 ---
 -- Returns a list of Item's that are currently in the loot window.
--- 
+--
 -- @return #table
 --          a list of Item's in the loot window
--- 
+--
 Items.getLootItems = function()
     local items = {}
     local lootCount = GetNumLootItems()
