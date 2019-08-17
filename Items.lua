@@ -1036,6 +1036,27 @@ local ITEM_LIST = {
         classes = { [CLASS_DRUID] = true },
         raids = { [RAID_ONYXIA] = true }
     },
+    [16908] = {
+        itemId = 16908,
+        name = "Bloodfang Hood",
+        roles = { [ROLE_MELEE_DPS] = true },
+        classes = { [CLASS_ROGUE] = true },
+        raids = { [RAID_ONYXIA] = true }
+    },
+    [16914] = {
+        itemId = 16914,
+        name = "Netherwind Crown",
+        roles = { [ROLE_CASTER_DPS] = true },
+        classes = { [CLASS_MAGE] = true },
+        raids = { [RAID_ONYXIA] = true }
+    },
+    [16921] = {
+        itemId = 16921,
+        name = "Halo of Transcendence",
+        roles = { [ROLE_HEALER] = true },
+        classes = { [CLASS_PRIEST] = true },
+        raids = { [RAID_ONYXIA] = true }
+    },
     [16929] = {
         itemId = 16929,
         name = "Nemesis Skullcap",
@@ -1043,11 +1064,74 @@ local ITEM_LIST = {
         classes = { [CLASS_WARLOCK] = true },
         raids = { [RAID_ONYXIA] = true }
     },
+    [16939] = {
+        itemId = 16939,
+        name = "Dragonstalker's Helm",
+        roles = { [ROLE_RANGED_DPS] = true },
+        classes = { [CLASS_HUNTER] = true },
+        raids = { [RAID_ONYXIA] = true }
+    },
+    [16947] = {
+        itemId = 16947,
+        name = "Helmet of Ten Storms",
+        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+        classes = { [CLASS_SHAMAN] = true },
+        raids = { [RAID_ONYXIA] = true }
+    },
+    [16955] = {
+        itemId = 16955,
+        name = "Judgement Crown",
+        roles = { [ROLE_MELEE_DPS] = true, [ROLE_HEALER] = true, [ROLE_TANK] = true },
+        classes = { [CLASS_PALADIN] = true },
+        raids = { [RAID_ONYXIA] = true }
+    },
+    [16963] = {
+        itemId = 16963,
+        name = "Helm of Wrath",
+        roles = { [ROLE_TANK] = true },
+        classes = { [CLASS_WARRIOR] = true },
+        raids = { [RAID_ONYXIA] = true }
+    },
+    [17064] = {
+        itemId = 17064,
+        name = "Shard of the Scale",
+        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+        raids = { [RAID_ONYXIA] = true }
+    },
     [17067] = {
         itemId = 17067,
         name = "Ancient Cornerstone Grimoire",
         roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
         classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+        raids = { [RAID_ONYXIA] = true }
+    },
+    [17068] = {
+        itemId = 17068,
+        name = "Deathbringer",
+        roles = { [ROLE_MELEE_DPS] = true },
+        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_WARRIOR] = true },
+        raids = { [RAID_ONYXIA] = true }
+    },
+    [17075] = {
+        itemId = 17075,
+        name = "Vis'kag the Bloodletter",
+        roles = { [ROLE_MELEE_DPS] = true },
+        classes = { [CLASS_ROGUE] = true, [CLASS_WARRIOR] = true },
+        raids = { [RAID_ONYXIA] = true }
+    },
+    [17078] = {
+        itemId = 17078,
+        name = "Sapphiron Drape",
+        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+        raids = { [RAID_ONYXIA] = true }
+    },
+    [18205] = {
+        itemId = 18205,
+        name = "Eskhandar's Collar",
+        roles = { [ROLE_RANGED_DPS] = true, [ROLE_MELEE_DPS] = true },
+        classes = { [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_WARRIOR] = true },
         raids = { [RAID_ONYXIA] = true }
     },
     [18422] = {
