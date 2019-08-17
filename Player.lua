@@ -124,6 +124,15 @@ function Player:addItem(item)
     end
 end
 
+---
+-- Removes the given item from this player's need-list if present.
+-- 
+-- @param #Item item
+--          the item to be removed from the player
+-- 
+-- @return #boolean
+--          true if the item was present and removed, nil otherwise
+--          
 function Player:removeItem(item)
     local player = self
     if (player.needlist[item.itemId]) then

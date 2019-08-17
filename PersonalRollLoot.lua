@@ -174,16 +174,18 @@ ns.roll = function(arg)
 end
 
 ns.announceMemberInfo = function()
-    -- TODO only announce if you are the raid/group leader
-    utils.forEachRaidMember(function(name)
-        local player = ns.DB.PLAYER_LIST[name]
-        if (player) then
-            local message = player:encode()
-            AddonMessage_Send("PRLMemberInfo", message, "WHISPER", player.name)
-        else
-            print("> Player '"..name.."' is not registered for Personal Roll Loot.")
-        end
-    end)
+    -- only announce if you are the raid/group leader
+    if (IsInGroup() and UnitIsGroupLeader("player")) then
+        utils.forEachRaidMember(function(name)
+            local player = ns.DB.PLAYER_LIST[name]
+            if (player) then
+                local message = player:encode()
+                AddonMessage_Send("PRLMemberInfo", message, "WHISPER", player.name)
+            else
+                print("> Player '"..name.."' is not registered for Personal Roll Loot.")
+            end
+        end)
+    end
 end
 
 ns.announceRollOrder = function(rollOrder)
@@ -326,10 +328,11 @@ end
 -- ------------------------------------------------------- --
 
 local function updateLootItems()
-    -- TODO update only when in raid environment
-    local lootItems = Items.getLootItems()
-    MasterUI.setLootItems(lootItems)
-    MemberUI.setLootItems(lootItems)
+    if (IsInGroup()) then
+        local lootItems = Items.getLootItems()
+        MasterUI.setLootItems(lootItems)
+        MemberUI.setLootItems(lootItems)
+    end
 end
 
 local function receiveMemberInfo(msg)
@@ -351,19 +354,21 @@ local function receiveRollOrderInfo(msg)
 end
 
 local function receive(prefix, message, type, sender)
-    -- TODO only accept announcements from raid/group leader
-    AddonMessage_Receive(prefix, message, type, sender, function(prefix, message, type, sender)
-        if (prefix == "PRLMemberInfo") then
-            receiveMemberInfo(message)
-        elseif (prefix == "PRLRollOrderInfo") then
-            receiveRollOrderInfo(message)
-            if (not MemberUI.isShown()) then
-                print("> Received a personal roll announcement. Type /prl to see the order.")
-                -- TODO maybe open the UI automatically:
-                -- MemberUI.toggleUI()
+    -- only accept announcements from raid/group leader
+    if (IsInGroup() and UnitIsGroupLeader(sender)) then
+        AddonMessage_Receive(prefix, message, type, sender, function(prefix, message, type, sender)
+            if (prefix == "PRLMemberInfo") then
+                receiveMemberInfo(message)
+            elseif (prefix == "PRLRollOrderInfo") then
+                receiveRollOrderInfo(message)
+                if (not MemberUI.isShown()) then
+                    print("> Received a personal roll announcement. Type /prl to see the order.")
+                    -- TODO maybe open the UI automatically:
+                    -- MemberUI.toggleUI()
+                end
             end
-        end
-    end)
+        end)
+    end
 end
 
 local function getItemNameFromChat(msg)
@@ -384,7 +389,7 @@ local function receiveLoot(msg, member)
         -- remove the realm part from the member
         local playerName = strsplit("-", member, 2)
         local player = ns.DB.PLAYER_LIST[playerName]
-        if (player) then
+        if (player and player:isInGroup()) then
             local itemName = getItemNameFromChat(msg)
             if (itemName) then
                 local item = Items.forName(itemName)
@@ -393,7 +398,26 @@ local function receiveLoot(msg, member)
                         print("> Removed item '"..item:getName().."' ("..item.itemId..") from player '"..playerName.."'.")
                     end
                 end
-            end            
+            end
+        end
+    end
+end
+
+local function inspectTarget()
+    local unit = "target"
+    local playerName = UnitName(unit)
+    if (playerName) then
+        local player = ns.DB.PLAYER_LIST[playerName]
+        if (player and CheckInteractDistance(unit,1) and CanInspect(unit)) then
+            for i = 1, 24 do
+                local itemId = GetInventoryItemID(unit, i)
+                if (itemId) then
+                    local item = ITEM_LIST[itemId]
+                    if (item and player:removeItem(item)) then
+                        print("> Removed item '"..item:getName().."' ("..item.itemId..") from player '"..playerName.."'.")
+                    end
+                end
+            end
         end
     end
 end
@@ -404,14 +428,13 @@ SLASH_PersonalRollLootTest1 = "/test"
 SlashCmdList["PersonalRollLootTest"] = function(s) test(s) end
 test = function()
     print("test function")
-    local name, icon = GetMacroInfo(1)
-    print(icon)
-    print(type(icon))
 end
+
 
 -- create an event frame
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("VARIABLES_LOADED")
+eventFrame:RegisterEvent("INSPECT_READY")
 eventFrame:RegisterEvent("CHAT_MSG_LOOT")
 eventFrame:RegisterEvent("CHAT_MSG_ADDON")
 eventFrame:RegisterEvent("LOOT_OPENED")
@@ -427,6 +450,8 @@ function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4, ...)
         updateLootItems()
     elseif (event == "CHAT_MSG_LOOT") then
         receiveLoot(arg1, arg2)
+    elseif (event == "INSPECT_READY") then
+        inspectTarget()
     end
 end
 eventFrame:SetScript("OnEvent", eventFrame.OnEvent)
