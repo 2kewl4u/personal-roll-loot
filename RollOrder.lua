@@ -5,6 +5,10 @@ local utils = ns.utils
 
 local ITEM_LIST = ns.ITEM_LIST
 
+---
+-- The roll order for a specific item contains a round based list of players
+-- that have a specific item on their instance priority list.
+-- 
 local RollOrder = {
     item,
     -- list of {round, playerName} pairs
@@ -13,6 +17,19 @@ local RollOrder = {
 RollOrder.__index = RollOrder
 ns.RollOrder = RollOrder
 
+---
+-- Creates a new RollOrder for the given item with the given list of rounds.
+-- Note that this method is intended to be used internally to create a
+-- RollOrder instance. Use RollOrder.of(instance, item) instead.
+-- 
+-- @param #Item item
+--          the item for which this is the roll order
+-- @param #table rounds
+--          a list of {round, playerName} pairs specifying the order
+-- 
+-- @return #RollOrder
+--          the roll order
+-- 
 function RollOrder.new(item, rounds)
     local self = setmetatable({}, RollOrder)
     self.item = item
@@ -20,6 +37,17 @@ function RollOrder.new(item, rounds)
     return self
 end
 
+---
+-- Creates a new RollOrder for the given item dropped within the given instance.
+-- 
+-- @param #Instance instance
+--          the instance where the item dropped
+-- @param #Item item
+--          the item that dropped
+--          
+-- @return #RollOrder
+--          the roll order for the item
+-- 
 function RollOrder.of(instance, item)
     if (instance and item) then
         local itemId = item.itemId
@@ -44,6 +72,13 @@ function RollOrder.of(instance, item)
     end
 end
 
+---
+-- Encodes this RollOrder into a string representation to be serialized. The
+-- string can be decoded back into the RollOrder using the decode() function.
+-- 
+-- @return #string
+--          the encoded roll order
+--          
 function RollOrder:encode()
     local rollOrder = self
     local ordercsv = utils.toCSV(rollOrder.rounds, function(index, round)
@@ -52,6 +87,16 @@ function RollOrder:encode()
     return rollOrder.item.itemId..":"..ordercsv
 end
 
+---
+-- Decodes the given string containing the previously encoded roll order data
+-- or nil in case the roll order could not be decoded.
+-- 
+-- @param #string encoded
+--          the encoded roll order string
+-- 
+-- @return #RollOrder
+--          the roll order read from the encoded data or nil
+--          
 function RollOrder.decode(encoded)
     local itemId, rollOrderCSV = strsplit(":", encoded)
     itemId = tonumber(itemId)
@@ -65,12 +110,14 @@ function RollOrder.decode(encoded)
                     table.insert(list, { round, playerName })
                 end
             end)
-            -- TODO sort the roll order
             return RollOrder.new(item, rounds or {})
         end
     end
 end
 
+---
+-- Prints the roll order to the console output.
+-- 
 function RollOrder:print()
     local rollOrder = self
     print("> Roll order for '"..rollOrder.item:getName().."'")

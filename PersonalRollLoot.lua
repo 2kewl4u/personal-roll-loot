@@ -1,6 +1,7 @@
 -- namespace
 local _, ns = ...;
 -- imports
+local AddonMessage = ns.AddonMessage
 local CLASS_ROLES = ns.CLASS_ROLES
 local Instance = ns.Instance
 local ITEM_LIST = ns.ITEM_LIST
@@ -180,7 +181,7 @@ ns.announceMemberInfo = function()
             local player = ns.DB.PLAYER_LIST[name]
             if (player) then
                 local message = player:encode()
-                AddonMessage_Send("PRLMemberInfo", message, "WHISPER", player.name)
+                AddonMessage.Send("PRLMemberInfo", message, "WHISPER", player.name)
             else
                 print("> Player '"..name.."' is not registered for Personal Roll Loot.")
             end
@@ -196,7 +197,7 @@ ns.announceRollOrder = function(rollOrder)
             local player = ns.DB.PLAYER_LIST[name]
             if (player) then
                 if (instance.players[name]) then
-                    AddonMessage_Send("PRLRollOrderInfo", message, "WHISPER", name)
+                    AddonMessage.Send("PRLRollOrderInfo", message, "WHISPER", name)
                 else
                     print("> Player '"..name.."' is not invited to the currently active instance.")
                 end
@@ -356,7 +357,7 @@ end
 local function receive(prefix, message, type, sender)
     -- only accept announcements from raid/group leader
     if (IsInGroup() and UnitIsGroupLeader(sender)) then
-        AddonMessage_Receive(prefix, message, type, sender, function(prefix, message, type, sender)
+        AddonMessage.Receive(prefix, message, type, sender, function(prefix, message, type, sender)
             if (prefix == "PRLMemberInfo") then
                 receiveMemberInfo(message)
             elseif (prefix == "PRLRollOrderInfo") then
@@ -384,7 +385,7 @@ local function getItemNameFromChat(msg)
     end
 end
 
-local function receiveLoot(msg, member)
+local function parseLootMessage(msg, member)
     if (msg and member) then
         -- remove the realm part from the member
         local playerName = strsplit("-", member, 2)
@@ -449,7 +450,7 @@ function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4, ...)
     elseif (event == "LOOT_OPENED" or event == "LOOT_SLOT_CLEARED") then
         updateLootItems()
     elseif (event == "CHAT_MSG_LOOT") then
-        receiveLoot(arg1, arg2)
+        parseLootMessage(arg1, arg2)
     elseif (event == "INSPECT_READY") then
         inspectTarget()
     end

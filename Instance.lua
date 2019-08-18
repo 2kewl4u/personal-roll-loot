@@ -42,6 +42,15 @@ function Instance.new(name, raid)
     return self
 end
 
+---
+-- Creates a new Instance based on the contents of the given instance.
+-- 
+-- @param #Instance instance
+--          the instance to be copied
+-- 
+-- @return #Instance
+--          the copy of the instance, not nil
+-- 
 function Instance.copy(instance)
     local copy = setmetatable({}, Instance)
     copy.name = instance.name
@@ -54,6 +63,20 @@ function Instance.copy(instance)
     return copy
 end
 
+---
+-- Creates the random priority loot list for the given player and instance.
+-- Every item that can drop in the given raid instance, is on the players
+-- need-list and corresponds to the players class and role will be added to the
+-- list. Finally the order of the items in the list will be shuffled.
+-- 
+-- @param #Instance instance
+--          the instance the player is attending
+-- @param #Player player
+--          the player to create the list for
+-- 
+-- @return #table
+--          the list of items for the player
+-- 
 local function createLootList(instance, player)
     local items = {}
     -- create a loot list

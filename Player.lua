@@ -150,7 +150,7 @@ end
 --          the item to check if it is needed by this player
 --          
 -- @return #boolean
---          true if the player needs the item, false otherwise
+--          true if the player needs the item, nil otherwise
 --          
 function Player:needsItem(item)
     local player = self
@@ -166,7 +166,6 @@ function Player:needsItem(item)
             end
         end
     end
-    return false
 end
 
 ---

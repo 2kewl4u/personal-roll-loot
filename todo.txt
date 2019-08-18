@@ -1,5 +1,2 @@
-- inspect to automatically deactivate items for a player that he has equipped
-
--- only announce if you are leader or master looter and only to grp members that exist
 - history of the drops and loots of the raid grps
 - invite players into the raidgrp for the selected instance
