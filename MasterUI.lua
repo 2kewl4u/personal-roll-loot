@@ -66,42 +66,7 @@ MasterUIFrame.Title:SetText("Personal Roll Loot - Master")
 HideUIPanel(MasterUIFrame)
 
 -- create tabs
-local tabs = {}
-local numTabs = 3
-MasterUIFrame.numTabs = numTabs
-for tabIndex = 1, numTabs do
-    local tabButton = CreateFrame("Button", MasterUIFrame:GetName().."Tab"..tabIndex, MasterUIFrame, "CharacterFrameTabButtonTemplate")
-    local tabFrame = CreateFrame("Frame", nil, MasterUIFrame)
-    tabButton.contentFrame = tabFrame
-    tabs[tabIndex] = tabButton
-
-    tabButton:SetID(tabIndex)
-    tabButton:SetText("Tab"..tabIndex)
-    tabButton:SetScript("OnClick", function()
-        PanelTemplates_SetTab(MasterUIFrame, tabIndex)
-        for index, tab in pairs(tabs) do
-            if (index == tabIndex) then
-                tab.contentFrame:Show()
-            else
-                tab.contentFrame:Hide()
-            end
-        end
-    end)
-    if (tabIndex == 1) then
-        tabButton:SetPoint("TOPLEFT", MasterUIFrame, "BOTTOMLEFT", 5, 7)
-    else
-        tabButton:SetPoint("TOPLEFT", tabs[tabIndex - 1], "TOPRIGHT", -14, 0)
-    end
-
-    tabFrame:SetPoint("TOPLEFT", PersonalRollLootMasterDialogBG, "TOPLEFT", 0, 0)
-    tabFrame:SetPoint("BOTTOMRIGHT", PersonalRollLootMasterDialogBG, "BOTTOMRIGHT", 0, 0)
-    if (tabIndex ~= 1) then tabFrame:Hide() end
-end
-PanelTemplates_SetTab(MasterUIFrame, 1)
--- set the tab names
-tabs[1]:SetText("Players")
-tabs[2]:SetText("Instances")
-tabs[3]:SetText("Roll")
+local tabs = utilsUI.createTabs(MasterUIFrame, { "Players", "Instances", "Roll" })
 local playerTabFrame = tabs[1].contentFrame
 local instancesTabFrame = tabs[2].contentFrame
 local rollTabFrame = tabs[3].contentFrame
@@ -231,8 +196,7 @@ playerItemScrollList:SetFilter(function(itemId, item)
     return true
 end)
 playerItemScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
-    GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
-    GameTooltip:SetItemByID(itemId)
+    utilsUI.showItemTooltip(button, itemId)
 end)
 playerItemScrollList:SetButtonScript("OnLeave", utilsUI.hideTooltip)
 -- border frame for the list
@@ -437,8 +401,7 @@ rollItemsScrollList:SetLabelProvider(function(itemId, item, button)
 end)
 utilsUI.createBorder(rollItemsScrollList:GetFrame())
 rollItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
-    GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
-    GameTooltip:SetItemByID(itemId)
+    utilsUI.showItemTooltip(button, itemId)
 end)
 rollItemsScrollList:SetButtonScript("OnLeave", utilsUI.hideTooltip)
 rollItemsScrollList:SetButtonScript("OnClick", updateRollOrderFields)
@@ -467,8 +430,7 @@ lootItemsScrollList:SetLabelProvider(function(itemId, item, button)
     button.Name:SetFontObject("GameFontHighlight")
 end)
 lootItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
-    GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
-    GameTooltip:SetItemByID(itemId)
+    utilsUI.showItemTooltip(button, itemId)
 end)
 lootItemsScrollList:SetButtonScript("OnLeave", utilsUI.hideTooltip)
 lootItemsScrollList:SetButtonScript("OnClick", updateRollOrderFields)
@@ -489,9 +451,7 @@ rollItemFieldButton:SetPoint("TOPLEFT", rollItemField, "TOPLEFT", 0, 0)
 rollItemFieldButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 rollItemFieldButton:SetScript("OnEnter", function()
     if (rollOrder) then
-        -- TODO extract into utilsUI.showItemTooltip
-        GameTooltip:SetOwner(rollItemFieldButton, "ANCHOR_BOTTOMRIGHT")
-        GameTooltip:SetItemByID(rollOrder.item.itemId)
+        utilsUI.showItemTooltip(rollItemFieldButton, rollOrder.item.itemId)
     end
 end)
 rollItemFieldButton:SetScript("OnLeave", utilsUI.hideTooltip)

@@ -1157,6 +1157,35 @@ local ITEM_LIST = {
         raids = { [RAID_ONYXIA] = true }
     },
 
+    -- BLACKWING LAIR
+    [19375] = {
+        itemId = 19375,
+        name = "Mish'undare, Circlet of the Mind Flayer",
+        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+        classes = { [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+        raids = { [RAID_BLACKWING_LAIR] = true }
+    },
+    [19376] = {
+        itemId = 19376,
+        name = "Archimtiros' Ring of Reckoning",
+        roles = { [ROLE_MELEE_DPS] = true, [ROLE_RANGED_DPS] = true, [ROLE_TANK] = true },
+        classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
+        raids = { [RAID_BLACKWING_LAIR] = true }
+    },
+    [19377] = {
+        itemId = 19377,
+        name = "Archimtiros' Ring of Reckoning",
+        roles = { [ROLE_MELEE_DPS] = true, [ROLE_RANGED_DPS] = true },
+        classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
+        raids = { [RAID_BLACKWING_LAIR] = true }
+    },
+    [19378] = {
+        itemId = 19378,
+        name = "Cloak of the Brood Lord",
+        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+        raids = { [RAID_BLACKWING_LAIR] = true }
+    },
 
 -- for testing purposes
 
