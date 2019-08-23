@@ -1,2 +1,4 @@
 - history of the drops and loots of the raid grps
 - invite players into the raidgrp for the selected instance
+
+- synchronize the player lists

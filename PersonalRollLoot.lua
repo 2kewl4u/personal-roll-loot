@@ -17,7 +17,30 @@ local utilsUI = ns.utilsUI
 local MasterUI = ns.MasterUI
 local MemberUI = ns.MemberUI
 
+-- events
+local EVENT_MEMBER_INFO = "PRLMemberInfo"
+local EVENT_ROLL_ORDER_INFO = "PRLRollOrderInfo"
+local EVENTS = { [EVENT_MEMBER_INFO] = true, [EVENT_ROLL_ORDER_INFO] = true }
+
 -- helper functions
+local function isGroupLeader(name)
+    -- remove the realm from the player name
+    name = strsplit("-", name, 2)
+    if (IsInGroup()) then
+        local memberCount = GetNumGroupMembers()
+        for index = 1, memberCount do
+            local member, rank = GetRaidRosterInfo(index)
+            -- if the raid member is the leader of the raid
+            if (member == name) then
+                if (rank == 2) then
+                    return true
+                end
+                break
+            end        
+        end
+    end
+end
+
 local function getPlayerNameAndRealm(arg)
     if (not arg) then error("> No player name specified.", 0) end
     local name, realm = UnitName(arg)
@@ -181,7 +204,7 @@ ns.announceMemberInfo = function()
             local player = ns.DB.PLAYER_LIST[name]
             if (player) then
                 local message = player:encode()
-                AddonMessage.Send("PRLMemberInfo", message, "WHISPER", player.name)
+                AddonMessage.Send(EVENT_MEMBER_INFO, message, "WHISPER", player.name)
             else
                 print("> Player '"..name.."' is not registered for Personal Roll Loot.")
             end
@@ -197,7 +220,7 @@ ns.announceRollOrder = function(rollOrder)
             local player = ns.DB.PLAYER_LIST[name]
             if (player) then
                 if (instance.players[name]) then
-                    AddonMessage.Send("PRLRollOrderInfo", message, "WHISPER", name)
+                    AddonMessage.Send(EVENT_ROLL_ORDER_INFO, message, "WHISPER", name)
                 else
                     print("> Player '"..name.."' is not invited to the currently active instance.")
                 end
@@ -327,7 +350,6 @@ end
 -- ------------------------------------------------------- --
 -- event handling                                          --
 -- ------------------------------------------------------- --
-
 local function updateLootItems()
     if (IsInGroup()) then
         local lootItems = Items.getLootItems()
@@ -355,20 +377,24 @@ local function receiveRollOrderInfo(msg)
 end
 
 local function receive(prefix, message, type, sender)
-    -- only accept announcements from raid/group leader
-    if (IsInGroup() and UnitIsGroupLeader(sender)) then
-        AddonMessage.Receive(prefix, message, type, sender, function(prefix, message, type, sender)
-            if (prefix == "PRLMemberInfo") then
-                receiveMemberInfo(message)
-            elseif (prefix == "PRLRollOrderInfo") then
-                receiveRollOrderInfo(message)
-                if (not MemberUI.isShown()) then
-                    print("> Received a personal roll announcement. Type /prl to see the order.")
-                    -- TODO maybe open the UI automatically:
-                    -- MemberUI.toggleUI()
+--    print("prefix: "..tostring(prefix))
+--    print("message: "..tostring(message))
+    if (EVENTS[prefix]) then
+        -- only accept announcements from raid/group leader
+        if (IsInGroup() and isGroupLeader(sender)) then
+            AddonMessage.Receive(prefix, message, type, sender, function(prefix, message, type, sender)
+                if (prefix == EVENT_MEMBER_INFO) then
+                    receiveMemberInfo(message)
+                elseif (prefix == EVENT_ROLL_ORDER_INFO) then
+                    receiveRollOrderInfo(message)
+                    if (not isGroupLeader(UnitName("player")) and not MemberUI.isShown()) then
+                        print("> Received a personal roll announcement. Type /prl to see the order.")
+                        -- TODO maybe open the UI automatically:
+                        -- MemberUI.toggleUI()
+                    end
                 end
-            end
-        end)
+            end)
+        end
     end
 end
 
@@ -390,7 +416,7 @@ local function parseLootMessage(msg, member)
         -- remove the realm part from the member
         local playerName = strsplit("-", member, 2)
         local player = ns.DB.PLAYER_LIST[playerName]
-        if (player and player:isInGroup()) then
+        if (player) then
             local itemName = getItemNameFromChat(msg)
             if (itemName) then
                 local item = Items.forName(itemName)
@@ -440,8 +466,8 @@ eventFrame:RegisterEvent("CHAT_MSG_LOOT")
 eventFrame:RegisterEvent("CHAT_MSG_ADDON")
 eventFrame:RegisterEvent("LOOT_OPENED")
 eventFrame:RegisterEvent("LOOT_SLOT_CLEARED")
-C_ChatInfo.RegisterAddonMessagePrefix("PRLMemberInfo")
-C_ChatInfo.RegisterAddonMessagePrefix("PRLRollOrderInfo")
+C_ChatInfo.RegisterAddonMessagePrefix(EVENT_MEMBER_INFO)
+C_ChatInfo.RegisterAddonMessagePrefix(EVENT_ROLL_ORDER_INFO)
 function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4, ...)
     if (event == "VARIABLES_LOADED") then
         ns.loadSavedVariables()

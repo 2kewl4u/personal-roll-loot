@@ -169,28 +169,6 @@ function Player:needsItem(item)
 end
 
 ---
--- Indicates whether this player is in the raid or party group.
--- 
--- @return #boolean
---          true if the player is in the group, nil otherwise
---          
-function Player:isInGroup()
-    local player = self
-    return UnitInRaid(player.name) or UnitInParty(player.name)
-end
-
----
--- Indicates whether this player is the group leader.
--- 
--- @return #boolean
---          true if the player is the group leader
---          
-function Player:isGroupLeader()
-    local player = self
-    return UnitIsGroupLeader(player.name)
-end
-
----
 -- Encodes this player into a string representation to be serialized. The
 -- string can be decoded back into a player using the decode() function.
 -- 
