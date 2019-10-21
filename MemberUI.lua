@@ -114,17 +114,6 @@ end)
 memberItemScrollList:SetButtonScript("OnLeave", utilsUI.hideTooltip)
 utilsUI.createBorder(memberItemScrollList:GetFrame())
 
-local syncButton = CreateFrame("Button", nil, memberTabFrame, "GameMenuButtonTemplate")
-syncButton:SetPoint("BOTTOMLEFT", memberTabFrame, "BOTTOMLEFT", MARGIN, MARGIN)
-syncButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
-syncButton:SetText("Synchronize")
-syncButton:SetScript("OnClick", function()
-    local status, err = pcall(ns.requestSync)
-    if (not status) then
-        print(err)
-    end
-end)
-
 local memberLootItemsField = memberTabFrame:CreateFontString(nil, "OVERLAY")
 memberLootItemsField:SetPoint("TOPLEFT", memberTabFrame, "TOPLEFT", WINDOW_WIDTH / 2 + SPACING, -MARGIN)
 memberLootItemsField:SetFontObject("GameFontNormalLEFT")
