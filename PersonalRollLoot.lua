@@ -21,7 +21,8 @@ local MemberUI = ns.MemberUI
 local EVENT_MEMBER_INFO = "PRLMemberInfo"
 local EVENT_ROLL_ORDER_INFO = "PRLRollOrderInfo"
 local EVENT_SYNC_REQUEST = "PRLSyncRequest"
-local EVENTS = { [EVENT_MEMBER_INFO] = true, [EVENT_ROLL_ORDER_INFO] = true, [EVENT_SYNC_REQUEST] = true }
+local EVENT_SYNC_INFO = "PRLSyncInfo"
+local EVENTS = { [EVENT_MEMBER_INFO] = true, [EVENT_ROLL_ORDER_INFO] = true, [EVENT_SYNC_REQUEST] = true, [EVENT_SYNC_INFO] = true }
 
 -- helper functions
 local function isGroupLeader(name)
@@ -388,9 +389,42 @@ local function receiveRollOrderInfo(msg)
     end
 end
 
+local function receiveSyncRequest(sender)
+    if (IsInGroup() and isGroupLeader(UnitName("player"))) then
+        print("> Got synchronize request from member '"..sender.."'.")
+        -- send the encoded player infos
+        local message = utils.toCSV(ns.DB.PLAYER_LIST, function(name, player)
+            return player:encode()
+        end, "/")
+        AddonMessage.Send(EVENT_SYNC_INFO, message, "WHISPER", sender)
+    end
+end
+
+local function receiveSyncInfo(message, sender)
+    -- only accept sync info from raid/group leader
+    if (IsInGroup() and isGroupLeader(sender)) then
+        print("> Got synchronize info from party leader '"..sender.."'.")
+        local syncCount = 0
+        local addCount = 0
+        utils.fromCSV(message, function(list, element)
+            local playerInfo = Player.decode(element)
+            -- synchronize the player info
+            local player = ns.DB.PLAYER_LIST[playerInfo.name]
+            if (player) then
+                player:synchronize(playerInfo)
+                syncCount = syncCount + 1
+            else
+                ns.DB.PLAYER_LIST[playerInfo.name] = Player.copy(playerInfo)
+                addCount = addCount + 1
+            end
+        end, "/")
+        print("> Synchronized "..syncCount.." and added "..addCount.." players.")
+    end
+end
+
 local function receive(prefix, message, type, sender)
-    print("prefix: "..tostring(prefix))
-    print("message: "..tostring(message))
+    -- print("prefix: "..tostring(prefix))
+    -- print("message: "..tostring(message))
     if (EVENTS[prefix]) then
         AddonMessage.Receive(prefix, message, type, sender, function(prefix, message, type, sender)
             if (prefix == EVENT_MEMBER_INFO) then
@@ -408,10 +442,9 @@ local function receive(prefix, message, type, sender)
                     end
                 end
             elseif (prefix == EVENT_SYNC_REQUEST) then
-                if (IsInGroup() and isGroupLeader(UnitName("player"))) then
-                    print("> Got synchronize request from member '"..sender.."'.")
-                    -- TODO NYI
-                end
+                receiveSyncRequest(sender)
+            elseif (prefix == EVENT_SYNC_INFO) then
+                receiveSyncInfo(message, sender)
             end
         end)
     end
@@ -488,6 +521,7 @@ eventFrame:RegisterEvent("LOOT_SLOT_CLEARED")
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_MEMBER_INFO)
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_ROLL_ORDER_INFO)
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_SYNC_REQUEST)
+C_ChatInfo.RegisterAddonMessagePrefix(EVENT_SYNC_INFO)
 function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4, ...)
     if (event == "VARIABLES_LOADED") then
         ns.loadSavedVariables()
