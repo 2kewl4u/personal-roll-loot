@@ -468,7 +468,7 @@ eventFrame:RegisterEvent("LOOT_OPENED")
 eventFrame:RegisterEvent("LOOT_SLOT_CLEARED")
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_MEMBER_INFO)
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_ROLL_ORDER_INFO)
-function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4, ...)
+function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4, arg5, ...)
     if (event == "VARIABLES_LOADED") then
         ns.loadSavedVariables()
     elseif (event == "CHAT_MSG_ADDON") then
@@ -476,7 +476,8 @@ function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4, ...)
     elseif (event == "LOOT_OPENED" or event == "LOOT_SLOT_CLEARED") then
         updateLootItems()
     elseif (event == "CHAT_MSG_LOOT") then
-        parseLootMessage(arg1, arg2)
+        -- arg5 "playerName2" - Name of player who received the loot
+        parseLootMessage(arg1, arg5)
     elseif (event == "INSPECT_READY") then
         inspectTarget()
     end
