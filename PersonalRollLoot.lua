@@ -24,6 +24,10 @@ local EVENT_SYNC_REQUEST = "PRLSyncRequest"
 local EVENT_SYNC_INFO = "PRLSyncInfo"
 local EVENTS = { [EVENT_MEMBER_INFO] = true, [EVENT_ROLL_ORDER_INFO] = true, [EVENT_SYNC_REQUEST] = true, [EVENT_SYNC_INFO] = true }
 
+-- set a delay in seconds until sending again a sync request or info
+local SYNC_DELAY = 30
+local syncRequestTimes = {}
+
 -- helper functions
 local function isGroupLeader(name)
     -- remove the realm from the player name
@@ -235,13 +239,28 @@ ns.announceRollOrder = function(rollOrder)
     end
 end
 
+local function isSyncDelay(sender)
+    sender = strsplit("-", sender, 2)
+    local lastSent = syncRequestTimes[sender]
+    local now = time()
+    local delay = lastSent and ((now - lastSent) < SYNC_DELAY)
+    if (not delay) then
+        syncRequestTimes[sender] = now
+    end
+    return delay
+end
+
 ns.requestSync = function()
     -- only send request to raid/group leader
     if (IsInGroup() and not UnitIsGroupLeader("player")) then
-        local name = utils.getRaidLeader()
-        if (name) then
-            print("> Requesting synchronize from party leader '"..name.."'.")
-            AddonMessage.Send(EVENT_SYNC_REQUEST, "all", "WHISPER", name)
+        if (isSyncDelay(UnitName("player"))) then
+            print("> Cannot send to many synchronize requests. Please wait "..SYNC_DELAY.." seconds.")
+        else
+            local name = utils.getRaidLeader()
+            if (name) then
+                print("> Requesting synchronize from party leader '"..name.."'.")
+                AddonMessage.Send(EVENT_SYNC_REQUEST, "all", "WHISPER", name)
+            end
         end
     end
 end
@@ -390,7 +409,7 @@ local function receiveRollOrderInfo(msg)
 end
 
 local function receiveSyncRequest(sender)
-    if (IsInGroup() and isGroupLeader(UnitName("player"))) then
+    if (IsInGroup() and not isSyncDelay(sender) and isGroupLeader(UnitName("player"))) then
         print("> Got synchronize request from member '"..sender.."'.")
         -- send the encoded player infos
         local message = utils.toCSV(ns.DB.PLAYER_LIST, function(name, player)
