@@ -20,7 +20,13 @@ local MemberUI = ns.MemberUI
 -- events
 local EVENT_MEMBER_INFO = "PRLMemberInfo"
 local EVENT_ROLL_ORDER_INFO = "PRLRollOrderInfo"
-local EVENTS = { [EVENT_MEMBER_INFO] = true, [EVENT_ROLL_ORDER_INFO] = true }
+local EVENT_SYNC_REQUEST = "PRLSyncRequest"
+local EVENT_SYNC_INFO = "PRLSyncInfo"
+local EVENTS = { [EVENT_MEMBER_INFO] = true, [EVENT_ROLL_ORDER_INFO] = true, [EVENT_SYNC_REQUEST] = true, [EVENT_SYNC_INFO] = true }
+
+-- set a delay in seconds until sending again a sync request or info
+local SYNC_DELAY = 30
+local syncRequestTimes = {}
 
 -- helper functions
 local function isGroupLeader(name)
@@ -36,7 +42,7 @@ local function isGroupLeader(name)
                     return true
                 end
                 break
-            end        
+            end
         end
     end
 end
@@ -233,6 +239,32 @@ ns.announceRollOrder = function(rollOrder)
     end
 end
 
+local function isSyncDelay(sender)
+    sender = strsplit("-", sender, 2)
+    local lastSent = syncRequestTimes[sender]
+    local now = time()
+    local delay = lastSent and ((now - lastSent) < SYNC_DELAY)
+    if (not delay) then
+        syncRequestTimes[sender] = now
+    end
+    return delay
+end
+
+ns.requestSync = function()
+    -- only send request to raid/group leader
+    if (IsInGroup() and not UnitIsGroupLeader("player")) then
+        if (isSyncDelay(UnitName("player"))) then
+            print("> Cannot send to many synchronize requests. Please wait "..SYNC_DELAY.." seconds.")
+        else
+            local name = utils.getRaidLeader()
+            if (name) then
+                print("> Requesting synchronize from party leader '"..name.."'.")
+                AddonMessage.Send(EVENT_SYNC_REQUEST, "all", "WHISPER", name)
+            end
+        end
+    end
+end
+
 -- ------------------------------------------------------- --
 -- slash commands                                          --
 -- ------------------------------------------------------- --
@@ -376,16 +408,51 @@ local function receiveRollOrderInfo(msg)
     end
 end
 
+local function receiveSyncRequest(sender)
+    if (IsInGroup() and not isSyncDelay(sender) and isGroupLeader(UnitName("player"))) then
+        print("> Got synchronize request from member '"..sender.."'.")
+        -- send the encoded player infos
+        local message = utils.toCSV(ns.DB.PLAYER_LIST, function(name, player)
+            return player:encode()
+        end, "/")
+        AddonMessage.Send(EVENT_SYNC_INFO, message, "WHISPER", sender)
+    end
+end
+
+local function receiveSyncInfo(message, sender)
+    -- only accept sync info from raid/group leader
+    if (IsInGroup() and isGroupLeader(sender)) then
+        print("> Got synchronize info from party leader '"..sender.."'.")
+        local syncCount = 0
+        local addCount = 0
+        utils.fromCSV(message, function(list, element)
+            local playerInfo = Player.decode(element)
+            -- synchronize the player info
+            local player = ns.DB.PLAYER_LIST[playerInfo.name]
+            if (player) then
+                player:synchronize(playerInfo)
+                syncCount = syncCount + 1
+            else
+                ns.DB.PLAYER_LIST[playerInfo.name] = Player.copy(playerInfo)
+                addCount = addCount + 1
+            end
+        end, "/")
+        print("> Synchronized "..syncCount.." and added "..addCount.." players.")
+    end
+end
+
 local function receive(prefix, message, type, sender)
---    print("prefix: "..tostring(prefix))
---    print("message: "..tostring(message))
+    -- print("prefix: "..tostring(prefix))
+    -- print("message: "..tostring(message))
     if (EVENTS[prefix]) then
-        -- only accept announcements from raid/group leader
-        if (IsInGroup() and isGroupLeader(sender)) then
-            AddonMessage.Receive(prefix, message, type, sender, function(prefix, message, type, sender)
-                if (prefix == EVENT_MEMBER_INFO) then
+        AddonMessage.Receive(prefix, message, type, sender, function(prefix, message, type, sender)
+            if (prefix == EVENT_MEMBER_INFO) then
+                -- only accept announcements from raid/group leader
+                if (IsInGroup() and isGroupLeader(sender)) then
                     receiveMemberInfo(message)
-                elseif (prefix == EVENT_ROLL_ORDER_INFO) then
+                end
+            elseif (prefix == EVENT_ROLL_ORDER_INFO) then
+                if (IsInGroup() and isGroupLeader(sender)) then
                     receiveRollOrderInfo(message)
                     if (not isGroupLeader(UnitName("player")) and not MemberUI.isShown()) then
                         print("> Received a personal roll announcement. Type /prl to see the order.")
@@ -393,8 +460,12 @@ local function receive(prefix, message, type, sender)
                         -- MemberUI.toggleUI()
                     end
                 end
-            end)
-        end
+            elseif (prefix == EVENT_SYNC_REQUEST) then
+                receiveSyncRequest(sender)
+            elseif (prefix == EVENT_SYNC_INFO) then
+                receiveSyncInfo(message, sender)
+            end
+        end)
     end
 end
 
@@ -468,6 +539,8 @@ eventFrame:RegisterEvent("LOOT_OPENED")
 eventFrame:RegisterEvent("LOOT_SLOT_CLEARED")
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_MEMBER_INFO)
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_ROLL_ORDER_INFO)
+C_ChatInfo.RegisterAddonMessagePrefix(EVENT_SYNC_REQUEST)
+C_ChatInfo.RegisterAddonMessagePrefix(EVENT_SYNC_INFO)
 function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4, arg5, ...)
     if (event == "VARIABLES_LOADED") then
         ns.loadSavedVariables()

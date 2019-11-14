@@ -74,9 +74,9 @@ local rollTabFrame = tabs[3].contentFrame
 -- --------------------------------------------------------- --
 -- the player list to add and remove players to the tracking --
 -- --------------------------------------------------------- --
-local playerScrollList = ScrollList.new("PersonalRollLootPlayerListScrollFrame", playerTabFrame, 19)
+local playerScrollList = ScrollList.new("PersonalRollLootPlayerListScrollFrame", playerTabFrame, 18)
 playerScrollList:SetPoint("TOPLEFT", playerTabFrame, "TOPLEFT", MARGIN, -MARGIN)
-playerScrollList:SetPoint("BOTTOMLEFT", playerTabFrame, "BOTTOMLEFT", MARGIN, TEXT_FIELD_HEIGHT + MARGIN + SPACING)
+playerScrollList:SetPoint("BOTTOMLEFT", playerTabFrame, "BOTTOMLEFT", MARGIN, 2 * (TEXT_FIELD_HEIGHT + SPACING) + MARGIN)
 playerScrollList:SetWidth(COLUMN_WIDTH)
 playerScrollList:SetButtonHeight(TEXT_FIELD_HEIGHT)
 playerScrollList:SetLabelProvider(function(k, v) return k end)
@@ -116,6 +116,17 @@ addPlayerButton:SetScript("OnClick", function()
         print(err)
     else
         playerScrollList:Update()
+    end
+end)
+
+local syncButton = CreateFrame("Button", nil, playerTabFrame, "GameMenuButtonTemplate")
+syncButton:SetPoint("BOTTOMLEFT", addPlayerButton, "TOPLEFT", 0, SPACING)
+syncButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
+syncButton:SetText("Synchronize")
+syncButton:SetScript("OnClick", function()
+    local status, err = pcall(ns.requestSync)
+    if (not status) then
+        print(err)
     end
 end)
 

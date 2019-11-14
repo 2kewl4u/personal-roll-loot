@@ -4,13 +4,13 @@ local utils = {}
 
 ---
 -- Returns the size of the given table. Returns 0 if the table is nil.
--- 
+--
 -- @param #table tbl
 --          the table to compute the size for
---          
+--
 -- @return #number
 --          the size of the table
---          
+--
 utils.tblsize = function(tbl)
     local size = 0
     if (tbl) then
@@ -25,13 +25,13 @@ end
 -- Copies the key-value pairs from the given table into a new table. Note that
 -- the returned table is not a deep copy of the given table! Returns nil if the
 -- given table is nil.
--- 
+--
 -- @param #table tbl
 --          the table to be copied
---          
+--
 -- @return #table
 --          the copy of the table or nil
---          
+--
 utils.copy = function(tbl)
     if (tbl) then
         local copy = {}
@@ -44,13 +44,13 @@ end
 
 ---
 -- Returns a list containing the elements of the given list in random order.
--- 
+--
 -- @param #table list
 --          a list with the elements to be shuffled
---          
+--
 -- @return #table
 --          a new list containing the shuffled elements
---          
+--
 utils.shuffle = function(list)
     local shuffled = {}
     for i, v in ipairs(list) do
@@ -64,19 +64,19 @@ end
 -- Returns a comma-separated list string containing the elements of the given
 -- list. The elements are passed as key-value pairs to the encoding function to
 -- provide a string representation.
--- 
+--
 -- If the given delimiter is nil, the default comma ',' will be used.
--- 
+--
 -- @param #table list
 --          the list to iterate over
 -- @param #function enc
 --          a function(key, value) return a string
 -- @param #string delimiter
 --          the delimiter, may be nil
---          
+--
 -- @return #string
 --          the comma-separated string list, not nil
---          
+--
 utils.toCSV = function(list, enc, delimiter)
     local csv = ""
     delimiter = delimiter or ","
@@ -94,16 +94,16 @@ end
 -- Returns a list containing the elements read from the given comma-separated
 -- list string. The elements are passed to the decoding function that will
 -- insert the element into the list.
--- 
+--
 -- If the given delimiter is nil, the default comma ','  will be used.
--- 
+--
 -- @param #string csv
 --          the comma-separated string list
--- @param #function dec 
+-- @param #function dec
 --          a function(list, element) that inserts the element into the list
 -- @param #string delimiter
 --          the delimiter, may be nil
---          
+--
 -- @return #table
 --          the table containing the elements, not nil
 --
@@ -121,10 +121,10 @@ end
 ---
 -- Iterates over each raid member that is currently online and calls the given
 -- action with the raid member name.
--- 
+--
 -- Note that even in case the player is not in a group, the action is always
 -- called with the player name.
--- 
+--
 -- @param #function action
 --          a function(name) that is called for each raid member
 --
@@ -133,14 +133,28 @@ utils.forEachRaidMember = function(action)
         local playerName = UnitName("player")
         local memberCount = GetNumGroupMembers()
         for index = 1, memberCount do
-            local name, rank, subgroup, level, class, fileName, 
-                  zone, online, isDead, role, isML = GetRaidRosterInfo(index)
+            local name, rank, subgroup, level, class, fileName,
+                zone, online, isDead, role, isML = GetRaidRosterInfo(index)
             if (playerName ~= name and online) then
                 action(name)
             end
         end
         -- if we are not in a group, we still execute the action on ourselves
         action(playerName)
+    end
+end
+
+utils.getRaidLeader = function()
+    local memberCount = GetNumGroupMembers()
+    for index = 1, memberCount do
+        local name, rank, subgroup, level, class, fileName,
+            zone, online, isDead, role, isML = GetRaidRosterInfo(index)
+        -- rank is 2 if the raid member is the leader of the raid, 1 if promoted to assistant, and 0 otherwise
+        if (rank == 2) then
+            -- remove the realm from the player name
+            name = strsplit("-", name, 2)
+            return name
+        end
     end
 end
 
