@@ -657,8 +657,8 @@ local ITEM_LIST = {
     [17076] = {
         itemId = 17076,
         name = "Bonereaver's Edge",
-        roles = { [ROLE_RANGED_DPS] = true, [ROLE_MELEE_DPS] = true },
-        classes = { [CLASS_HUNTER] = true, [CLASS_PALADIN] = true, [CLASS_WARRIOR] = true },
+        roles = { [ROLE_MELEE_DPS] = true },
+        classes = { [CLASS_PALADIN] = true, [CLASS_WARRIOR] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [17077] = {
@@ -693,8 +693,8 @@ local ITEM_LIST = {
     [17104] = {
         itemId = 17104,
         name = "Spinal Reaper",
-        roles = { [ROLE_RANGED_DPS] = true, [ROLE_MELEE_DPS] = true },
-        classes = { [CLASS_HUNTER] = true, [CLASS_SHAMAN] = true, [CLASS_PALADIN] = true, [CLASS_WARRIOR] = true },
+        roles = { [ROLE_MELEE_DPS] = true },
+        classes = { [CLASS_SHAMAN] = true, [CLASS_PALADIN] = true, [CLASS_WARRIOR] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [17105] = {
@@ -749,8 +749,8 @@ local ITEM_LIST = {
     [18564] = {
         itemId = 18564,
         name = "Bindings of the Windseeker",
-        roles = { [ROLE_RANGED_DPS] = true, [ROLE_MELEE_DPS] = true },
-        classes = { [CLASS_PALADIN] = true, [CLASS_ROGUE] = true, [CLASS_HUNTER] = true, [CLASS_WARRIOR] = true },
+        roles = { [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+        classes = { [CLASS_PALADIN] = true, [CLASS_ROGUE] = true, [CLASS_WARRIOR] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [18646] = {
@@ -833,7 +833,7 @@ local ITEM_LIST = {
     [18815] = {
         itemId = 18815,
         name = "Essence of the Pure Flame",
-        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true, [ROLE_MELEE_DPS] = true, [ROLE_RANGED_DPS] = true, [ROLE_TANK] = true },
         classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true,
             [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
@@ -1137,7 +1137,7 @@ local ITEM_LIST = {
     [18422] = {
         itemId = 18422,
         name = "Head of Onyxia",
-        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true, [ROLE_MELEE_DPS] = true, [ROLE_RANGED_DPS] = true, [ROLE_TANK] = true },
         classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true,
                     [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
         raids = { [RAID_ONYXIA] = true }
