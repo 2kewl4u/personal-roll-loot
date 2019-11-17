@@ -55,12 +55,10 @@ end
 --          the frame to show/hide
 -- 
 utilsUI.toggleUI = function(frame)
-    if (not UnitAffectingCombat("player")) then
-        if (frame:IsShown()) then
-            HideUIPanel(frame)
-        else
-            ShowUIPanel(frame)
-        end
+    if (frame:IsShown()) then
+        HideUIPanel(frame)
+    else
+        ShowUIPanel(frame)
     end
 end
 
