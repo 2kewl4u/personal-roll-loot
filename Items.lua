@@ -630,7 +630,7 @@ local ITEM_LIST = {
         itemId = 17071,
         name = "Gutgore Ripper",
         roles = { [ROLE_MELEE_DPS] = true },
-        classes = { [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_WARRIOR] = true },
+        classes = { [CLASS_ROGUE] = true, [CLASS_WARRIOR] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [17072] = {
@@ -715,7 +715,7 @@ local ITEM_LIST = {
         itemId = 17107,
         name = "Dragon's Blood Cape",
         roles = { [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
-        classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
+        classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [17109] = {
@@ -778,7 +778,7 @@ local ITEM_LIST = {
         itemId = 18805,
         name = "Core Hound Tooth",
         roles = { [ROLE_MELEE_DPS] = true },
-        classes = { [CLASS_WARRIOR] = true, [CLASS_SHAMAN] = true, [CLASS_ROGUE] = true },
+        classes = { [CLASS_WARRIOR] = true, [CLASS_ROGUE] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [18806] = {
@@ -842,7 +842,7 @@ local ITEM_LIST = {
         itemId = 18816,
         name = "Perdition's Blade",
         roles = { [ROLE_MELEE_DPS] = true },
-        classes = { [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_WARRIOR] = true },
+        classes = { [CLASS_ROGUE] = true, [CLASS_WARRIOR] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [18817] = {
@@ -1017,7 +1017,7 @@ local ITEM_LIST = {
         itemId = 19146,
         name = "Wristguards of Stability",
         roles = { [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
-        classes = { [CLASS_ROGUE] = true, [CLASS_DRUID] = true },
+        classes = { [CLASS_DRUID] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [19147] = {
