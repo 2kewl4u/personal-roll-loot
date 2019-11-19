@@ -1026,6 +1026,40 @@ local ITEM_LIST = {
         classes = { [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
+    
+    -- QUEST ITEMS
+    [18608] = {
+        itemId = 18608,
+        name = "Benediction",
+        roles = {},
+        classes = {},
+        raids = {},
+        swallows = { 18646 } -- The Eye of Divinity
+    },
+    [18609] = {
+        itemId = 18609,
+        name = "Anathema",
+        roles = {},
+        classes = {},
+        raids = {},
+        swallows = { 18646 } -- The Eye of Divinity
+    },
+    [18713] = {
+        itemId = 18713,
+        name = "Rhok'delar, Longbow of the Ancient Keepers",
+        roles = {},
+        classes = {},
+        raids = {},
+        swallows = { 18703, 18705 } -- Ancient Petrified Leaf, Mature Black Dragon Sinew
+    },
+    [18715] = {
+        itemId = 18715,
+        name = "Lok'delar, Stave of the Ancient Keepers",
+        roles = {},
+        classes = {},
+        raids = {},
+        swallows = { 18703, 18705 } -- Ancient Petrified Leaf, Mature Black Dragon Sinew
+    },
 
     -- ONYXIA
     [16900] = {
@@ -1193,7 +1227,8 @@ local ITEM_LIST = {
 --        name = "Linen Cloth",
 --        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
 --        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
---        raids = { [RAID_MOLTEN_CORE] = true }
+--        raids = { [RAID_MOLTEN_CORE] = true },
+--        swallows = { 2592 }
 --    },
 --    [2592] = {
 --        itemId = 2592,

@@ -482,6 +482,20 @@ local function getItemNameFromChat(msg)
     end
 end
 
+local function removeItemFromPlayer(player, item)
+    if (item) then
+        if (player:removeItem(item)) then
+            print("> Removed item '"..item:getName().."' ("..item.itemId..") from player '"..player.name.."'.")
+        end
+
+        -- swallow additional items
+        for index, itemId in ipairs(item.swallows or {}) do
+            local addItem = ITEM_LIST[itemId]
+            removeItemFromPlayer(player, addItem)
+        end
+    end
+end
+
 local function parseLootMessage(msg, member)
     if (msg and member) then
         -- remove the realm part from the member
@@ -491,11 +505,7 @@ local function parseLootMessage(msg, member)
             local itemName = getItemNameFromChat(msg)
             if (itemName) then
                 local item = Items.forName(itemName)
-                if (item) then
-                    if (player:removeItem(item)) then
-                        print("> Removed item '"..item:getName().."' ("..item.itemId..") from player '"..playerName.."'.")
-                    end
-                end
+                removeItemFromPlayer(player, item)
             end
         end
     end
@@ -511,9 +521,7 @@ local function inspectTarget()
                 local itemId = GetInventoryItemID(unit, i)
                 if (itemId) then
                     local item = ITEM_LIST[itemId]
-                    if (item and player:removeItem(item)) then
-                        print("> Removed item '"..item:getName().."' ("..item.itemId..") from player '"..playerName.."'.")
-                    end
+                    removeItemFromPlayer(player, item)
                 end
             end
         end
