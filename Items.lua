@@ -826,16 +826,15 @@ local ITEM_LIST = {
     [18814] = {
         itemId = 18814,
         name = "Choker of the Fire Lord",
-        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+        roles = { [ROLE_CASTER_DPS] = true },
         classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [18815] = {
         itemId = 18815,
         name = "Essence of the Pure Flame",
-        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true, [ROLE_MELEE_DPS] = true, [ROLE_RANGED_DPS] = true, [ROLE_TANK] = true },
-        classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true,
-            [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true, [ROLE_MELEE_DPS] = true, [ROLE_TANK] = true },
+        classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [18816] = {
@@ -855,8 +854,8 @@ local ITEM_LIST = {
     [18820] = {
         itemId = 18820,
         name = "Talisman of Ephemeral Power",
-        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
-        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+        roles = { [ROLE_CASTER_DPS] = true },
+        classes = { [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [18821] = {
@@ -904,8 +903,8 @@ local ITEM_LIST = {
     [18842] = {
         itemId = 18842,
         name = "Staff of Dominance",
-        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
-        classes = { [CLASS_DRUID] = true, [CLASS_MAGE] = true, [CLASS_PRIEST] = true, [CLASS_SHAMAN] = true, [CLASS_WARLOCK] = true },
+        roles = { [ROLE_CASTER_DPS] = true },
+        classes = { [CLASS_DRUID] = true, [CLASS_MAGE] = true, [CLASS_SHAMAN] = true, [CLASS_WARLOCK] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [18861] = {
@@ -1009,8 +1008,8 @@ local ITEM_LIST = {
     [19145] = {
         itemId = 19145,
         name = "Robe of Volatile Power",
-        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
-        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+        roles = { [ROLE_CASTER_DPS] = true },
+        classes = { [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [19146] = {
@@ -1023,8 +1022,8 @@ local ITEM_LIST = {
     [19147] = {
         itemId = 19147,
         name = "Ring of Spell Power",
-        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
-        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+        roles = { [ROLE_CASTER_DPS] = true },
+        classes = { [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
 
@@ -1123,8 +1122,8 @@ local ITEM_LIST = {
     [17078] = {
         itemId = 17078,
         name = "Sapphiron Drape",
-        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
-        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+        roles = { [ROLE_CASTER_DPS] = true },
+        classes = { [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
         raids = { [RAID_ONYXIA] = true }
     },
     [18205] = {
