@@ -1026,41 +1026,8 @@ local ITEM_LIST = {
         classes = { [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
-    
-    -- QUEST ITEMS
-    [18608] = {
-        itemId = 18608,
-        name = "Benediction",
-        roles = {},
-        classes = {},
-        raids = {},
-        swallows = { 18646 } -- The Eye of Divinity
-    },
-    [18609] = {
-        itemId = 18609,
-        name = "Anathema",
-        roles = {},
-        classes = {},
-        raids = {},
-        swallows = { 18646 } -- The Eye of Divinity
-    },
-    [18713] = {
-        itemId = 18713,
-        name = "Rhok'delar, Longbow of the Ancient Keepers",
-        roles = {},
-        classes = {},
-        raids = {},
-        swallows = { 18703, 18705 } -- Ancient Petrified Leaf, Mature Black Dragon Sinew
-    },
-    [18715] = {
-        itemId = 18715,
-        name = "Lok'delar, Stave of the Ancient Keepers",
-        roles = {},
-        classes = {},
-        raids = {},
-        swallows = { 18703, 18705 } -- Ancient Petrified Leaf, Mature Black Dragon Sinew
-    },
 
+    
     -- ONYXIA
     [16900] = {
         itemId = 16900,
@@ -1189,6 +1156,66 @@ local ITEM_LIST = {
         classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_DRUID] = true },
         raids = { [RAID_ONYXIA] = true }
     },
+    
+    
+       -- QUEST ITEMS
+    [18608] = {
+        itemId = 18608,
+        name = "Benediction",
+        roles = {},
+        classes = {},
+        raids = {},
+        swallows = { 18646 } -- The Eye of Divinity
+    },
+    [18609] = {
+        itemId = 18609,
+        name = "Anathema",
+        roles = {},
+        classes = {},
+        raids = {},
+        swallows = { 18646 } -- The Eye of Divinity
+    },
+    [18713] = {
+        itemId = 18713,
+        name = "Rhok'delar, Longbow of the Ancient Keepers",
+        roles = {},
+        classes = {},
+        raids = {},
+        swallows = { 18703, 18705 } -- Ancient Petrified Leaf, Mature Black Dragon Sinew
+    },
+    [18715] = {
+        itemId = 18715,
+        name = "Lok'delar, Stave of the Ancient Keepers",
+        roles = {},
+        classes = {},
+        raids = {},
+        swallows = { 18703, 18705 } -- Ancient Petrified Leaf, Mature Black Dragon Sinew
+    },
+    [18403] = {
+        itemId = 18403,
+        name = "Dragonslayer's Signet",
+        roles = {},
+        classes = {},
+        raids = {},
+        swallows = { 18422 } -- Head of Onyxia
+    },
+    [18404] = {
+        itemId = 18404,
+        name = "Onyxia Tooth Pendant",
+        roles = {},
+        classes = {},
+        raids = {},
+        swallows = { 18422 } -- Head of Onyxia
+    },
+    [18406] = {
+        itemId = 18406,
+        name = "Onyxia Blood Talisman",
+        roles = {},
+        classes = {},
+        raids = {},
+        swallows = { 18422 } -- Head of Onyxia
+    },
+    
 
     -- BLACKWING LAIR
     [19375] = {
