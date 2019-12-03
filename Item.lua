@@ -93,8 +93,8 @@ end
 --
 function Item:isForClass(class)
     local item = self
-    if (class) then
-        return item.classes[class]
+    if (class and item.classes[class]) then
+        return true
     end
 end
 
