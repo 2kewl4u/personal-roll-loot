@@ -700,7 +700,7 @@ local ITEM_LIST = {
     [17105] = {
         itemId = 17105,
         name = "Aurastone Hammer",
-        roles = { [ROLE_HEALER] = 2, [ROLE_CASTER_DPS] = 1, [ROLE_TANK] = 2 },
+        roles = { [ROLE_HEALER] = 1, [ROLE_CASTER_DPS] = 1 },
         classes = { [CLASS_DRUID] = 1, [CLASS_SHAMAN] = 1, [CLASS_PALADIN] = 1, [CLASS_PRIEST] = 3 },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
@@ -721,7 +721,7 @@ local ITEM_LIST = {
     [17109] = {
         itemId = 17109,
         name = "Choker of Enlightenment",
-        roles = { [ROLE_HEALER] = 2, [ROLE_CASTER_DPS] = 1, [ROLE_TANK] = 2 },
+        roles = { [ROLE_HEALER] = 1, [ROLE_CASTER_DPS] = 1 },
         classes = { [CLASS_PALADIN] = 3, [CLASS_SHAMAN] = 1, [CLASS_DRUID] = 1, [CLASS_PRIEST] = 1, [CLASS_WARLOCK] = 1, [CLASS_MAGE] = 1 },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
@@ -742,8 +742,8 @@ local ITEM_LIST = {
     [18203] = {
         itemId = 18203,
         name = "Eskhandar's Right Claw",
-        roles = { [ROLE_RANGED_DPS] = 3, [ROLE_MELEE_DPS] = 2, [ROLE_TANK] = 3 },
-        classes = { [CLASS_HUNTER] = 3, [CLASS_ROGUE] = 2, [CLASS_SHAMAN] = 3, [CLASS_WARRIOR] = 2 },
+        roles = { [ROLE_RANGED_DPS] = 4, [ROLE_MELEE_DPS] = 3, [ROLE_TANK] = 4 },
+        classes = { [CLASS_HUNTER] = 4, [CLASS_ROGUE] = 3, [CLASS_SHAMAN] = 3, [CLASS_WARRIOR] = 3 },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [18564] = {
@@ -973,8 +973,8 @@ local ITEM_LIST = {
     [19139] = {
         itemId = 19139,
         name = "Fireguard Shoulders",
-        roles = { [ROLE_HEALER] = 2, [ROLE_TANK] = 1, [ROLE_CASTER_DPS] = 2, [ROLE_MELEE_DPS] = 1 },
-        classes = { [CLASS_DRUID] = 1, [CLASS_ROGUE] = 1 },
+        roles = { [ROLE_HEALER] = 4, [ROLE_TANK] = 2, [ROLE_CASTER_DPS] = 4, [ROLE_MELEE_DPS] = 3 },
+        classes = { [CLASS_DRUID] = 2, [CLASS_ROGUE] = 3 },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [19140] = {
@@ -994,15 +994,15 @@ local ITEM_LIST = {
     [19143] = {
         itemId = 19143,
         name = "Flameguard Gauntlets",
-        roles = { [ROLE_MELEE_DPS] = true },
-        classes = { [CLASS_PALADIN] = true, [CLASS_WARRIOR] = true },
+        roles = { [ROLE_MELEE_DPS] = 1 },
+        classes = { [CLASS_PALADIN] = 1, [CLASS_WARRIOR] = 1 },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [19144] = {
         itemId = 19144,
         name = "Sabatons of the Flamewalker",
-        roles = { [ROLE_RANGED_DPS] = true, [ROLE_MELEE_DPS] = true },
-        classes = { [CLASS_SHAMAN] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true },
+        roles = { [ROLE_RANGED_DPS] = 1, [ROLE_MELEE_DPS] = 1 },
+        classes = { [CLASS_SHAMAN] = 1, [CLASS_PALADIN] = 1, [CLASS_HUNTER] = 1 },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [19145] = {
@@ -1016,7 +1016,7 @@ local ITEM_LIST = {
         itemId = 19146,
         name = "Wristguards of Stability",
         roles = { [ROLE_MELEE_DPS] = 1, [ROLE_TANK] = 1 },
-        classes = { [CLASS_DRUID] = 1 },
+        classes = { [CLASS_DRUID] = 1, [CLASS_SHAMAN] = 2, [CLASS_WARRIOR] = 2 },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [19147] = {
@@ -1218,34 +1218,34 @@ local ITEM_LIST = {
     
 
     -- BLACKWING LAIR
-    [19375] = {
-        itemId = 19375,
-        name = "Mish'undare, Circlet of the Mind Flayer",
-        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
-        classes = { [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
-        raids = { [RAID_BLACKWING_LAIR] = true }
-    },
-    [19376] = {
-        itemId = 19376,
-        name = "Archimtiros' Ring of Reckoning",
-        roles = { [ROLE_MELEE_DPS] = true, [ROLE_RANGED_DPS] = true, [ROLE_TANK] = true },
-        classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
-        raids = { [RAID_BLACKWING_LAIR] = true }
-    },
-    [19377] = {
-        itemId = 19377,
-        name = "Archimtiros' Ring of Reckoning",
-        roles = { [ROLE_MELEE_DPS] = true, [ROLE_RANGED_DPS] = true },
-        classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
-        raids = { [RAID_BLACKWING_LAIR] = true }
-    },
-    [19378] = {
-        itemId = 19378,
-        name = "Cloak of the Brood Lord",
-        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
-        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
-        raids = { [RAID_BLACKWING_LAIR] = true }
-    },
+--    [19375] = {
+--        itemId = 19375,
+--        name = "Mish'undare, Circlet of the Mind Flayer",
+--        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+--        classes = { [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+--        raids = { [RAID_BLACKWING_LAIR] = true }
+--    },
+--    [19376] = {
+--        itemId = 19376,
+--        name = "Archimtiros' Ring of Reckoning",
+--        roles = { [ROLE_MELEE_DPS] = true, [ROLE_RANGED_DPS] = true, [ROLE_TANK] = true },
+--        classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
+--        raids = { [RAID_BLACKWING_LAIR] = true }
+--    },
+--    [19377] = {
+--        itemId = 19377,
+--        name = "Archimtiros' Ring of Reckoning",
+--        roles = { [ROLE_MELEE_DPS] = true, [ROLE_RANGED_DPS] = true },
+--        classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
+--        raids = { [RAID_BLACKWING_LAIR] = true }
+--    },
+--    [19378] = {
+--        itemId = 19378,
+--        name = "Cloak of the Brood Lord",
+--        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
+--        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+--        raids = { [RAID_BLACKWING_LAIR] = true }
+--    },
 
 -- for testing purposes
 
