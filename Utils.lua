@@ -158,6 +158,14 @@ utils.getRaidLeader = function()
     end
 end
 
+utils.isGroupLeader = function(name)
+    if (utils.getRaidLeader() == name) then
+        return true
+    else
+        return false
+    end
+end
+
 ns.utils = utils
 
 

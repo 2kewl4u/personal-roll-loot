@@ -5,6 +5,7 @@ local CLASS_ROLES = ns.CLASS_ROLES
 local RAIDS = ns.RAIDS
 local ROLES = ns.ROLES
 local ScrollList = ns.ScrollList
+local utils = ns.utils
 local utilsUI = ns.utilsUI
 
 local COLUMN_WIDTH = utilsUI.COLUMN_WIDTH
@@ -495,6 +496,14 @@ MasterUI.__index = MasterUI
 MasterUI.setLootItems = function(items)
     lootItems = items
     lootItemsScrollList:Update()
+
+    -- open the master UI during loot
+    if ((not UnitAffectingCombat("player"))
+        and (not (next(items) == nil))
+        and utils.isGroupLeader(UnitName("player"))) then
+        utilsUI.showTab(MasterUIFrame, 3)
+        ShowUIPanel(MasterUIFrame)
+    end
 end
 
 MasterUI.toggleUI = function() utilsUI.toggleUI(MasterUIFrame) end
