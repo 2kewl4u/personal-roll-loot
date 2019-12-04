@@ -10,32 +10,48 @@ ns.ScrollList = {
     labelProvider = function(k, v) return tostring(v) end,
     contentProvider = function() return {} end,
     filter = function() return true end,
+    sorter = function(key1, value1, key2, value2) return key1 < key2 end,
     buttonScript,
     offset = 0
 }
 local ScrollList = ns.ScrollList
 ScrollList.__index = ScrollList
 
-local function size(self, items)
-    local count = 0
+local function getItems(self)
+    local items = self.contentProvider()
+    -- filter the items
+    local filteredItems = {}
     for key, value in pairs(items) do
         if (self.filter(key, value) == true) then
-            count = count + 1
+            filteredItems[key] = value
         end
     end
-    return count
+    -- sort the items
+    local sortedItems = {}
+    for key, value in pairs(filteredItems) do
+        table.insert(sortedItems, { key, value })
+    end
+
+    if (self.sorter) then
+        table.sort(sortedItems, function(entry1, entry2)
+            return self.sorter(entry1[1], entry1[2], entry2[1], entry2[2])
+        end)
+    end
+    return sortedItems
 end
 
 local function updateScrollFrame(self)
     local scrollFrame = self.frame
-    local items = self.contentProvider()
-    local itemCount = size(self, items)
+    local items = getItems(self)
+    local itemCount = #(items)
     local numToDisplay = self.numToDisplay
     FauxScrollFrame_Update(scrollFrame, itemCount, numToDisplay, self.buttonHeight, nil, nil, nil, nil, nil, nil, true)
     local offset = FauxScrollFrame_GetOffset(scrollFrame)
 
     local line = 0
-    for key, value in pairs(items) do
+    for index, entry in ipairs(items) do
+        local key = entry[1]
+        local value = entry[2]
         if (self.filter(key, value) == true) then
             local lineminusoffset = line - offset
             if (lineminusoffset >= numToDisplay) then break end
@@ -173,6 +189,10 @@ end
 
 function ScrollList.SetFilter(self, f)
     if f then self.filter = f end
+end
+
+function ScrollList.SetSorter(self, f)
+    if f then self.sorter = f end
 end
 
 function ScrollList.GetFrame(self)
