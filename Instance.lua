@@ -78,15 +78,33 @@ end
 --          the list of items for the player
 -- 
 local function createLootList(instance, player)
-    local items = {}
+    -- the items per priority
+    local itemsPerPriority = {}
     -- create a loot list
     for itemId, item in pairs(ITEM_LIST) do
         if (item.raids[instance.raid] and player:needsItem(item)) then
+            local priority = item:getPriority(player)
+            local items = itemsPerPriority[priority] or {}
             table.insert(items, itemId)
+            itemsPerPriority[priority] = items
         end
     end
+    
     -- shuffle the items
-    items = utils.shuffle(items)
+    for prio, items in pairs(itemsPerPriority) do
+        itemsPerPriority[prio] = utils.shuffle(items)
+    end
+    
+    -- concatenate the item lists
+    local items = {}
+    for i = 1, 10, 1 do
+        local prioItems = itemsPerPriority[i]
+        if (prioItems) then
+            for index, itemId in ipairs(prioItems) do
+                table.insert(items, itemId)
+            end
+        end
+    end
     return items
 end
 
