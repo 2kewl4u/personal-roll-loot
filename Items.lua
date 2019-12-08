@@ -294,7 +294,7 @@ local ITEM_LIST = {
         itemId = 16834,
         name = "Cenarion Helm",
         roles = { [ROLE_HEALER] = 1, [ROLE_CASTER_DPS] = 1 },
-        classes = { [CLASS_DRUID] = true },
+        classes = { [CLASS_DRUID] = 1 },
         raids = { [RAID_MOLTEN_CORE] = true }
     },
     [16835] = {
