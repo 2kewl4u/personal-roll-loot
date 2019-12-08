@@ -1,2 +1,3 @@
 - history of the drops and loots of the raid grps
 - invite players into the raidgrp for the selected instance
+- clicking the item to see the roll order will post it in the raid chat
