@@ -36,6 +36,13 @@ local MSG_ROLL_ORDER_INFO = 2
 local MSG_SYNC_REQUEST =    3
 local MSG_SYNC_INFO =       4
 
+local ROLL_NEED = "need"
+local ROLL_GREED = "greed"
+local ROLL_PASS = "pass"
+local ROLL_DIS = "dis"
+
+local currentRollOrder
+
 
 -- set a delay in seconds until sending again a sync request or info
 local SYNC_DELAY = 30
@@ -236,6 +243,15 @@ end
 ns.announceRollOrder = function(rollOrder)
     local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
     if (instance) then
+        currentRollOrder = rollOrder
+        -- announce the item in the chat
+        if (IsInGroup()) then
+            local chatType = "PARTY"
+            if (IsInRaid()) then chatType = "RAID" end
+            
+            SendChatMessage(rollOrder.item:getLink() , chatType)
+        end
+        
         local message = rollOrder:encode()
         utils.forEachRaidMember(function(name)
             local player = ns.DB.PLAYER_LIST[name]
@@ -422,11 +438,15 @@ eventHandler[MSG_MEMBER_INFO] = receiveMemberInfo
 
 local function receiveRollOrderInfo(message, sender)
     if (message and IsInGroup() and isGroupLeader(sender)) then
+        local playerName = UnitName("player")
         local rollOrder = RollOrder.decode(message)
         if (rollOrder) then
             MemberUI.setRollOrder(rollOrder)
+            if (rollOrder:contains(playerName)) then
+                print("roollllll")
+            end
         end
-        if (not isGroupLeader(UnitName("player")) and not MemberUI.isShown()) then
+        if (not isGroupLeader(playerName) and not MemberUI.isShown()) then
             print("> Received a personal roll announcement. Type /prl to see the order.")
             -- TODO maybe open the UI automatically:
             -- MemberUI.toggleUI()
