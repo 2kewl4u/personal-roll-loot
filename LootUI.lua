@@ -7,7 +7,7 @@ local utilsUI = ns.utilsUI
 local ROLL_NEED = "need"
 local ROLL_GREED = "greed"
 local ROLL_PASS = "pass"
-local ROLL_DISENCHANT = "dis"
+local ROLL_REMOVE = "remove"
 
 local displayHeight = UIParent:GetHeight();
 local LootButton = {
@@ -24,7 +24,7 @@ LootButton.frame:SetPoint("CENTER", UIParent, "BOTTOM", 0, displayHeight / 3)
 LootButton.frame.NeedButton:SetScript("OnClick", function() response(ROLL_NEED) end)
 LootButton.frame.PassButton:SetScript("OnClick", function() response(ROLL_PASS) end)
 LootButton.frame.GreedButton:SetScript("OnClick", function() response(ROLL_GREED) end)
-LootButton.frame.DisenchantButton:SetScript("OnClick", function() response(ROLL_DISENCHANT) end)
+LootButton.frame.DisenchantButton:SetScript("OnClick", function() response(ROLL_REMOVE) end)
 
 function LootButton.setItem(item)
     LootButton.item = item
