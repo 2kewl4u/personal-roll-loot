@@ -166,6 +166,19 @@ utils.isGroupLeader = function(name)
     end
 end
 
+utils.isInRaid = function(playerName)
+    if (playerName) then
+        local memberCount = GetNumGroupMembers()
+        for index = 1, memberCount do
+            local name, rank, subgroup, level, class, fileName,
+                zone, online, isDead, role, isML = GetRaidRosterInfo(index)
+            if (playerName == name) then
+                return true
+            end
+        end
+    end
+end
+
 ns.utils = utils
 
 

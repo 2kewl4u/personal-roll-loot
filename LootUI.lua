@@ -25,6 +25,11 @@ LootButton.frame.NeedButton:SetScript("OnClick", function() response(ROLL_NEED) 
 LootButton.frame.PassButton:SetScript("OnClick", function() response(ROLL_PASS) end)
 LootButton.frame.GreedButton:SetScript("OnClick", function() response(ROLL_GREED) end)
 LootButton.frame.DisenchantButton:SetScript("OnClick", function() response(ROLL_REMOVE) end)
+-- add button tooltips
+utilsUI.addTooltipText(LootButton.frame.NeedButton, "need - i would be happy about that")
+utilsUI.addTooltipText(LootButton.frame.PassButton, "pass - i renounce this time")
+utilsUI.addTooltipText(LootButton.frame.GreedButton, "greed - i'd take it if nobody wants it")
+utilsUI.addTooltipText(LootButton.frame.DisenchantButton, "remove - i do not want the item")
 
 function LootButton.setItem(item)
     LootButton.item = item

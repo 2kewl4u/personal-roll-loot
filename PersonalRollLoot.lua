@@ -259,12 +259,14 @@ local function sendRollRequest()
             local entry = currentRollOrder.rounds[index]
             local round = entry[1]
             if (currentRound and currentRound < round) then break end
-            currentRound = round
-            currentRollOrder.currentRound = round
 
             -- send a role request for the current round
             local playerName = entry[2]
-            AddonMessage.Send(EVENT_MESSAGE, MSG_ROLL_REQUEST.."#"..currentRollOrder.item.itemId, "WHISPER", playerName)
+            if (utils.isInRaid(playerName)) then
+                AddonMessage.Send(EVENT_MESSAGE, MSG_ROLL_REQUEST.."#"..currentRollOrder.item.itemId, "WHISPER", playerName)
+                currentRound = round
+                currentRollOrder.currentRound = round
+            end
             currentRollOrder.sentIndex = index + 1
         end
     end
@@ -304,7 +306,7 @@ end
 ns.respondRollOrder = function(item, rollType)
     local raidLeader = utils.getRaidLeader()
     if (raidLeader and item) then
-        postChatMessage(rollType.." - "..item:getName())
+        postChatMessage(rollType.." - "..item:getLink())
 
         local message = MSG_ROLL_RESPONSE.."#"..item.itemId..":"..rollType
         AddonMessage.Send(EVENT_MESSAGE, message, "WHISPER", raidLeader)
@@ -577,8 +579,7 @@ eventHandler[MSG_ROLL_RESPONSE] = function(message, sender)
                 if (round == currentRollOrder.currentRound) then
                     local playerName = entry[2]
                     local response = currentRollOrder.responses[playerName]
-                    if (not response) then
-                        -- TODO skip players not in raidgrp
+                    if (not response and utils.isInRaid(playerName)) then
                         missingResponse = true
                         break
                     elseif (response == ROLL_NEED) then
