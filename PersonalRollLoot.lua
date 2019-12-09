@@ -16,6 +16,7 @@ local utilsUI = ns.utilsUI
 
 local MasterUI = ns.MasterUI
 local MemberUI = ns.MemberUI
+local LootButton = ns.LootButton
 
 -- events
 local EVENT_MESSAGE = "PRL_EVENT"
@@ -240,18 +241,21 @@ ns.announceMemberInfo = function()
     end
 end
 
+local function postItemInChat(item)
+    if (IsInGroup()) then
+        local chatType = "PARTY"
+        if (IsInRaid()) then chatType = "RAID" end
+
+        SendChatMessage(item:getLink() , chatType)
+    end
+end
+
 ns.announceRollOrder = function(rollOrder)
     local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
     if (instance) then
         currentRollOrder = rollOrder
-        -- announce the item in the chat
-        if (IsInGroup()) then
-            local chatType = "PARTY"
-            if (IsInRaid()) then chatType = "RAID" end
-            
-            SendChatMessage(rollOrder.item:getLink() , chatType)
-        end
-        
+        postItemInChat(rollOrder.item)
+
         local message = rollOrder:encode()
         utils.forEachRaidMember(function(name)
             local player = ns.DB.PLAYER_LIST[name]
@@ -443,14 +447,14 @@ local function receiveRollOrderInfo(message, sender)
         if (rollOrder) then
             MemberUI.setRollOrder(rollOrder)
             if (rollOrder:contains(playerName)) then
-                print("roollllll")
+                LootButton.setItem(rollOrder.item)
             end
         end
-        if (not isGroupLeader(playerName) and not MemberUI.isShown()) then
-            print("> Received a personal roll announcement. Type /prl to see the order.")
+--        if (not isGroupLeader(playerName) and not MemberUI.isShown()) then
+--            print("> Received a personal roll announcement. Type /prl to see the order.")
             -- TODO maybe open the UI automatically:
             -- MemberUI.toggleUI()
-        end
+--        end
     end
 end
 eventHandler[MSG_ROLL_ORDER_INFO] = receiveRollOrderInfo
