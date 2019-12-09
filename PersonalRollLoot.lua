@@ -40,7 +40,7 @@ local MSG_SYNC_INFO =       4
 local ROLL_NEED = "need"
 local ROLL_GREED = "greed"
 local ROLL_PASS = "pass"
-local ROLL_DIS = "dis"
+local ROLL_DISENCHANT = "dis"
 
 local currentRollOrder
 
@@ -274,6 +274,10 @@ ns.announceRollOrder = function(rollOrder)
     else
         print("> No active instance.")
     end
+end
+
+ns.respondRollOrder = function(item, rollType)
+    
 end
 
 local function isSyncDelay(sender)
