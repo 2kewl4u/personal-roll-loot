@@ -31,6 +31,7 @@ local MSG_SYNC_INFO =           4
 local MSG_ROLL_REQUEST =        5
 local MSG_ROLL_RESPONSE =       6
 local MSG_MEMBER_INFO_REQUEST = 7
+local MSG_REMOVAL_REQUEST =		8
 
 local ROLL_NEED = "need"
 local ROLL_GREED = "greed"
@@ -45,24 +46,6 @@ local SYNC_DELAY = 30
 local syncRequestTimes = {}
 
 -- helper functions
-local function isGroupLeader(name)
-    -- remove the realm from the player name
-    name = strsplit("-", name, 2)
-    if (IsInGroup()) then
-        local memberCount = GetNumGroupMembers()
-        for index = 1, memberCount do
-            local member, rank = GetRaidRosterInfo(index)
-            -- if the raid member is the leader of the raid
-            if (member == name) then
-                if (rank == 2) then
-                    return true
-                end
-                break
-            end
-        end
-    end
-end
-
 local function getPlayerNameAndRealm(arg)
     if (not arg) then error("> No player name specified.", 0) end
     local name, realm = UnitName(arg)
@@ -212,6 +195,20 @@ ns.invite = function(arg)
     end
 end
 
+local function removeItemFromPlayer(player, item)
+    if (item) then
+        if (player:removeItem(item)) then
+            print("> Removed item '"..item:getName().."' ("..item.itemId..") from player '"..player.name.."'.")
+        end
+
+        -- swallow additional items
+        for index, itemId in ipairs(item.swallows or {}) do
+            local addItem = ITEM_LIST[itemId]
+            removeItemFromPlayer(player, addItem)
+        end
+    end
+end
+
 -- expect itemId or name
 ns.roll = function(arg)
     local item = getItem(arg)
@@ -343,6 +340,17 @@ ns.requestSync = function()
                 print("> Requesting synchronize from party leader '"..name.."'.")
                 AddonMessage.Send(EVENT_MESSAGE, MSG_SYNC_REQUEST.."#".."all", "WHISPER", name)
             end
+        end
+    end
+end
+
+ns.requestItemRemoval = function(item)
+    -- only send request to raid/group leader
+    if (IsInGroup()) then
+        local name = utils.getRaidLeader()
+        if (name) then
+            print("> Request item removal for '"..item:getName().."' ("..item.itemId..").")
+            AddonMessage.Send(EVENT_MESSAGE, MSG_REMOVAL_REQUEST.."#"..item.itemId, "WHISPER", name)
         end
     end
 end
@@ -490,7 +498,7 @@ end
 
 local function receiveMemberInfo(message, sender)
     -- only accept announcements from raid/group leader
-    if (message and IsInGroup() and isGroupLeader(sender)) then
+    if (message and IsInGroup() and utils.isGroupLeader(sender)) then
         local player = Player.decode(message)
         if (player) then
             MemberUI.setMemberInfo(player)
@@ -500,8 +508,8 @@ end
 eventHandler[MSG_MEMBER_INFO] = receiveMemberInfo
 
 local function receiveRollOrderInfo(message, sender)
-    if (message and IsInGroup() and isGroupLeader(sender)) then
-        local playerName = UnitName("player")
+    if (message and IsInGroup() and utils.isGroupLeader(sender)) then
+        -- local playerName = UnitName("player")
         local rollOrder = RollOrder.decode(message)
         if (rollOrder) then
             MemberUI.setRollOrder(rollOrder)
@@ -516,7 +524,7 @@ end
 eventHandler[MSG_ROLL_ORDER_INFO] = receiveRollOrderInfo
 
 local function receiveSyncRequest(message, sender)
-    if (IsInGroup() and not isSyncDelay(sender) and isGroupLeader(UnitName("player"))) then
+    if (IsInGroup() and not isSyncDelay(sender) and UnitIsGroupLeader("player")) then
         print("> Got synchronize request from member '"..sender.."'.")
         -- send the encoded player infos
         local message = utils.toCSV(ns.DB.PLAYER_LIST, function(name, player)
@@ -529,7 +537,7 @@ eventHandler[MSG_SYNC_REQUEST] = receiveSyncRequest
 
 local function receiveSyncInfo(message, sender)
     -- only accept sync info from raid/group leader
-    if (IsInGroup() and isGroupLeader(sender)) then
+    if (IsInGroup() and utils.isGroupLeader(sender)) then
         print("> Got synchronize info from party leader '"..sender.."'.")
         local syncCount = 0
         local addCount = 0
@@ -552,7 +560,7 @@ eventHandler[MSG_SYNC_INFO] = receiveSyncInfo
 
 eventHandler[MSG_ROLL_REQUEST] = function(message, sender)
     -- only accept sync info from raid/group leader
-    if (IsInGroup() and isGroupLeader(sender)) then
+    if (IsInGroup() and utils.isGroupLeader(sender)) then
         -- message contains the itemId to roll
         local itemId = tonumber(message)
         if (itemId) then
@@ -608,6 +616,23 @@ end
 
 eventHandler[MSG_MEMBER_INFO_REQUEST] = function(message, sender)
     ns.sendMemberInfo(sender)
+end
+
+eventHandler[MSG_REMOVAL_REQUEST] = function(message, sender)
+    if (message and sender) then
+        local itemId = tonumber(message)
+        if (itemId) then
+            local item = ITEM_LIST[itemId]
+            if (item) then
+                local player = ns.DB.PLAYER_LIST[sender]
+                if (player and Items.canRemove(item, player)) then
+                    removeItemFromPlayer(player, item)
+                    -- respond back with an update of the player info
+                    ns.sendMemberInfo(sender)
+                end
+            end
+        end
+    end
 end
 
 local function receive(prefix, message, type, sender)

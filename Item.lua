@@ -114,6 +114,24 @@ function Item:isForClass(class)
 end
 
 ---
+-- Indicates whether this item is assigned to one of the given roles.
+-- 
+-- @param #table roles
+--          the roles to check (the role must be the key of the table)
+--          
+-- @return #boolean
+--          true if this item has one of the roles, nil otherwise
+--          
+function Item:hasRole(roles)
+    local item = self
+    for role in pairs (roles) do
+        if (item.roles[role]) then
+            return true
+        end
+    end
+end
+
+---
 -- Indicates whether the this item drops in the given instance.
 --
 -- @param #Instance instance
@@ -161,5 +179,3 @@ function Item:getPriority(player)
         end
     end
 end
-
-

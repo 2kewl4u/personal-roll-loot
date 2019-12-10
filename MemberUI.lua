@@ -2,6 +2,7 @@
 local _, ns = ...;
 -- imports
 local CLASS_ROLES = ns.CLASS_ROLES
+local ConfirmItemRemovalDialog = ns.ConfirmItemRemovalDialog
 local Items = ns.Items
 local Player = ns.Player
 local ROLES = ns.ROLES
@@ -101,7 +102,11 @@ memberItemScrollList:SetLabelProvider(function(itemId, item, button)
     if (disabled) then
         button.Name:SetFontObject("GameFontDisable")
     else
-        button.Name:SetFontObject("GameFontHighlight")
+        if (item:hasRole(memberInfo.roles)) then
+            button.Name:SetFontObject("GameFontNormal")
+        else
+            button.Name:SetFontObject("GameFontHighlight")
+        end
     end
 end)
 memberItemScrollList:SetFilter(function(itemId, item)
@@ -115,6 +120,15 @@ memberItemScrollList:SetButtonScript("OnEnter", function(index, button, itemId, 
     utilsUI.showItemTooltip(button, itemId)
 end)
 memberItemScrollList:SetButtonScript("OnLeave", utilsUI.hideTooltip)
+memberItemScrollList:SetButtonScript("OnClick", function(index, button, itemId, item)
+    if (Items.canRemove(item, memberInfo)) then
+        ConfirmItemRemovalDialog:open(item:getName(), function(result)
+            if (result) then
+                ns.requestItemRemoval(item)
+            end
+        end)
+    end
+end)
 utilsUI.createBorder(memberItemScrollList:GetFrame())
 
 local memberLootItemsField = memberTabFrame:CreateFontString(nil, "OVERLAY")

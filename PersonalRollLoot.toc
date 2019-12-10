@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Title: Personal Roll Loot
-## Version: 0.2.2
+## Version: 0.3.0
 ## Author: Ben
 ## SavedVariables: PersonalRollLootDB
 
@@ -20,6 +20,8 @@ frames\PersonalLootFrame.xml
 
 UtilsUI.lua
 ScrollList.lua
+
+ui\ConfirmItemRemovalDialog.lua
 MasterUI.lua
 MemberUI.lua
 LootUI.lua
