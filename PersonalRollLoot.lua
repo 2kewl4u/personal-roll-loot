@@ -16,13 +16,36 @@ local utilsUI = ns.utilsUI
 
 local MasterUI = ns.MasterUI
 local MemberUI = ns.MemberUI
+local LootButton = ns.LootButton
 
 -- events
+local EVENT_MESSAGE = "PRL_EVENT"
 local EVENT_MEMBER_INFO = "PRLMemberInfo"
 local EVENT_ROLL_ORDER_INFO = "PRLRollOrderInfo"
 local EVENT_SYNC_REQUEST = "PRLSyncRequest"
 local EVENT_SYNC_INFO = "PRLSyncInfo"
-local EVENTS = { [EVENT_MEMBER_INFO] = true, [EVENT_ROLL_ORDER_INFO] = true, [EVENT_SYNC_REQUEST] = true, [EVENT_SYNC_INFO] = true }
+local EVENTS = {
+    [EVENT_MEMBER_INFO] = true,
+    [EVENT_ROLL_ORDER_INFO] = true,
+    [EVENT_SYNC_REQUEST] = true,
+    [EVENT_SYNC_INFO] = true,
+    [EVENT_MESSAGE] = true
+}
+
+local MSG_MEMBER_INFO =     1
+local MSG_ROLL_ORDER_INFO = 2
+local MSG_SYNC_REQUEST =    3
+local MSG_SYNC_INFO =       4
+local MSG_ROLL_REQUEST =    5
+local MSG_ROLL_RESPONSE =   6
+
+local ROLL_NEED = "need"
+local ROLL_GREED = "greed"
+local ROLL_PASS = "pass"
+local ROLL_REMOVE = "remove"
+
+local currentRollOrder
+
 
 -- set a delay in seconds until sending again a sync request or info
 local SYNC_DELAY = 30
@@ -210,6 +233,8 @@ ns.announceMemberInfo = function()
             local player = ns.DB.PLAYER_LIST[name]
             if (player) then
                 local message = player:encode()
+                AddonMessage.Send(EVENT_MESSAGE, MSG_MEMBER_INFO.."#"..message, "WHISPER", player.name)
+                -- TODO deprecated preserved for backward compatibility
                 AddonMessage.Send(EVENT_MEMBER_INFO, message, "WHISPER", player.name)
             else
                 print("> Player '"..name.."' is not registered for Personal Roll Loot.")
@@ -218,14 +243,53 @@ ns.announceMemberInfo = function()
     end
 end
 
+local function postChatMessage(message)
+    if (IsInGroup()) then
+        local chatType = "PARTY"
+        if (IsInRaid()) then chatType = "RAID" end
+
+        SendChatMessage(message, chatType)
+    end
+end
+
+local function sendRollRequest()
+    if (currentRollOrder) then
+        local currentRound
+        for index = currentRollOrder.sentIndex, #currentRollOrder.rounds, 1 do
+            local entry = currentRollOrder.rounds[index]
+            local round = entry[1]
+            if (currentRound and currentRound < round) then break end
+
+            -- send a role request for the current round
+            local playerName = entry[2]
+            local item = currentRollOrder.item
+            if (utils.isInRaid(playerName)) then
+                local player = ns.DB.PLAYER_LIST[playerName]
+                if (player and player.needlist[item.itemId]) then
+                    AddonMessage.Send(EVENT_MESSAGE, MSG_ROLL_REQUEST.."#"..item.itemId, "WHISPER", playerName)
+                    postChatMessage(round.." - "..playerName)
+                    currentRound = round
+                    currentRollOrder.currentRound = round
+                end
+            end
+            currentRollOrder.sentIndex = index + 1
+        end
+    end
+end
+
 ns.announceRollOrder = function(rollOrder)
     local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
     if (instance) then
+        currentRollOrder = rollOrder
+        postChatMessage(rollOrder.item:getLink())
+
         local message = rollOrder:encode()
         utils.forEachRaidMember(function(name)
             local player = ns.DB.PLAYER_LIST[name]
             if (player) then
                 if (instance.players[name]) then
+                    AddonMessage.Send(EVENT_MESSAGE, MSG_ROLL_ORDER_INFO.."#"..message, "WHISPER", name)
+                    -- TODO deprecated preserved for backward compatibility
                     AddonMessage.Send(EVENT_ROLL_ORDER_INFO, message, "WHISPER", name)
                 else
                     print("> Player '"..name.."' is not invited to the currently active instance.")
@@ -234,8 +298,23 @@ ns.announceRollOrder = function(rollOrder)
                 print("> Player '"..name.."' is not registered for Personal Roll Loot.")
             end
         end)
+
+        -- prepare protocol
+        currentRollOrder.sentIndex = 1
+        currentRollOrder.responses = {}
+        sendRollRequest()
     else
         print("> No active instance.")
+    end
+end
+
+ns.respondRollOrder = function(item, rollType)
+    local raidLeader = utils.getRaidLeader()
+    if (raidLeader and item) then
+        postChatMessage(rollType.." - "..item:getLink())
+
+        local message = MSG_ROLL_RESPONSE.."#"..item.itemId..":"..rollType
+        AddonMessage.Send(EVENT_MESSAGE, message, "WHISPER", raidLeader)
     end
 end
 
@@ -259,7 +338,7 @@ ns.requestSync = function()
             local name = utils.getRaidLeader()
             if (name) then
                 print("> Requesting synchronize from party leader '"..name.."'.")
-                AddonMessage.Send(EVENT_SYNC_REQUEST, "all", "WHISPER", name)
+                AddonMessage.Send(EVENT_MESSAGE, MSG_SYNC_REQUEST.."#".."all", "WHISPER", name)
             end
         end
     end
@@ -382,6 +461,22 @@ end
 -- ------------------------------------------------------- --
 -- event handling                                          --
 -- ------------------------------------------------------- --
+local eventHandler = {}
+
+local function removeItemFromPlayer(player, item)
+    if (item) then
+        if (player:removeItem(item)) then
+            print("> Removed item '"..item:getName().."' ("..item.itemId..") from player '"..player.name.."'.")
+        end
+
+        -- swallow additional items
+        for index, itemId in ipairs(item.swallows or {}) do
+            local addItem = ITEM_LIST[itemId]
+            removeItemFromPlayer(player, addItem)
+        end
+    end
+end
+
 local function updateLootItems()
     if (IsInGroup()) then
         local lootItems = Items.getLootItems()
@@ -390,34 +485,44 @@ local function updateLootItems()
     end
 end
 
-local function receiveMemberInfo(msg)
-    if (msg) then
-        local player = Player.decode(msg)
+local function receiveMemberInfo(message, sender)
+    -- only accept announcements from raid/group leader
+    if (message and IsInGroup() and isGroupLeader(sender)) then
+        local player = Player.decode(message)
         if (player) then
             MemberUI.setMemberInfo(player)
         end
     end
 end
+eventHandler[MSG_MEMBER_INFO] = receiveMemberInfo
 
-local function receiveRollOrderInfo(msg)
-    if (msg) then
-        local rollOrder = RollOrder.decode(msg)
+local function receiveRollOrderInfo(message, sender)
+    if (message and IsInGroup() and isGroupLeader(sender)) then
+        local playerName = UnitName("player")
+        local rollOrder = RollOrder.decode(message)
         if (rollOrder) then
             MemberUI.setRollOrder(rollOrder)
         end
+        --        if (not isGroupLeader(playerName) and not MemberUI.isShown()) then
+        --            print("> Received a personal roll announcement. Type /prl to see the order.")
+        -- TODO maybe open the UI automatically:
+        -- MemberUI.toggleUI()
+        --        end
     end
 end
+eventHandler[MSG_ROLL_ORDER_INFO] = receiveRollOrderInfo
 
-local function receiveSyncRequest(sender)
+local function receiveSyncRequest(message, sender)
     if (IsInGroup() and not isSyncDelay(sender) and isGroupLeader(UnitName("player"))) then
         print("> Got synchronize request from member '"..sender.."'.")
         -- send the encoded player infos
         local message = utils.toCSV(ns.DB.PLAYER_LIST, function(name, player)
             return player:encode()
         end, "/")
-        AddonMessage.Send(EVENT_SYNC_INFO, message, "WHISPER", sender)
+        AddonMessage.Send(EVENT_MESSAGE, MSG_SYNC_INFO.."#"..message, "WHISPER", sender)
     end
 end
+eventHandler[MSG_SYNC_REQUEST] = receiveSyncRequest
 
 local function receiveSyncInfo(message, sender)
     -- only accept sync info from raid/group leader
@@ -440,30 +545,85 @@ local function receiveSyncInfo(message, sender)
         print("> Synchronized "..syncCount.." and added "..addCount.." players.")
     end
 end
+eventHandler[MSG_SYNC_INFO] = receiveSyncInfo
+
+eventHandler[MSG_ROLL_REQUEST] = function(message, sender)
+    -- only accept sync info from raid/group leader
+    if (IsInGroup() and isGroupLeader(sender)) then
+        -- message contains the itemId to roll
+        local itemId = tonumber(message)
+        if (itemId) then
+            local item = ITEM_LIST[itemId]
+            if (item) then
+                LootButton.setItem(item)
+            end
+        end
+    end
+end
+
+eventHandler[MSG_ROLL_RESPONSE] = function(message, sender)
+    if (currentRollOrder) then
+        local itemId, rollType = strsplit(":", message, 2)
+        itemId = tonumber(itemId)
+        if (itemId and rollType and currentRollOrder.item.itemId == itemId) then
+            currentRollOrder.responses[sender] = rollType
+
+            -- remove the unwanted item from the list
+            if (rollType == ROLL_REMOVE) then
+                local player = ns.DB.PLAYER_LIST[sender]
+                if (player) then
+                    removeItemFromPlayer(player, currentRollOrder.item)
+                end
+            end
+
+            -- evaluate the response
+            local missingResponse = false
+            local need = false
+            for index, entry in ipairs(currentRollOrder.rounds) do
+                local round = entry[1]
+                if (round == currentRollOrder.currentRound) then
+                    local playerName = entry[2]
+                    local response = currentRollOrder.responses[playerName]
+                    if (not response and utils.isInRaid(playerName)) then
+                        missingResponse = true
+                        break
+                    elseif (response == ROLL_NEED) then
+                        need = true
+                    end
+                elseif (round > currentRollOrder.currentRound) then
+                    break
+                end
+            end
+
+            -- trigger the next rolling
+            if (not missingResponse and not need) then
+                sendRollRequest()
+            end
+        end
+    end
+end
 
 local function receive(prefix, message, type, sender)
-    -- print("prefix: "..tostring(prefix))
-    -- print("message: "..tostring(message))
+    --     print("prefix: "..tostring(prefix))
+    --     print("message: "..tostring(message))
     if (EVENTS[prefix]) then
         AddonMessage.Receive(prefix, message, type, sender, function(prefix, message, type, sender)
-            if (prefix == EVENT_MEMBER_INFO) then
-                -- only accept announcements from raid/group leader
-                if (IsInGroup() and isGroupLeader(sender)) then
-                    receiveMemberInfo(message)
-                end
-            elseif (prefix == EVENT_ROLL_ORDER_INFO) then
-                if (IsInGroup() and isGroupLeader(sender)) then
-                    receiveRollOrderInfo(message)
-                    if (not isGroupLeader(UnitName("player")) and not MemberUI.isShown()) then
-                        print("> Received a personal roll announcement. Type /prl to see the order.")
-                        -- TODO maybe open the UI automatically:
-                        -- MemberUI.toggleUI()
+            if (prefix == EVENT_MESSAGE) then
+                sender = strsplit("-", sender, 2) -- remove realm suffix
+                prefix, message = strsplit("#", message, 2)
+                -- prefix must be a number
+                prefix = tonumber(prefix)
+                if (prefix) then
+                    local handler = eventHandler[prefix]
+                    if (handler) then
+                        handler(message, sender)
                     end
                 end
-            elseif (prefix == EVENT_SYNC_REQUEST) then
-                receiveSyncRequest(sender)
-            elseif (prefix == EVENT_SYNC_INFO) then
-                receiveSyncInfo(message, sender)
+
+            elseif (prefix == EVENT_MEMBER_INFO) then
+                receiveMemberInfo(message, sender)
+            elseif (prefix == EVENT_ROLL_ORDER_INFO) then
+                receiveRollOrderInfo(message, sender)
             end
         end)
     end
@@ -478,20 +638,6 @@ local function getItemNameFromChat(msg)
             if (itemName and lastPart) then
                 return itemName
             end
-        end
-    end
-end
-
-local function removeItemFromPlayer(player, item)
-    if (item) then
-        if (player:removeItem(item)) then
-            print("> Removed item '"..item:getName().."' ("..item.itemId..") from player '"..player.name.."'.")
-        end
-
-        -- swallow additional items
-        for index, itemId in ipairs(item.swallows or {}) do
-            local addItem = ITEM_LIST[itemId]
-            removeItemFromPlayer(player, addItem)
         end
     end
 end
@@ -549,6 +695,7 @@ C_ChatInfo.RegisterAddonMessagePrefix(EVENT_MEMBER_INFO)
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_ROLL_ORDER_INFO)
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_SYNC_REQUEST)
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_SYNC_INFO)
+C_ChatInfo.RegisterAddonMessagePrefix(EVENT_MESSAGE)
 function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4, arg5, ...)
     if (event == "VARIABLES_LOADED") then
         ns.loadSavedVariables()

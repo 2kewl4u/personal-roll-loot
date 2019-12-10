@@ -16,8 +16,11 @@ Libs\AceComm-3.0\ChatThrottleLib.lua
 AddonMessage.lua
 SavedVariables.lua
 
+frames\PersonalLootFrame.xml
+
 UtilsUI.lua
 ScrollList.lua
 MasterUI.lua
 MemberUI.lua
+LootUI.lua
 PersonalRollLoot.lua

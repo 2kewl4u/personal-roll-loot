@@ -73,6 +73,26 @@ function RollOrder.of(instance, item)
 end
 
 ---
+-- Indicates whether the given player name is on this RollOrder.
+-- 
+-- @param #string playerName
+--          the name of the player to check
+-- 
+-- @return #boolean
+--          true if the player is on the roll order, nil otherwise
+-- 
+function RollOrder:contains(playerName)
+    local rollOrder = self
+    if (playerName) then
+        for index, entry in ipairs(rollOrder.rounds) do
+            if (playerName == entry[2]) then
+                return true
+            end
+        end
+    end
+end
+
+---
 -- Encodes this RollOrder into a string representation to be serialized. The
 -- string can be decoded back into the RollOrder using the decode() function.
 -- 

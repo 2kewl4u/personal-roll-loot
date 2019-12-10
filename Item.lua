@@ -12,6 +12,8 @@ local Item = {
     name,
     -- a texture used to display the item
     texture,
+    -- the link used to post the item in the chat
+    link,
     -- a set of roles assigned to this item
     roles,
     -- a set of classes that can use this item
@@ -38,6 +40,7 @@ local function load(item)
             item.name = itemName
             item.texture = itemTexture
             item.loaded = true
+            item.link = itemLink
         else
             item.texture = 134400
         end
@@ -68,6 +71,18 @@ function Item:getName()
     local item = self
     load(item)
     return item.name
+end
+
+---
+-- Returns the item link of this item.
+-- 
+-- @return #string
+--          the item link
+--          
+function Item:getLink()
+    local item = self
+    load(item)
+    return item.link
 end
 
 ---

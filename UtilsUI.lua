@@ -108,4 +108,13 @@ utilsUI.showItemTooltip = function(owner, itemId)
     GameTooltip:SetItemByID(itemId)
 end
 
+utilsUI.addTooltipText = function(owner, text, anchor)
+    anchor = anchor or "ANCHOR_BOTTOMRIGHT"
+    owner:SetScript("OnEnter", function()
+        GameTooltip:SetOwner(owner, anchor)
+        GameTooltip:SetText(text, 0.8, 0.6, 0)
+    end)
+    owner:SetScript("OnLeave", utilsUI.hideTooltip)
+end
+
 ns.utilsUI = utilsUI
