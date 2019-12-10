@@ -20,24 +20,17 @@ local LootButton = ns.LootButton
 
 -- events
 local EVENT_MESSAGE = "PRL_EVENT"
-local EVENT_MEMBER_INFO = "PRLMemberInfo"
-local EVENT_ROLL_ORDER_INFO = "PRLRollOrderInfo"
-local EVENT_SYNC_REQUEST = "PRLSyncRequest"
-local EVENT_SYNC_INFO = "PRLSyncInfo"
 local EVENTS = {
-    [EVENT_MEMBER_INFO] = true,
-    [EVENT_ROLL_ORDER_INFO] = true,
-    [EVENT_SYNC_REQUEST] = true,
-    [EVENT_SYNC_INFO] = true,
     [EVENT_MESSAGE] = true
 }
 
-local MSG_MEMBER_INFO =     1
-local MSG_ROLL_ORDER_INFO = 2
-local MSG_SYNC_REQUEST =    3
-local MSG_SYNC_INFO =       4
-local MSG_ROLL_REQUEST =    5
-local MSG_ROLL_RESPONSE =   6
+local MSG_MEMBER_INFO =         1
+local MSG_ROLL_ORDER_INFO =     2
+local MSG_SYNC_REQUEST =        3
+local MSG_SYNC_INFO =           4
+local MSG_ROLL_REQUEST =        5
+local MSG_ROLL_RESPONSE =       6
+local MSG_MEMBER_INFO_REQUEST = 7
 
 local ROLL_NEED = "need"
 local ROLL_GREED = "greed"
@@ -226,20 +219,32 @@ ns.roll = function(arg)
     return RollOrder.of(instance, item)
 end
 
+ns.sendMemberInfo = function(name)
+    -- only announce if you are the raid/group leader
+    if (IsInGroup() and UnitIsGroupLeader("player")) then
+        local player = ns.DB.PLAYER_LIST[name]
+        if (player) then
+            local message = player:encode()
+            AddonMessage.Send(EVENT_MESSAGE, MSG_MEMBER_INFO.."#"..message, "WHISPER", player.name)
+        else
+            print("> Player '"..name.."' is not registered for Personal Roll Loot.")
+        end
+    end
+end
+
 ns.announceMemberInfo = function()
     -- only announce if you are the raid/group leader
     if (IsInGroup() and UnitIsGroupLeader("player")) then
-        utils.forEachRaidMember(function(name)
-            local player = ns.DB.PLAYER_LIST[name]
-            if (player) then
-                local message = player:encode()
-                AddonMessage.Send(EVENT_MESSAGE, MSG_MEMBER_INFO.."#"..message, "WHISPER", player.name)
-                -- TODO deprecated preserved for backward compatibility
-                AddonMessage.Send(EVENT_MEMBER_INFO, message, "WHISPER", player.name)
-            else
-                print("> Player '"..name.."' is not registered for Personal Roll Loot.")
-            end
-        end)
+        utils.forEachRaidMember(ns.sendMemberInfo)
+    end
+end
+
+ns.sendMemberInfoRequest = function()
+    if (IsInGroup()) then
+        local raidLeader = utils.getRaidLeader()
+        local playerName = UnitName("player")
+        local message = playerName
+        AddonMessage.Send(EVENT_MESSAGE, MSG_MEMBER_INFO_REQUEST.."#"..message, "WHISPER", raidLeader)
     end
 end
 
@@ -289,8 +294,6 @@ ns.announceRollOrder = function(rollOrder)
             if (player) then
                 if (instance.players[name]) then
                     AddonMessage.Send(EVENT_MESSAGE, MSG_ROLL_ORDER_INFO.."#"..message, "WHISPER", name)
-                    -- TODO deprecated preserved for backward compatibility
-                    AddonMessage.Send(EVENT_ROLL_ORDER_INFO, message, "WHISPER", name)
                 else
                     print("> Player '"..name.."' is not invited to the currently active instance.")
                 end
@@ -603,6 +606,10 @@ eventHandler[MSG_ROLL_RESPONSE] = function(message, sender)
     end
 end
 
+eventHandler[MSG_MEMBER_INFO_REQUEST] = function(message, sender)
+    ns.sendMemberInfo(sender)
+end
+
 local function receive(prefix, message, type, sender)
     --     print("prefix: "..tostring(prefix))
     --     print("message: "..tostring(message))
@@ -619,11 +626,6 @@ local function receive(prefix, message, type, sender)
                         handler(message, sender)
                     end
                 end
-
-            elseif (prefix == EVENT_MEMBER_INFO) then
-                receiveMemberInfo(message, sender)
-            elseif (prefix == EVENT_ROLL_ORDER_INFO) then
-                receiveRollOrderInfo(message, sender)
             end
         end)
     end
@@ -691,10 +693,6 @@ eventFrame:RegisterEvent("CHAT_MSG_LOOT")
 eventFrame:RegisterEvent("CHAT_MSG_ADDON")
 eventFrame:RegisterEvent("LOOT_OPENED")
 eventFrame:RegisterEvent("LOOT_SLOT_CLEARED")
-C_ChatInfo.RegisterAddonMessagePrefix(EVENT_MEMBER_INFO)
-C_ChatInfo.RegisterAddonMessagePrefix(EVENT_ROLL_ORDER_INFO)
-C_ChatInfo.RegisterAddonMessagePrefix(EVENT_SYNC_REQUEST)
-C_ChatInfo.RegisterAddonMessagePrefix(EVENT_SYNC_INFO)
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_MESSAGE)
 function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4, arg5, ...)
     if (event == "VARIABLES_LOADED") then
