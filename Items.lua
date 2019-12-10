@@ -943,70 +943,110 @@ local ITEM_LIST = {
         name = "Band of Accuria",
         roles = { [ROLE_MELEE_DPS] = 1, [ROLE_RANGED_DPS] = 1, [ROLE_TANK] = 2 },
         classes = { [CLASS_WARRIOR] = 1, [CLASS_PALADIN] = 1, [CLASS_HUNTER] = 1, [CLASS_ROGUE] = 1, [CLASS_SHAMAN] = 1, [CLASS_DRUID] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_FINGERS,
+        slotSize = 2,
+        tier = 1.5,
+        removable = true
     },
     [17065] = {
         itemId = 17065,
         name = "Medallion of Steadfast Might",
         roles = { [ROLE_TANK] = 1 },
         classes = { [CLASS_WARRIOR] = 1, [CLASS_PALADIN] = 1, [CLASS_DRUID] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_NECK,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [17066] = {
         itemId = 17066,
         name = "Drillborer Disk",
         roles = { [ROLE_TANK] = 1 },
         classes = { [CLASS_WARRIOR] = 1, [CLASS_PALADIN] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_OFF_HAND,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [17069] = {
         itemId = 17069,
         name = "Striker's Mark",
         roles = { [ROLE_RANGED_DPS] = 2, [ROLE_MELEE_DPS] = 1 },
         classes = { [CLASS_HUNTER] = 2, [CLASS_ROGUE] = 1, [CLASS_WARRIOR] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_RANGED,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [17071] = {
         itemId = 17071,
         name = "Gutgore Ripper",
         roles = { [ROLE_MELEE_DPS] = 1 },
         classes = { [CLASS_ROGUE] = 1, [CLASS_WARRIOR] = 2, [CLASS_SHAMAN] = 3 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 2,
+        tier = 1,
+        removable = true
     },
     [17072] = {
         itemId = 17072,
         name = "Blastershot Launcher",
         roles = { [ROLE_RANGED_DPS] = 1, [ROLE_MELEE_DPS] = 1 },
         classes = { [CLASS_HUNTER] = 1, [CLASS_ROGUE] = 1, [CLASS_WARRIOR] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_RANGED,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [17073] = {
         itemId = 17073,
         name = "Earthshaker",
         roles = { [ROLE_MELEE_DPS] = 1 },
         classes = { [CLASS_DRUID] = 2, [CLASS_PALADIN] = 1, [CLASS_WARRIOR] = 1, [CLASS_SHAMAN] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [17074] = {
         itemId = 17074,
         name = "Shadowstrike",
         roles = { [ROLE_RANGED_DPS] = 4, [ROLE_MELEE_DPS] = 3 },
         classes = { [CLASS_HUNTER] = 4, [CLASS_PALADIN] = 3, [CLASS_WARRIOR] = 3 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [17076] = {
         itemId = 17076,
         name = "Bonereaver's Edge",
         roles = { [ROLE_MELEE_DPS] = 1 },
         classes = { [CLASS_PALADIN] = 1, [CLASS_WARRIOR] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 1,
+        tier = 1.5,
+        removable = true
     },
     [17077] = {
         itemId = 17077,
         name = "Crimson Shocker",
         roles = { [ROLE_HEALER] = 1, [ROLE_CASTER_DPS] = 1 },
         classes = { [CLASS_PRIEST] = 1, [CLASS_WARLOCK] = 1, [CLASS_MAGE] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_RANGED,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [17082] = {
         itemId = 17082,
@@ -1014,357 +1054,561 @@ local ITEM_LIST = {
         roles = { [ROLE_HEALER] = 3, [ROLE_CASTER_DPS] = 3, [ROLE_MELEE_DPS] = 4, [ROLE_TANK] = 4, [ROLE_RANGED_DPS] = 4 },
         classes = { [CLASS_WARRIOR] = 3, [CLASS_PALADIN] = 3, [CLASS_HUNTER] = 4, [CLASS_ROGUE] = 4, [CLASS_SHAMAN] = 3, [CLASS_DRUID] = 3,
             [CLASS_PRIEST] = 3, [CLASS_WARLOCK] = 3, [CLASS_MAGE] = 4 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_TRINKET,
+        slotSize = 2,
+        tier = 1,
+        removable = true
     },
     [17102] = {
         itemId = 17102,
         name = "Cloak of the Shrouded Mists",
         roles = { [ROLE_RANGED_DPS] = 1, [ROLE_MELEE_DPS] = 1, [ROLE_TANK] = 2 },
         classes = { [CLASS_WARRIOR] = 2, [CLASS_PALADIN] = 2, [CLASS_HUNTER] = 1, [CLASS_ROGUE] = 1, [CLASS_SHAMAN] = 2, [CLASS_DRUID] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_BACK,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [17103] = {
         itemId = 17103,
         name = "Azuresong Mageblade",
         roles = { [ROLE_HEALER] = 2, [ROLE_CASTER_DPS] = 1, [ROLE_TANK] = 2 },
         classes = { [CLASS_MAGE] = 1, [CLASS_WARLOCK] = 1, [CLASS_PALADIN] = 2 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [17104] = {
         itemId = 17104,
         name = "Spinal Reaper",
         roles = { [ROLE_MELEE_DPS] = 1 },
         classes = { [CLASS_SHAMAN] = 1, [CLASS_PALADIN] = 1, [CLASS_WARRIOR] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 1,
+        tier = 1.5,
+        removable = true
     },
     [17105] = {
         itemId = 17105,
         name = "Aurastone Hammer",
         roles = { [ROLE_HEALER] = 1, [ROLE_CASTER_DPS] = 1 },
         classes = { [CLASS_DRUID] = 1, [CLASS_SHAMAN] = 1, [CLASS_PALADIN] = 1, [CLASS_PRIEST] = 3 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [17106] = {
         itemId = 17106,
         name = "Malistar's Defender",
         roles = { [ROLE_HEALER] = 1, [ROLE_CASTER_DPS] = 2, [ROLE_TANK] = 3 },
         classes = { [CLASS_SHAMAN] = 1, [CLASS_PALADIN] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_OFF_HAND,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [17107] = {
         itemId = 17107,
         name = "Dragon's Blood Cape",
         roles = { [ROLE_MELEE_DPS] = 2, [ROLE_TANK] = 1 },
         classes = { [CLASS_WARRIOR] = 1, [CLASS_PALADIN] = 1, [CLASS_SHAMAN] = 2, [CLASS_DRUID] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_BACK,
+        slotSize = 1,
+        tier = 1.5,
+        removable = true
     },
     [17109] = {
         itemId = 17109,
         name = "Choker of Enlightenment",
         roles = { [ROLE_HEALER] = 1, [ROLE_CASTER_DPS] = 1 },
         classes = { [CLASS_PALADIN] = 3, [CLASS_SHAMAN] = 1, [CLASS_DRUID] = 1, [CLASS_PRIEST] = 1, [CLASS_WARLOCK] = 1, [CLASS_MAGE] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_NECK,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [17110] = {
         itemId = 17110,
         name = "Seal of the Archmagus",
         roles = { [ROLE_HEALER] = 1, [ROLE_CASTER_DPS] = 2 },
         classes = { [CLASS_PALADIN] = 1, [CLASS_SHAMAN] = 1, [CLASS_DRUID] = 1, [CLASS_PRIEST] = 1, [CLASS_WARLOCK] = 2, [CLASS_MAGE] = 2 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_FINGERS,
+        slotSize = 2,
+        tier = 1,
+        removable = true
     },
     [17204] = {
         itemId = 17204,
         name = "Eye of Sulfuras",
         roles = { [ROLE_MELEE_DPS] = 1 },
         classes = { [CLASS_PALADIN] = 1, [CLASS_SHAMAN] = 1, [CLASS_WARRIOR] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 1,
+        tier = 1.5,
+        removable = true
     },
     [18203] = {
         itemId = 18203,
         name = "Eskhandar's Right Claw",
         roles = { [ROLE_RANGED_DPS] = 4, [ROLE_MELEE_DPS] = 3, [ROLE_TANK] = 4 },
         classes = { [CLASS_HUNTER] = 4, [CLASS_ROGUE] = 3, [CLASS_SHAMAN] = 3, [CLASS_WARRIOR] = 3 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18564] = {
         itemId = 18564,
         name = "Bindings of the Windseeker",
         roles = { [ROLE_MELEE_DPS] = 2, [ROLE_TANK] = 1 },
         classes = { [CLASS_PALADIN] = 1, [CLASS_ROGUE] = 2, [CLASS_WARRIOR] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 1,
+        tier = 1.5,
+        removable = true
     },
     [18646] = {
         itemId = 18646,
         name = "The Eye of Divinity",
         roles = { [ROLE_CASTER_DPS] = 1, [ROLE_HEALER] = 1 },
         classes = { [CLASS_PRIEST] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18703] = {
         itemId = 18703,
         name = "Ancient Petrified Leaf",
         roles = { [ROLE_RANGED_DPS] = 1 },
         classes = { [CLASS_HUNTER] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_RANGED,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18803] = {
         itemId = 18803,
         name = "Finkle's Lava Dredger",
         roles = { [ROLE_HEALER] = 2, [ROLE_MELEE_DPS] = 2 },
         classes = { [CLASS_DRUID] = 2, [CLASS_SHAMAN] = 3, [CLASS_PALADIN] = 2 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18805] = {
         itemId = 18805,
         name = "Core Hound Tooth",
         roles = { [ROLE_MELEE_DPS] = 1 },
         classes = { [CLASS_WARRIOR] = 2, [CLASS_ROGUE] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 2,
+        tier = 1,
+        removable = true
     },
     [18806] = {
         itemId = 18806,
         name = "Core Forged Greaves",
         roles = { [ROLE_TANK] = 1 },
         classes = { [CLASS_WARRIOR] = 2, [CLASS_PALADIN] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_FEET,
+        slotSize = 1,
+        tier = 1,
+        removable = false
     },
     [18808] = {
         itemId = 18808,
         name = "Gloves of the Hypnotic Flame",
         roles = { [ROLE_CASTER_DPS] = 2 },
         classes = { [CLASS_WARLOCK] = 2, [CLASS_MAGE] = 2 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_HANDS,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18809] = {
         itemId = 18809,
         name = "Sash of Whispered Secrets",
         roles = { [ROLE_CASTER_DPS] = 1 },
         classes = { [CLASS_WARLOCK] = 1, [CLASS_PRIEST] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_WAIST,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18810] = {
         itemId = 18810,
         name = "Wild Growth Spaulders",
         roles = { [ROLE_HEALER] = 1 },
         classes = { [CLASS_DRUID] = 1, [CLASS_SHAMAN] = 2 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_SHOULDER,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18811] = {
         itemId = 18811,
         name = "Fireproof Cloak",
         roles = { [ROLE_HEALER] = 2, [ROLE_CASTER_DPS] = 2 },
         classes = { [CLASS_PALADIN] = 2, [CLASS_SHAMAN] = 2, [CLASS_DRUID] = 2, [CLASS_PRIEST] = 2, [CLASS_WARLOCK] = 2, [CLASS_MAGE] = 2 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_BACK,
+        slotSize = 1,
+        tier = 1,
+        removable = false
     },
     [18812] = {
         itemId = 18812,
         name = "Wristguards of True Flight",
         roles = { [ROLE_MELEE_DPS] = 1, [ROLE_RANGED_DPS] = 1 },
         classes = { [CLASS_HUNTER] = 1, [CLASS_SHAMAN] = 1, [CLASS_PALADIN] = 2 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_WRIST,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18814] = {
         itemId = 18814,
         name = "Choker of the Fire Lord",
         roles = { [ROLE_CASTER_DPS] = 1 },
         classes = { [CLASS_PALADIN] = 1, [CLASS_SHAMAN] = 1, [CLASS_DRUID] = 1, [CLASS_PRIEST] = 1, [CLASS_WARLOCK] = 1, [CLASS_MAGE] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_NECK,
+        slotSize = 1,
+        tier = 1.5,
+        removable = true
     },
     [18815] = {
         itemId = 18815,
         name = "Essence of the Pure Flame",
         roles = { [ROLE_HEALER] = 4, [ROLE_CASTER_DPS] = 4, [ROLE_MELEE_DPS] = 4, [ROLE_TANK] = 3 },
         classes = { [CLASS_WARRIOR] = 3, [CLASS_PALADIN] = 3, [CLASS_SHAMAN] = 3, [CLASS_DRUID] = 3 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_TRINKET,
+        slotSize = 2,
+        tier = 1,
+        removable = true
     },
     [18816] = {
         itemId = 18816,
         name = "Perdition's Blade",
         roles = { [ROLE_MELEE_DPS] = 1 },
         classes = { [CLASS_ROGUE] = 1, [CLASS_WARRIOR] = 2 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 2,
+        tier = 1.5,
+        removable = true
     },
     [18817] = {
         itemId = 18817,
         name = "Crown of Destruction",
         roles = { [ROLE_RANGED_DPS] = 2, [ROLE_MELEE_DPS] = 1 },
         classes = { [CLASS_HUNTER] = 2, [CLASS_SHAMAN] = 1, [CLASS_PALADIN] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_HEAD,
+        slotSize = 1,
+        tier = 1.5,
+        removable = true
     },
     [18820] = {
         itemId = 18820,
         name = "Talisman of Ephemeral Power",
         roles = { [ROLE_CASTER_DPS] = 1, [ROLE_HEALER] = 2 },
         classes = { [CLASS_PALADIN] = 2, [CLASS_SHAMAN] = 1, [CLASS_DRUID] = 1, [CLASS_PRIEST] = 1, [CLASS_WARLOCK] = 1, [CLASS_MAGE] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_TRINKET,
+        slotSize = 2,
+        tier = 1,
+        removable = true
     },
     [18821] = {
         itemId = 18821,
         name = "Quick Strike Ring",
         roles = { [ROLE_RANGED_DPS] = 2, [ROLE_MELEE_DPS] = 1 },
         classes = { [CLASS_PALADIN] = 1, [CLASS_SHAMAN] = 1, [CLASS_DRUID] = 1, [CLASS_ROGUE] = 2, [CLASS_WARRIOR] = 1, [CLASS_HUNTER] = 2 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_FINGERS,
+        slotSize = 2,
+        tier = 1,
+        removable = true
     },
     [18822] = {
         itemId = 18822,
         name = "Obsidian Edged Blade",
         roles = { [ROLE_MELEE_DPS] = 1 },
         classes = { [CLASS_PALADIN] = 1, [CLASS_WARRIOR] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18823] = {
         itemId = 18823,
         name = "Aged Core Leather Gloves",
         roles = { [ROLE_MELEE_DPS] = 1, [ROLE_TANK] = 3 },
         classes = { [CLASS_ROGUE] = 1, [CLASS_DRUID] = 3, [CLASS_SHAMAN] = 3, [CLASS_WARRIOR] = 2 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_HANDS,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18824] = {
         itemId = 18824,
         name = "Magma Tempered Boots",
         roles = { [ROLE_HEALER] = 1 },
         classes = { [CLASS_PALADIN] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_FEET,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18829] = {
         itemId = 18829,
         name = "Deep Earth Spaulders",
-        roles = { [ROLE_CASTER_DPS] = 1 },
+        roles = { [ROLE_CASTER_DPS] = 1, [ROLE_MELEE_DPS] = 2 },
         classes = { [CLASS_SHAMAN] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_SHOULDER,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18832] = {
         itemId = 18832,
         name = "Brutality Blade",
         roles = { [ROLE_RANGED_DPS] = 3, [ROLE_MELEE_DPS] = 1, [ROLE_TANK] = 2 },
         classes = { [CLASS_HUNTER] = 3, [CLASS_ROGUE] = 1, [CLASS_PALADIN] = 2, [CLASS_WARRIOR] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 2,
+        tier = 1,
+        removable = true
     },
     [18842] = {
         itemId = 18842,
         name = "Staff of Dominance",
         roles = { [ROLE_CASTER_DPS] = 1, [ROLE_HEALER] = 2 },
         classes = { [CLASS_DRUID] = 1, [CLASS_MAGE] = 1, [CLASS_SHAMAN] = 2, [CLASS_WARLOCK] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18861] = {
         itemId = 18861,
         name = "Flamewaker Legplates",
         roles = { [ROLE_TANK] = 1 },
         classes = { [CLASS_PALADIN] = 1, [CLASS_WARRIOR] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_LEGS,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18870] = {
         itemId = 18870,
         name = "Helm of the Lifegiver",
         roles = { [ROLE_HEALER] = 1 },
         classes = { [CLASS_SHAMAN] = 1, [CLASS_PALADIN] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_HEAD,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18872] = {
         itemId = 18872,
         name = "Manastorm Leggings",
         roles = { [ROLE_HEALER] = 1, [ROLE_CASTER_DPS] = 3 },
         classes = { [CLASS_PALADIN] = 2, [CLASS_SHAMAN] = 2, [CLASS_DRUID] = 2, [CLASS_MAGE] = 3, [CLASS_PRIEST] = 1, [CLASS_WARLOCK] = 3 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_LEGS,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18875] = {
         itemId = 18875,
         name = "Salamander Scale Pants",
         roles = { [ROLE_HEALER] = 1 },
         classes = { [CLASS_DRUID] = 1, [CLASS_SHAMAN] = 2, [CLASS_PALADIN] = 2 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_LEGS,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18878] = {
         itemId = 18878,
         name = "Sorcerous Dagger",
         roles = { [ROLE_HEALER] = 2, [ROLE_CASTER_DPS] = 1 },
         classes = { [CLASS_DRUID] = 1, [CLASS_MAGE] = 1, [CLASS_PRIEST] = 2, [CLASS_SHAMAN] = 1, [CLASS_WARLOCK] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18879] = {
         itemId = 18879,
         name = "Heavy Dark Iron Ring",
         roles = { [ROLE_TANK] = 1 },
         classes = { [CLASS_DRUID] = 1, [CLASS_PALADIN] = 1, [CLASS_WARRIOR] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_FINGERS,
+        slotSize = 2,
+        tier = 1,
+        removable = true
     },
     [19136] = {
         itemId = 19136,
         name = "Mana Igniting Cord",
         roles = { [ROLE_HEALER] = 2, [ROLE_CASTER_DPS] = 1 },
         classes = { [CLASS_DRUID] = 1, [CLASS_PRIEST] = 2, [CLASS_MAGE] = 1, [CLASS_WARLOCK] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_WAIST,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [19137] = {
         itemId = 19137,
         name = "Onslaught Girdle",
         roles = { [ROLE_MELEE_DPS] = 1 },
         classes = { [CLASS_WARRIOR] = 1, [CLASS_PALADIN] = 2 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_WAIST,
+        slotSize = 1,
+        tier = 1.5,
+        removable = true
     },
     [19138] = {
         itemId = 19138,
         name = "Band of Sulfuras",
         roles = { [ROLE_HEALER] = 1, [ROLE_CASTER_DPS] = 2 },
         classes = { [CLASS_PALADIN] = 1, [CLASS_SHAMAN] = 1, [CLASS_DRUID] = 1, [CLASS_PRIEST] = 1, [CLASS_WARLOCK] = 2, [CLASS_MAGE] = 2 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_FINGERS,
+        slotSize = 2,
+        tier = 1,
+        removable = true
     },
     [19139] = {
         itemId = 19139,
         name = "Fireguard Shoulders",
         roles = { [ROLE_HEALER] = 4, [ROLE_TANK] = 2, [ROLE_CASTER_DPS] = 4, [ROLE_MELEE_DPS] = 3 },
         classes = { [CLASS_DRUID] = 2, [CLASS_ROGUE] = 3 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_SHOULDER,
+        slotSize = 1,
+        tier = 1,
+        removable = false
     },
     [19140] = {
         itemId = 19140,
         name = "Cauterizing Band",
         roles = { [ROLE_HEALER] = 1 },
         classes = { [CLASS_PALADIN] = 1, [CLASS_SHAMAN] = 1, [CLASS_DRUID] = 1, [CLASS_PRIEST] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_FINGERS,
+        slotSize = 2,
+        tier = 1,
+        removable = true
     },
     [19142] = {
         itemId = 19142,
         name = "Fire Runed Grimoire",
         roles = { [ROLE_HEALER] = 2, [ROLE_CASTER_DPS] = 1 },
         classes = { [CLASS_PALADIN] = 2, [CLASS_SHAMAN] = 2, [CLASS_DRUID] = 1, [CLASS_PRIEST] = 2, [CLASS_WARLOCK] = 1, [CLASS_MAGE] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_OFF_HAND,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [19143] = {
         itemId = 19143,
         name = "Flameguard Gauntlets",
         roles = { [ROLE_MELEE_DPS] = 1 },
         classes = { [CLASS_PALADIN] = 1, [CLASS_WARRIOR] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_HANDS,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [19144] = {
         itemId = 19144,
         name = "Sabatons of the Flamewalker",
         roles = { [ROLE_RANGED_DPS] = 1, [ROLE_MELEE_DPS] = 1 },
         classes = { [CLASS_SHAMAN] = 1, [CLASS_PALADIN] = 1, [CLASS_HUNTER] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_FEET,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [19145] = {
         itemId = 19145,
         name = "Robe of Volatile Power",
         roles = { [ROLE_CASTER_DPS] = 1 },
         classes = { [CLASS_SHAMAN] = 1, [CLASS_DRUID] = 1, [CLASS_PRIEST] = 2, [CLASS_WARLOCK] = 1, [CLASS_MAGE] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_CHEST,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [19146] = {
         itemId = 19146,
         name = "Wristguards of Stability",
         roles = { [ROLE_MELEE_DPS] = 1, [ROLE_TANK] = 1 },
         classes = { [CLASS_DRUID] = 1, [CLASS_SHAMAN] = 2, [CLASS_WARRIOR] = 2 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_WRIST,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [19147] = {
         itemId = 19147,
         name = "Ring of Spell Power",
         roles = { [ROLE_CASTER_DPS] = 1 },
         classes = { [CLASS_SHAMAN] = 1, [CLASS_DRUID] = 1, [CLASS_PRIEST] = 1, [CLASS_WARLOCK] = 1, [CLASS_MAGE] = 1 },
-        raids = { [RAID_MOLTEN_CORE] = true }
+        raids = { [RAID_MOLTEN_CORE] = true },
+        slot = SLOT_FINGERS,
+        slotSize = 2,
+        tier = 1,
+        removable = true
     },
 
 
@@ -1374,56 +1618,88 @@ local ITEM_LIST = {
         name = "Stormrage Cover",
         roles = { [ROLE_HEALER] = 1 },
         classes = { [CLASS_DRUID] = 1 },
-        raids = { [RAID_ONYXIA] = true }
+        raids = { [RAID_ONYXIA] = true },
+        slot = SLOT_HEAD,
+        slotSize = 1,
+        tier = 2,
+        removable = true
     },
     [16908] = {
         itemId = 16908,
         name = "Bloodfang Hood",
         roles = { [ROLE_MELEE_DPS] = 1 },
         classes = { [CLASS_ROGUE] = 1 },
-        raids = { [RAID_ONYXIA] = true }
+        raids = { [RAID_ONYXIA] = true },
+        slot = SLOT_HEAD,
+        slotSize = 1,
+        tier = 2,
+        removable = true
     },
     [16914] = {
         itemId = 16914,
         name = "Netherwind Crown",
         roles = { [ROLE_CASTER_DPS] = 1 },
         classes = { [CLASS_MAGE] = 1 },
-        raids = { [RAID_ONYXIA] = true }
+        raids = { [RAID_ONYXIA] = true },
+        slot = SLOT_HEAD,
+        slotSize = 1,
+        tier = 2,
+        removable = true
     },
     [16921] = {
         itemId = 16921,
         name = "Halo of Transcendence",
         roles = { [ROLE_HEALER] = 1 },
         classes = { [CLASS_PRIEST] = 1 },
-        raids = { [RAID_ONYXIA] = true }
+        raids = { [RAID_ONYXIA] = true },
+        slot = SLOT_HEAD,
+        slotSize = 1,
+        tier = 2,
+        removable = true
     },
     [16929] = {
         itemId = 16929,
         name = "Nemesis Skullcap",
         roles = { [ROLE_CASTER_DPS] = 1 },
         classes = { [CLASS_WARLOCK] = 1 },
-        raids = { [RAID_ONYXIA] = true }
+        raids = { [RAID_ONYXIA] = true },
+        slot = SLOT_HEAD,
+        slotSize = 1,
+        tier = 2,
+        removable = true
     },
     [16939] = {
         itemId = 16939,
         name = "Dragonstalker's Helm",
         roles = { [ROLE_RANGED_DPS] = 1 },
         classes = { [CLASS_HUNTER] = 1 },
-        raids = { [RAID_ONYXIA] = true }
+        raids = { [RAID_ONYXIA] = true },
+        slot = SLOT_HEAD,
+        slotSize = 1,
+        tier = 2,
+        removable = true
     },
     [16947] = {
         itemId = 16947,
         name = "Helmet of Ten Storms",
         roles = { [ROLE_HEALER] = 1, [ROLE_CASTER_DPS] = 2 },
         classes = { [CLASS_SHAMAN] = 1 },
-        raids = { [RAID_ONYXIA] = true }
+        raids = { [RAID_ONYXIA] = true },
+        slot = SLOT_HEAD,
+        slotSize = 1,
+        tier = 2,
+        removable = true
     },
     [16955] = {
         itemId = 16955,
         name = "Judgement Crown",
         roles = { [ROLE_MELEE_DPS] = 1, [ROLE_HEALER] = 2, [ROLE_TANK] = 1 },
         classes = { [CLASS_PALADIN] = 1 },
-        raids = { [RAID_ONYXIA] = true }
+        raids = { [RAID_ONYXIA] = true },
+        slot = SLOT_HEAD,
+        slotSize = 1,
+        tier = 2,
+        removable = true
     },
     [16963] = {
         itemId = 16963,
@@ -1441,42 +1717,66 @@ local ITEM_LIST = {
         name = "Shard of the Scale",
         roles = { [ROLE_HEALER] = 1, [ROLE_CASTER_DPS] = 2 },
         classes = { [CLASS_PALADIN] = 1, [CLASS_SHAMAN] = 1, [CLASS_DRUID] = 1, [CLASS_PRIEST] = 1, [CLASS_WARLOCK] = 2, [CLASS_MAGE] = 2 },
-        raids = { [RAID_ONYXIA] = true }
+        raids = { [RAID_ONYXIA] = true },
+        slot = SLOT_TRINKET,
+        slotSize = 2,
+        tier = 1,
+        removable = true
     },
     [17067] = {
         itemId = 17067,
         name = "Ancient Cornerstone Grimoire",
         roles = { [ROLE_HEALER] = 1, [ROLE_CASTER_DPS] = 1 },
         classes = { [CLASS_PALADIN] = 2, [CLASS_SHAMAN] = 2, [CLASS_DRUID] = 1, [CLASS_PRIEST] = 2, [CLASS_WARLOCK] = 1, [CLASS_MAGE] = 1 },
-        raids = { [RAID_ONYXIA] = true }
+        raids = { [RAID_ONYXIA] = true },
+        slot = SLOT_OFF_HAND,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [17068] = {
         itemId = 17068,
         name = "Deathbringer",
         roles = { [ROLE_MELEE_DPS] = 1, [ROLE_TANK] = 2 },
         classes = { [CLASS_PALADIN] = 2, [CLASS_SHAMAN] = 2, [CLASS_WARRIOR] = 1 },
-        raids = { [RAID_ONYXIA] = true }
+        raids = { [RAID_ONYXIA] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 2,
+        tier = 1,
+        removable = true
     },
     [17075] = {
         itemId = 17075,
         name = "Vis'kag the Bloodletter",
         roles = { [ROLE_MELEE_DPS] = 1, [ROLE_TANK] = 2 },
         classes = { [CLASS_ROGUE] = 1, [CLASS_WARRIOR] = 1 },
-        raids = { [RAID_ONYXIA] = true }
+        raids = { [RAID_ONYXIA] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 2,
+        tier = 1,
+        removable = true
     },
     [17078] = {
         itemId = 17078,
         name = "Sapphiron Drape",
         roles = { [ROLE_CASTER_DPS] = 1 },
         classes = { [CLASS_SHAMAN] = 1, [CLASS_DRUID] = 1, [CLASS_PRIEST] = 1, [CLASS_WARLOCK] = 1, [CLASS_MAGE] = 1 },
-        raids = { [RAID_ONYXIA] = true }
+        raids = { [RAID_ONYXIA] = true },
+        slot = SLOT_BACK,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18205] = {
         itemId = 18205,
         name = "Eskhandar's Collar",
         roles = { [ROLE_RANGED_DPS] = 2, [ROLE_MELEE_DPS] = 1, [ROLE_TANK] = 2 },
         classes = { [CLASS_HUNTER] = 2, [CLASS_ROGUE] = 1, [CLASS_SHAMAN] = 2, [CLASS_WARRIOR] = 1 },
-        raids = { [RAID_ONYXIA] = true }
+        raids = { [RAID_ONYXIA] = true },
+        slot = SLOT_NECK,
+        slotSize = 1,
+        tier = 1,
+        removable = true
     },
     [18422] = {
         itemId = 18422,
@@ -1498,7 +1798,11 @@ local ITEM_LIST = {
         name = "Ring of Binding",
         roles = { [ROLE_TANK] = 1 },
         classes = { [CLASS_WARRIOR] = 1, [CLASS_PALADIN] = 1, [CLASS_DRUID] = 1 },
-        raids = { [RAID_ONYXIA] = true }
+        raids = { [RAID_ONYXIA] = true },
+        slot = SLOT_FINGERS,
+        slotSize = 2,
+        tier = 1,
+        removable = true
     },
 
 
@@ -1683,11 +1987,11 @@ Items.canRemove = function(playerItem, memberInfo)
                 (not memberInfo.needlist[itemId])
                 ) then
 
-                found = found + 1
-            end
-
-            if (found >= playerItem.slotSize) then
-                return true
+                if (item.slotSize == 1 or found >= 1) then
+                    return true
+                else
+                    found = found + 1
+                end
             end
         end
     end
