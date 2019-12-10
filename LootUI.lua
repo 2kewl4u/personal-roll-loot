@@ -35,6 +35,8 @@ function LootButton.setItem(item)
     LootButton.item = item
     LootButton.frame.Name:SetText(item:getName())
     LootButton.frame.IconFrame.Icon:SetTexture(item:getTexture())
+    local color = item:getColor()
+    LootButton.frame.Name:SetTextColor(color.r, color.g, color.b)
 
     local itemButton = LootButton.frame.IconFrame
     itemButton:SetScript("OnEnter", function()

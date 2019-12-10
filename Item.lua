@@ -14,6 +14,8 @@ local Item = {
     texture,
     -- the link used to post the item in the chat
     link,
+    -- the item quality color
+    color,
     -- a set of roles assigned to this item
     roles,
     -- a set of classes that can use this item
@@ -41,8 +43,10 @@ local function load(item)
             item.texture = itemTexture
             item.loaded = true
             item.link = itemLink
+            item.color = ITEM_QUALITY_COLORS[itemRarity]
         else
             item.texture = 134400
+            item.color = { r = 1, g = 1, b = 1}
         end
     end
 end
@@ -95,6 +99,18 @@ function Item:getTexture()
     local item = self
     load(item)
     return item.texture
+end
+
+---
+-- Returns the item quality color, a table with the key values (r,g,b).
+--
+-- @return #table
+--          the quality color
+--
+function Item:getColor()
+    local item = self
+    load(item)
+    return item.color
 end
 
 ---
