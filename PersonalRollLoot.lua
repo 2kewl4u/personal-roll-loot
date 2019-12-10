@@ -262,10 +262,15 @@ local function sendRollRequest()
 
             -- send a role request for the current round
             local playerName = entry[2]
+            local item = currentRollOrder.item
             if (utils.isInRaid(playerName)) then
-                AddonMessage.Send(EVENT_MESSAGE, MSG_ROLL_REQUEST.."#"..currentRollOrder.item.itemId, "WHISPER", playerName)
-                currentRound = round
-                currentRollOrder.currentRound = round
+                local player = ns.DB.PLAYER_LIST[playerName]
+                if (player and player.needlist[item.itemId]) then
+                    AddonMessage.Send(EVENT_MESSAGE, MSG_ROLL_REQUEST.."#"..item.itemId, "WHISPER", playerName)
+                    postChatMessage(round.." - "..playerName)
+                    currentRound = round
+                    currentRollOrder.currentRound = round
+                end
             end
             currentRollOrder.sentIndex = index + 1
         end
