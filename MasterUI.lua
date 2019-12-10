@@ -187,7 +187,11 @@ playerItemScrollList:SetLabelProvider(function(itemId, item, button)
     if (disabled) then
         button.Name:SetFontObject("GameFontDisable")
     else
-        button.Name:SetFontObject("GameFontHighlight")
+        if (item:hasRole(player.roles)) then
+            button.Name:SetFontObject("GameFontNormal")
+        else
+            button.Name:SetFontObject("GameFontHighlight")
+        end
     end
 end)
 playerItemScrollList:SetButtonScript("OnClick", function(index, button, itemId, item)
