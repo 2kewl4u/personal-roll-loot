@@ -21,7 +21,7 @@ frames\PersonalLootFrame.xml
 UtilsUI.lua
 ScrollList.lua
 
-ui\ConfirmItemRemovalDialog.lua
+ConfirmDialog.lua
 MasterUI.lua
 MemberUI.lua
 LootUI.lua
