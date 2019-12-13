@@ -122,7 +122,7 @@ end)
 memberItemScrollList:SetButtonScript("OnLeave", utilsUI.hideTooltip)
 memberItemScrollList:SetButtonScript("OnClick", function(index, button, itemId, item)
     if (Items.canRemove(item, memberInfo)) then
-        ConfirmDialog:open("Do you really want to permanently remove "..item:getLink().." from your need list?", function(result)
+        ConfirmDialog.open("Do you really want to permanently remove "..item:getLink().." from your need list?", function(result)
             if (result) then
                 ns.requestItemRemoval(item)
             end

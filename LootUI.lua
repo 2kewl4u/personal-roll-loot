@@ -31,7 +31,7 @@ utilsUI.addTooltipText(LootButton.frame.PassButton, "pass - i renounce this time
 utilsUI.addTooltipText(LootButton.frame.GreedButton, "greed - i'd take it if nobody wants it")
 utilsUI.addTooltipText(LootButton.frame.DisenchantButton, "remove - i do not want the item")
 
-function LootButton.setItem(item)
+LootButton.setItem = function(item)
     LootButton.item = item
     LootButton.frame.Name:SetText(item:getName())
     LootButton.frame.IconFrame.Icon:SetTexture(item:getTexture())
