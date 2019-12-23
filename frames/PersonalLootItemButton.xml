@@ -5,14 +5,22 @@
     <Button name="PersonalLootItemButtonTemplate" inherits="LargeItemButtonTemplate" virtual="true">
         <Size x="155" y="41" />
         <Layers>
-            <Layer level="OVERLAY">
-                <FontString parentKey="Priority"
-                    inherits="GameFontHighlight" text="0">
-                    <Size x="30" y="30" />
+            <Layer level="ARTWORK">
+                <Texture file="Interface\Addons\PersonalRollLoot\textures\role-icons">
+                    <Size x="18" y="18" />
+                    <TexCoords left="0" right="0.26171875" top="0.5234375" bottom="0.78515625" />
                     <Anchors>
-                        <Anchor point="BOTTOMRIGHT"
-                            relativeKey="$parent"
-                            relativePoint="BOTTOMRIGHT" x="-5" y="0" />
+                        <Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-10"
+                            y="5" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString parentKey="Priority" inherits="GameFontHighlight" text="0">
+                    <Size x="18" y="18" />
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-10"
+                            y="5" />
                     </Anchors>
                 </FontString>
             </Layer>
