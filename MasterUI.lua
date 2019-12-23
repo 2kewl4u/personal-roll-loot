@@ -294,7 +294,7 @@ addInstanceButton:SetScript("OnClick", function()
     local name = newInstanceEditBox:GetText()
     local raid = newInstanceRaidDropDown.value
     if (name and raid) then
-        local status, err = pcall(ns.createInstance, name.." "..raid)
+        local status, err = pcall(ns.createInstance, name, raid)
         if (not status) then
             print(err)
         else

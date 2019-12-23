@@ -149,9 +149,8 @@ local function printPlayerInfo(player)
     end
 end
 
-ns.createInstance = function(arg)
-    arg = arg or ""
-    local name, raidName = strsplit(" ", arg, 2)
+ns.createInstance = function(name, raidName)
+	name = name or ""
     if (strlen(name) < 1) then error("> Invalid instance name '"..name.."'.", 0) end
     if (not raidName) then error("> No raid name specified.", 0) end
     if (not RAIDS[raidName]) then error("> No raid with the name '"..raidName.."' found.", 0) end
@@ -420,7 +419,11 @@ local COMMANDS = {
         end
     end,
 
-    ["create-instance"] = ns.createInstance,
+    ["create-instance"] = function(arg)
+        arg = arg or ""
+        local name, raidName = strsplit(" ", arg, 2)
+        ns.createInstance(name, raidName)
+    end,
     ["delete-instance"] = ns.deleteInstance,
 
     ["instance-info"] = function(arg)
