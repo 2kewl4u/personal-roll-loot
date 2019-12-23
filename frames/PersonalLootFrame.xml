@@ -6,16 +6,6 @@
     <Button name="PersonalLootRollButtonTemplate"
         motionScriptsWhileDisabled="true" virtual="true">
         <Size x="32" y="32" />
-        <!-- <Scripts>
-            <OnEnter>
-                GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-                    GameTooltip:AddLine("reason", 1, 1, 0.5, true);
-                    GameTooltip:Show();
-            </OnEnter>
-            <OnLeave>
-                GameTooltip:Hide();
-            </OnLeave>
-        </Scripts> -->
     </Button>
 
     <Frame name="PersonalLootFrameTemplate" parent="UIParent"

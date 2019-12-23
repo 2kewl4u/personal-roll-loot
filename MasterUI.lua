@@ -156,6 +156,7 @@ for role in pairs(ROLES) do
             else
                 player.roles[role] = nil
             end
+            playerItemScrollList:Update()
         end
     end)
     roleButtons[role] = roleButton
@@ -163,7 +164,7 @@ for role in pairs(ROLES) do
 end
 
 -- item list
-playerItemScrollList = ScrollList.new("PersonalRollLootPlayerItemListScrollFrame", playerTabFrame, 6, "LargeItemButtonTemplate")
+playerItemScrollList = ScrollList.new("PersonalRollLootPlayerItemListScrollFrame", playerTabFrame, 6, "PersonalLootItemButtonTemplate")
 playerItemScrollList:SetPoint("BOTTOMLEFT", playerTabFrame, "BOTTOMLEFT", WINDOW_WIDTH / 2 + SPACING, TEXT_FIELD_HEIGHT + MARGIN + SPACING)
 playerItemScrollList:SetSize(COLUMN_WIDTH, 6 * ITEM_BUTTON_HEIGHT + SPACING)
 playerItemScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
@@ -182,6 +183,7 @@ playerItemScrollList:SetLabelProvider(function(itemId, item, button)
         if (player.needlist[itemId]) then disabled = false end
     end
 
+    button.Priority:SetText(item:getPriority(player))
     button.Icon:SetTexture(item:getTexture())
     button.Name:SetText(item:getName())
     if (disabled) then
@@ -294,7 +296,7 @@ addInstanceButton:SetScript("OnClick", function()
     local name = newInstanceEditBox:GetText()
     local raid = newInstanceRaidDropDown.value
     if (name and raid) then
-        local status, err = pcall(ns.createInstance, name.." "..raid)
+        local status, err = pcall(ns.createInstance, name, raid)
         if (not status) then
             print(err)
         else

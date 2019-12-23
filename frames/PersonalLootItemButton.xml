@@ -1,0 +1,22 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+    <Button name="PersonalLootItemButtonTemplate" inherits="LargeItemButtonTemplate" virtual="true">
+        <Size x="155" y="41" />
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString parentKey="Priority"
+                    inherits="GameFontHighlight" text="0">
+                    <Size x="30" y="30" />
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT"
+                            relativeKey="$parent"
+                            relativePoint="BOTTOMRIGHT" x="-5" y="0" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Button>
+
+</Ui>

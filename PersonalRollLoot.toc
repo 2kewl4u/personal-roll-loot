@@ -16,6 +16,7 @@ Libs\AceComm-3.0\ChatThrottleLib.lua
 AddonMessage.lua
 SavedVariables.lua
 
+frames\PersonalLootItemButton.xml
 frames\PersonalLootFrame.xml
 
 UtilsUI.lua
