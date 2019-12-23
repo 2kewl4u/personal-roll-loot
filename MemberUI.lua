@@ -79,7 +79,7 @@ for role in pairs(ROLES) do
 end
 
 -- item list
-local memberItemScrollList = ScrollList.new("PersonalRollLootMemberItemListScrollFrame", memberTabFrame, 6, "LargeItemButtonTemplate")
+local memberItemScrollList = ScrollList.new("PersonalRollLootMemberItemListScrollFrame", memberTabFrame, 6, "PersonalLootItemButtonTemplate")
 memberItemScrollList:SetPoint("BOTTOMLEFT", memberTabFrame, "BOTTOMLEFT", MARGIN, TEXT_FIELD_HEIGHT + MARGIN + SPACING)
 memberItemScrollList:SetSize(COLUMN_WIDTH, 6 * ITEM_BUTTON_HEIGHT + SPACING)
 memberItemScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
@@ -97,6 +97,7 @@ memberItemScrollList:SetLabelProvider(function(itemId, item, button)
         if (player.needlist[itemId]) then disabled = false end
     end
 
+    button.Priority:SetText(item:getPriority(memberInfo))
     button.Icon:SetTexture(item:getTexture())
     button.Name:SetText(item:getName())
     if (disabled) then
