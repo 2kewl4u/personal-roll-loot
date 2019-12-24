@@ -16,7 +16,7 @@
                 </Texture>
             </Layer>
             <Layer level="OVERLAY">
-                <FontString parentKey="Priority" inherits="GameFontHighlight" text="0">
+                <FontString parentKey="Priority" inherits="GameFontNormal" text="0">
                     <Size x="18" y="18" />
                     <Anchors>
                         <Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-10"

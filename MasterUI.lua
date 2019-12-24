@@ -128,7 +128,7 @@ playerNameField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 
 -- role buttons
 for roleIndex = 1, 4, 1 do
-    local roleButton = CreateFrame("CheckButton", nil, playerTabFrame, "UICheckButtonTemplate")
+    local roleButton = CreateFrame("CheckButton", nil, playerTabFrame, "PersonalLootRoleButton")
     roleButton:SetPoint("TOPLEFT", playerNameField, "BOTTOMLEFT", 0, (-SPACING - TEXT_FIELD_HEIGHT * (roleIndex - 1)))
     roleButton.text:SetFontObject("GameFontNormal")
     roleButton:SetScript("OnClick", function()
@@ -152,6 +152,7 @@ local function updateRoleButton(button, role, checked)
     checked = checked or false
     if (role) then
         button.text:SetText(role.name)
+        button.icon:SetTexture(role.texture)
         button:Show()
         button.role = role
     else

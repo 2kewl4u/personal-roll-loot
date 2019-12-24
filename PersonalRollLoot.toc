@@ -20,6 +20,7 @@ SavedVariables.lua
 
 frames\PersonalLootItemButton.xml
 frames\PersonalLootFrame.xml
+frames\PersonalLootRoleButton.xml
 
 UtilsUI.lua
 ScrollList.lua

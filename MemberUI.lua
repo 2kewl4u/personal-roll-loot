@@ -71,10 +71,11 @@ local roles = Roles.forClass(class)
 -- hide the roles if there is only one spec
 if (utils.tblsize(roles) > 1) then
     for roleId, role in pairs(roles) do
-        local roleButton = CreateFrame("CheckButton", nil, memberTabFrame, "UICheckButtonTemplate")
+        local roleButton = CreateFrame("CheckButton", nil, memberTabFrame, "PersonalLootRoleButton")
         roleButton:SetPoint("TOPLEFT", memberNameField, "BOTTOMLEFT", 0, -(SPACING + TEXT_FIELD_HEIGHT * roleIndex))
         roleButton.text:SetText(role.name)
         roleButton.text:SetFontObject("GameFontDisable")
+        roleButton.icon:SetTexture(role.texture)
         roleButton:SetEnabled(false)
         roleButton.role = role
         memberRoleButtons[roleId] = roleButton
