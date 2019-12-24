@@ -2,13 +2,12 @@
 local _, ns = ...;
 -- imports
 local AddonMessage = ns.AddonMessage
-local CLASS_ROLES = ns.CLASS_ROLES
 local Instance = ns.Instance
 local ITEM_LIST = ns.ITEM_LIST
 local Items = ns.Items
 local Player = ns.Player
 local RAIDS = ns.RAIDS
-local ROLES = ns.ROLES
+local ROLES_LIST = ns.ROLES_LIST
 local RollOrder = ns.RollOrder
 local ScrollList = ns.ScrollList
 local utils = ns.utils
@@ -61,13 +60,13 @@ local function getPlayer(arg)
     return player
 end
 
-local function getRole(arg)
+local function getRoleId(arg)
     if (not arg) then error("> No role specified.", 0) end
     local role = arg
-    if (not ROLES[role]) then
+    if (not ROLES_LIST[role]) then
         local errMsg = "> Undefined role '"..role.."'."
         errMsg = errMsg.."\nPossible roles:"
-        for l,_ in pairs(ROLES) do
+        for l,_ in pairs(ROLES_LIST) do
             errMsg = errMsg.."\n  "..l
         end
         error(errMsg, 0)
@@ -371,7 +370,7 @@ local COMMANDS = {
         local arg1, arg2 = strsplit(" ", arg, 2)
         local player = getPlayer(arg1)
         local name = player["name"]
-        local role = getRole(arg2)
+        local role = getRoleId(arg2)
 
         -- add role to player
         player["roles"][role] = true
@@ -383,7 +382,7 @@ local COMMANDS = {
         local arg1, arg2 = strsplit(" ", arg, 2)
         local player = getPlayer(arg1)
         local name = player["name"]
-        local role = getRole(arg2)
+        local role = getRoleId(arg2)
 
         -- remove role from player
         player["roles"][role] = nil
