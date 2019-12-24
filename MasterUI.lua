@@ -426,7 +426,9 @@ rollItemsScrollList:SetButtonScript("OnClick", updateRollOrderFields)
 rollItemsScrollList:SetFilter(function(itemId, item)
     if (ns.DB.activeInstance) then
         local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
-        return item:dropsIn(instance)
+        if (instance) then
+            return item:dropsIn(instance) and instance.history[item.itemId]
+        end
     end
 end)
 
@@ -502,6 +504,7 @@ MasterUI.__index = MasterUI
 MasterUI.setLootItems = function(items)
     lootItems = items
     lootItemsScrollList:Update()
+    rollItemsScrollList:Update()
 
     -- open the master UI during loot
     if ((not UnitAffectingCombat("player"))

@@ -17,7 +17,9 @@ local Instance = {
     -- the date and time this instance was created
     created,
     -- a map of player names pointing to their priority lists
-    players
+    players,
+    -- a set of items that dropped in the instance so far
+    history
 }
 Instance.__index = Instance
 ns.Instance = Instance
@@ -39,6 +41,7 @@ function Instance.new(name, raid)
     self.raid = raid
     self.created = date("%y-%m-%d %H:%M:%S")
     self.players = {}
+    self.history = {}
     return self
 end
 
@@ -56,6 +59,7 @@ function Instance.copy(instance)
     copy.name = instance.name
     copy.raid = instance.raid
     copy.created = instance.created
+    copy.history = utils.copy(instance.history) or {}
     copy.players = {}
     for name, list in pairs(instance.players) do
         copy.players[name] = utils.copy(list)
@@ -128,6 +132,20 @@ function Instance:addPlayer(player, force)
     if ((not instance.players[player.name]) or force) then
         instance.players[player.name] = createLootList(instance, player)
         return true
+    end
+end
+
+---
+-- Adds the given item to the loot history of this instance. Does nothing
+-- if the item is already present.
+-- 
+-- @param #Item item
+--          the item to be added
+-- 
+function Instance:addItem(item)
+    local instance = self
+    if (item) then
+        instance.history[item.itemId] = true
     end
 end
 

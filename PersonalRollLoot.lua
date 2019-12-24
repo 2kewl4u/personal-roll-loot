@@ -494,6 +494,19 @@ end
 local function updateLootItems()
     if (IsInGroup()) then
         local lootItems = Items.getLootItems()
+
+        if (UnitIsGroupLeader("player")) then
+            -- add the items to the loot history of the current instance
+            if (ns.DB.activeInstance) then
+                local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
+                if (instance) then
+                    for itemId, item in pairs(lootItems) do
+                        instance:addItem(item)
+                    end
+                end
+            end
+        end
+        -- update the UI
         MasterUI.setLootItems(lootItems)
         MemberUI.setLootItems(lootItems)
     end

@@ -1969,10 +1969,10 @@ Items.forName = function(name)
 end
 
 ---
--- Returns a list of Item's that are currently in the loot window.
+-- Returns a map (itemId -> item) of Item's that are currently in the loot window.
 --
 -- @return #table
---          a list of Item's in the loot window
+--          a map of Item's in the loot window
 --
 Items.getLootItems = function()
     local items = {}
