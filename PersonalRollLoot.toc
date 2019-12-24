@@ -6,6 +6,8 @@
 
 Utils.lua
 Constants.lua
+Role.lua
+Roles.lua
 Item.lua
 Items.lua
 Player.lua
