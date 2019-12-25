@@ -129,9 +129,11 @@ end
 -- 
 function Instance:addPlayer(player, force)
     local instance = self
-    if ((not instance.players[player.name]) or force) then
-        instance.players[player.name] = createLootList(instance, player)
-        return true
+    if (player) then
+        if ((not instance.players[player.name]) or force) then
+            instance.players[player.name] = createLootList(instance, player)
+            return true
+        end
     end
 end
 

@@ -1,6 +1,7 @@
 -- namespace
 local _, ns = ...;
 -- imports
+local Players = ns.Players
 local RAIDS = ns.RAIDS
 local Roles = ns.Roles
 local ScrollList = ns.ScrollList
@@ -99,14 +100,8 @@ addPlayerButton:SetPoint("BOTTOMLEFT", playerTabFrame, "BOTTOMLEFT", MARGIN, MAR
 addPlayerButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 addPlayerButton:SetText("Add Player(s)")
 addPlayerButton:SetScript("OnClick", function()
-    local name = UnitName("target")
-    if (name) then name = "target" end
-    local status, err = pcall(ns.addPlayer, name)
-    if (not status) then
-        print(err)
-    else
-        playerScrollList:Update()
-    end
+    Players.add(nil)
+    playerScrollList:Update()
 end)
 
 local syncButton = CreateFrame("Button", nil, playerTabFrame, "GameMenuButtonTemplate")

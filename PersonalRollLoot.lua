@@ -6,8 +6,9 @@ local Instance = ns.Instance
 local ITEM_LIST = ns.ITEM_LIST
 local Items = ns.Items
 local Player = ns.Player
+local Players = ns.Players
 local RAIDS = ns.RAIDS
-local ROLES_LIST = ns.ROLES_LIST
+local Roles = ns.Roles
 local RollOrder = ns.RollOrder
 local ScrollList = ns.ScrollList
 local utils = ns.utils
@@ -45,35 +46,6 @@ local SYNC_DELAY = 30
 local syncRequestTimes = {}
 
 -- helper functions
-local function getPlayerNameAndRealm(arg)
-    if (not arg) then error("> No player name specified.", 0) end
-    local name, realm = UnitName(arg)
-    if not name then error("> No player found with the name '"..arg.."'.", 0) end
-    if not realm then realm = GetRealmName() end
-    return name, realm
-end
-
-local function getPlayer(arg)
-    local name, realm = getPlayerNameAndRealm(arg)
-    local player = ns.DB.PLAYER_LIST[name]
-    if (not player) then error("> No player registered with the name '"..name.."'.", 0) end
-    return player
-end
-
-local function getRoleId(arg)
-    if (not arg) then error("> No role specified.", 0) end
-    local role = arg
-    if (not ROLES_LIST[role]) then
-        local errMsg = "> Undefined role '"..role.."'."
-        errMsg = errMsg.."\nPossible roles:"
-        for l,_ in pairs(ROLES_LIST) do
-            errMsg = errMsg.."\n  "..l
-        end
-        error(errMsg, 0)
-    end
-    return role
-end
-
 local function getItem(arg)
     if (not arg) then error("> No item id or name specified.", 0) end
     local itemId = tonumber(arg) -- will be nil if not a number
@@ -93,61 +65,6 @@ local function getInstance(name)
 end
 
 -- core functions
-ns.addPlayer = function(arg)
-    if (not arg) then
-        -- no argument given, so add all players in the group
-        local added = 0
-        utils.forEachRaidMember(function(name)
-            local name, realm = getPlayerNameAndRealm(name)
-            if (name and (not ns.DB.PLAYER_LIST[name])) then
-                local _,class,_ = UnitClass(name)
-                ns.DB.PLAYER_LIST[name] = Player.new(name,realm,class)
-                added = added + 1
-            end
-        end)
-        print("> Added "..added.." players.")
-    else
-        local name, realm = getPlayerNameAndRealm(arg)
-
-        -- check if we already have the player
-        if (ns.DB.PLAYER_LIST[name]) then error("> Player '"..name.."' already registered.", 0) end
-
-        -- add the player to our database
-        if (not UnitIsPlayer(arg)) then error("> Unit '"..name.."' is not a player.", 0) end
-        local _,class,_ = UnitClass(arg)
-
-        ns.DB.PLAYER_LIST[name] = Player.new(name,realm,class)
-        print("> Added player '"..name.."-"..realm.."', "..class..".")
-    end
-end
-
-ns.removePlayer = function(arg)
-    if (not arg) then error("> No player name specified.", 0) end
-    local player = ns.DB.PLAYER_LIST[arg]
-    if (not player) then player = getPlayer(arg) end
-
-    local name = player["name"]
-    -- remove the player
-    ns.DB.PLAYER_LIST[name] = nil
-    print("> Removed player '"..name.."'.")
-end
-
-local function printPlayerInfo(player)
-    print("> Player '"..player.name.."', Class: "..player.class..",")
-
-    print("Roles:")
-    for l,_ in pairs(player.roles) do
-        print("  "..l)
-    end
-
-    print("Need-list:")
-    local needlist = player.needlist
-    for itemId,_ in pairs(needlist) do
-        local item = ITEM_LIST[itemId]
-        if (item) then print("  "..item.name) end
-    end
-end
-
 ns.createInstance = function(name, raidName)
 	name = name or ""
     if (strlen(name) < 1) then error("> Invalid instance name '"..name.."'.", 0) end
@@ -180,16 +97,17 @@ ns.invite = function(arg)
     if (not arg) then
         local invited = 0
         utils.forEachRaidMember(function(name)
-            local player = getPlayer(name)
+            local player = Players.get(name)
             if (instance:addPlayer(player)) then
                 invited = invited + 1
             end
         end)
         print("> Invited "..invited.." players.")
     else
-        local player = getPlayer(arg)
-        instance:addPlayer(player, true)
-        print("> Created loot table for player '"..player.name.."'.")
+        local player = Players.get(arg)
+        if (instance:addPlayer(player, true)) then
+            print("> Created loot table for player '"..player.name.."'.")
+        end
     end
 end
 
@@ -357,64 +275,73 @@ end
 -- slash commands                                          --
 -- ------------------------------------------------------- --
 local COMMANDS = {
-    ["add-player"] = ns.addPlayer,
-    ["remove-player"] = ns.removePlayer,
+    ["add-player"] = Players.add,
+    ["remove-player"] = Players.remove,
 
     ["player-info"] = function(arg)
-        local player = getPlayer(arg)
-        printPlayerInfo(player)
+        local player = Players.get(arg)
+        if (player) then
+            player:print()
+        end
     end,
 
     ["add-role"] = function(arg)
         arg = arg or ""
         local arg1, arg2 = strsplit(" ", arg, 2)
-        local player = getPlayer(arg1)
-        local name = player["name"]
-        local role = getRoleId(arg2)
-
-        -- add role to player
-        player["roles"][role] = true
-        print("> Added role '"..role.."' to player '"..name.."'.")
+        local player = Players.get(arg1)
+        if (player) then
+            local name = player.name
+            local role = Roles.checkRoleId(arg2)
+    
+            -- add role to player
+            player.roles[role] = true
+            print("> Added role '"..role.."' to player '"..name.."'.")
+        end
     end,
 
     ["remove-role"] = function(arg)
         arg = arg or ""
         local arg1, arg2 = strsplit(" ", arg, 2)
-        local player = getPlayer(arg1)
-        local name = player["name"]
-        local role = getRoleId(arg2)
-
-        -- remove role from player
-        player["roles"][role] = nil
-        print("> Removed role '"..role.."' from player '"..name.."'.")
+        local player = Players.get(arg1)
+        if (player) then
+            local name = player["name"]
+            local role = Roles.checkRoleId(arg2)
+    
+            -- remove role from player
+            player["roles"][role] = nil
+            print("> Removed role '"..role.."' from player '"..name.."'.")
+        end
     end,
 
     ["add-item"] = function(arg)
         arg = arg or ""
         local arg1, arg2 = strsplit(" ", arg, 2)
-        local player = getPlayer(arg1)
-        local item = getItem(arg2)
-
-        -- add item to player
-        if (not player:addItem(item)) then
-            error("> Item '"..item.name.."' ("..item.itemId..") is not assigned to the class '"..player.class.."'.", 0)
+        local player = Players.get(arg1)
+        if (player) then
+            local item = getItem(arg2)
+    
+            -- add item to player
+            if (not player:addItem(item)) then
+                error("> Item '"..item.name.."' ("..item.itemId..") is not assigned to the class '"..player.class.."'.", 0)
+            end
+            print("> Added item '"..item.name.."' ("..item.itemId..") to player '"..player.name.."'.")
         end
-        print("> Added item '"..item.name.."' ("..item.itemId..") to player '"..player.name.."'.")
     end,
 
     ["remove-item"] = function(arg)
         arg = arg or ""
         local arg1, arg2 = strsplit(" ", arg, 2)
-        local player = getPlayer(arg1)
-        local item = getItem(arg2)
-        local name = player["name"]
-
-        -- remove role from player
-        if (player.needlist[item.itemId]) then
-            player.needlist[item.itemId] = nil
-            print("> Removed item '"..item.name.."' ("..item.itemId..") from player '"..name.."'.")
-        else
-            print("> The item '"..item.name.."' ("..item.itemId..") was not on the need-list for player '"..name.."'.")
+        local player = Players.get(arg1)
+        if (player) then
+            local item = getItem(arg2)
+            local name = player.name
+    
+            -- remove item from player
+            if (player:removeItem(item)) then
+                print("> Removed item '"..item.name.."' ("..item.itemId..") from player '"..name.."'.")
+            else
+                print("> The item '"..item.name.."' ("..item.itemId..") was not on the need-list for player '"..name.."'.")
+            end
         end
     end,
 

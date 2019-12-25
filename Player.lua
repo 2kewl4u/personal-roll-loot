@@ -256,3 +256,23 @@ function Player.decode(encoded)
         return player
     end
 end
+
+---
+-- Prints this player's information on the console.
+-- 
+function Player:print()
+    local player = self
+    print("> Player '"..player.name.."', Class: "..player.class..",")
+
+    print("Roles:")
+    for l,_ in pairs(player.roles) do
+        print("  "..l)
+    end
+
+    print("Need-list:")
+    local needlist = player.needlist
+    for itemId,_ in pairs(needlist) do
+        local item = ITEM_LIST[itemId]
+        if (item) then print("  "..item.name) end
+    end    
+end

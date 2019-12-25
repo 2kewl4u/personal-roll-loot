@@ -189,6 +189,29 @@ Roles.forClass = function(class)
     end
 end
 
+---
+-- Checks whether the given string represents a valid roleId.
+-- 
+-- @param #string arg
+--          the roleId string
+-- 
+-- @return #string
+--          the valid roleId or error
+--          
+Roles.checkRoleId = function(arg)
+    if (not arg) then error("> No role specified.", 0) end
+    local role = arg
+    if (not ROLES_LIST[role]) then
+        local errMsg = "> Undefined role '"..role.."'."
+        errMsg = errMsg.."\nPossible roles:"
+        for l,_ in pairs(ROLES_LIST) do
+            errMsg = errMsg.."\n  "..l
+        end
+        error(errMsg, 0)
+    end
+    return role
+end
+
 ns.Roles = Roles
 ns.CLASS_ROLES = CLASS_ROLES
 ns.ROLES_LIST = ROLES_LIST
