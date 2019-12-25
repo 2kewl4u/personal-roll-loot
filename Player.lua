@@ -1,8 +1,9 @@
 -- namespace
 local _, ns = ...;
 -- imports
-local CLASS_ROLES = ns.CLASS_ROLES
 local ITEM_LIST = ns.ITEM_LIST
+local Roles = ns.Roles
+local ROLES_LIST = ns.ROLES_LIST
 local utils = ns.utils
 
 ---
@@ -26,7 +27,7 @@ Player.__index = Player
 ns.Player = Player
 
 ---
--- Creates a set with all the roles the given class can take.
+-- Creates a set with all the roleIds the given class can take.
 --
 -- @param #string class
 --          the class constant, e.g. WARRIOR
@@ -34,11 +35,11 @@ ns.Player = Player
 -- @return #table
 --          a set of roles for the class, not nil
 --
-local function getClassRoles(class)
-    local classRoles = {}
-    -- copy the roles
-    for role,_ in pairs(CLASS_ROLES[class] or {}) do
-        classRoles[role] = true
+local function getRoleIds(class)
+    local classRoles = Roles.forClass(class)
+    -- copy the roleIds
+    for roleId,_ in pairs(classRoles) do
+        classRoles[roleId] = true
     end
     return classRoles
 end
@@ -80,7 +81,7 @@ function Player.new(name, realm, class)
     self.name = name
     self.realm = realm
     self.class = class
-    self.roles = getClassRoles(class)
+    self.roles = getRoleIds(class)
     self.needlist = createNeedList(class)
     return self
 end
@@ -99,8 +100,21 @@ function Player.copy(player)
     copy.name = player.name
     copy.realm = player.realm
     copy.class = player.class
-    copy.roles = utils.copy(player.roles)
     copy.needlist = utils.copy(player.needlist)
+    
+    -- copy the roles
+    copy.roles = {}
+    for roleId,_ in pairs(player.roles or {}) do
+        local role = ROLES_LIST[roleId]
+        if (role and role.class == player.class) then
+            copy.roles[roleId] = true
+        end
+    end
+    -- check that the roles are not empty
+    if (utils.tblsize(copy.roles) < 1) then
+        copy.roles = getRoleIds(player.class)
+    end
+     
     return copy
 end
 

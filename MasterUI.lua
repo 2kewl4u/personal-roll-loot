@@ -1,9 +1,8 @@
 -- namespace
 local _, ns = ...;
 -- imports
-local CLASS_ROLES = ns.CLASS_ROLES
 local RAIDS = ns.RAIDS
-local ROLES = ns.ROLES
+local Roles = ns.Roles
 local ScrollList = ns.ScrollList
 local utils = ns.utils
 local utilsUI = ns.utilsUI
@@ -37,6 +36,7 @@ local rollItemField
 local rollOrderScrollList
 
 -- menu functions
+local updateRoleButtons
 local function updateRollOrderFields(index, button, itemId, item)
     -- perform the roll before
     local status, result = pcall(ns.roll, itemId)
@@ -84,20 +84,9 @@ playerScrollList:SetLabelProvider(function(k, v) return k end)
 playerScrollList:SetContentProvider(function() return ns.DB.PLAYER_LIST end)
 playerScrollList:SetButtonScript("OnClick", function(index, button, name, player)
     playerNameField:SetText(name..", "..player.class)
-    for role in pairs(ROLES) do
-        local roleButton = roleButtons[role]
-        local checked = player.roles[role] == true
-        roleButton:SetChecked(checked)
-        if (CLASS_ROLES[player.class][role]) then
-            roleButton:SetEnabled(true)
-            roleButton.text:SetFontObject("GameFontNormal")
-        else
-            roleButton:SetEnabled(false)
-            roleButton.text:SetFontObject("GameFontDisable")
-        end
-    end
     playerNameField.player = player
     playerItemScrollList:Update()
+    updateRoleButtons()
 end)
 playerScrollList:SetButtonScript("OnEnter", function(index, button, name, player)
     utilsUI.showPlayerTooltip(button, name)
@@ -138,30 +127,65 @@ playerNameField:SetText("Player Name")
 playerNameField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 
 -- role buttons
-local roleIndex = 0
-for role in pairs(ROLES) do
-    local roleButton = CreateFrame("CheckButton", nil, playerTabFrame, "UICheckButtonTemplate")
-    roleButton:SetPoint("TOPLEFT", playerNameField, "BOTTOMLEFT", 0, (-SPACING - TEXT_FIELD_HEIGHT * roleIndex))
-    roleButton.text:SetText(role)
-    roleButton.text:SetFontObject("GameFontDisable")
-    roleButton:SetEnabled(false)
-    roleButton.role = role
+for roleIndex = 1, 4, 1 do
+    local roleButton = CreateFrame("CheckButton", nil, playerTabFrame, "PersonalLootRoleButton")
+    roleButton:SetPoint("TOPLEFT", playerNameField, "BOTTOMLEFT", 0, (-SPACING - TEXT_FIELD_HEIGHT * (roleIndex - 1)))
+    roleButton.text:SetFontObject("GameFontNormal")
     roleButton:SetScript("OnClick", function()
         local player = playerNameField.player
-        local name = player.name
-        if (player) then
+        local role = roleButton.role
+        if (player and role) then
             local checked = roleButton:GetChecked()
+            local roleId = role.roleId
             if (checked) then
-                player.roles[role] = true
+                player.roles[roleId] = true
             else
-                player.roles[role] = nil
+                player.roles[roleId] = nil
             end
             playerItemScrollList:Update()
         end
     end)
-    roleButtons[role] = roleButton
-    roleIndex = roleIndex + 1
+    roleButtons[roleIndex] = roleButton
 end
+
+local function updateRoleButton(button, role, checked)
+    checked = checked or false
+    if (role) then
+        button.text:SetText(role.name)
+        button.icon:SetTexture(role.texture)
+        button:Show()
+        button.role = role
+    else
+        button:Hide()
+    end
+    button:SetChecked(checked)
+end
+
+updateRoleButtons = function()
+    local player = playerNameField.player
+    if (player) then
+        local roles = Roles.forClass(player.class)
+        local index = 1
+        -- hide the roles if there is only one spec
+        if (utils.tblsize(roles) > 1) then
+            for roleId, role in pairs(roles) do
+                local button = roleButtons[index]
+                updateRoleButton(button, role, player.roles[roleId])
+                index = index + 1
+            end
+        end
+        -- clear unused role buttons
+        for i = index, 4, 1 do
+            local button = roleButtons[i]
+            updateRoleButton(button)
+        end
+    else
+        for index, button in ipairs(roleButtons) do
+            updateRoleButton(button)
+        end
+    end
+end
+updateRoleButtons()
 
 -- item list
 playerItemScrollList = ScrollList.new("PersonalRollLootPlayerItemListScrollFrame", playerTabFrame, 6, "PersonalLootItemButtonTemplate")
@@ -233,9 +257,7 @@ removePlayerButton:SetScript("OnClick", function()
         playerNameField.player = nil
         playerScrollList:Update()
         playerItemScrollList:Update()
-        for role, roleButton in pairs(roleButtons) do
-            roleButton:SetChecked(false)
-        end
+        updateRoleButtons()
     end
 end)
 

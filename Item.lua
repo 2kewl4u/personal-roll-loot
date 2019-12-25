@@ -176,24 +176,17 @@ end
 function Item:getPriority(player)
     local item = self
     if (player) then
-        -- first class priority
-        local classPriority = item.classes[player.class]
-        if (classPriority) then
-            -- get the best role priority
-            local rolePriority
-            for role, prio in pairs(item.roles) do
-                if (player.roles[role]) then
-                    if (rolePriority) then
-                        rolePriority = min(rolePriority, prio)
-                    else
-                        rolePriority = prio
-                    end
+        -- get the best role priority
+        local rolePriority
+        for role, prio in pairs(item.roles) do
+            if (player.roles[role]) then
+                if (rolePriority) then
+                    rolePriority = min(rolePriority, prio)
+                else
+                    rolePriority = prio
                 end
             end
-            -- take the lowest prio from class or role
-            if (rolePriority) then
-                return max(classPriority, rolePriority)
-            end
         end
+        return rolePriority
     end
 end

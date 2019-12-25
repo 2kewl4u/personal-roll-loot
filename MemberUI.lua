@@ -1,11 +1,10 @@
 -- namespace
 local _, ns = ...;
 -- imports
-local CLASS_ROLES = ns.CLASS_ROLES
 local ConfirmDialog = ns.ConfirmDialog
 local Items = ns.Items
 local Player = ns.Player
-local ROLES = ns.ROLES
+local Roles = ns.Roles
 local ScrollList = ns.ScrollList
 local utils = ns.utils
 local utilsUI = ns.utilsUI
@@ -67,15 +66,21 @@ memberNameField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 -- role buttons
 local roleIndex = 0
 local memberRoleButtons = {}
-for role in pairs(ROLES) do
-    local roleButton = CreateFrame("CheckButton", nil, memberTabFrame, "UICheckButtonTemplate")
-    roleButton:SetPoint("TOPLEFT", memberNameField, "BOTTOMLEFT", 0, -(SPACING + TEXT_FIELD_HEIGHT * roleIndex))
-    roleButton.text:SetText(role)
-    roleButton.text:SetFontObject("GameFontDisable")
-    roleButton:SetEnabled(false)
-    roleButton.role = role
-    memberRoleButtons[role] = roleButton
-    roleIndex = roleIndex + 1
+local _, class = UnitClass("player")
+local roles = Roles.forClass(class)
+-- hide the roles if there is only one spec
+if (utils.tblsize(roles) > 1) then
+    for roleId, role in pairs(roles) do
+        local roleButton = CreateFrame("CheckButton", nil, memberTabFrame, "PersonalLootRoleButton")
+        roleButton:SetPoint("TOPLEFT", memberNameField, "BOTTOMLEFT", 0, -(SPACING + TEXT_FIELD_HEIGHT * roleIndex))
+        roleButton.text:SetText(role.name)
+        roleButton.text:SetFontObject("GameFontDisable")
+        roleButton.icon:SetTexture(role.texture)
+        roleButton:SetEnabled(false)
+        roleButton.role = role
+        memberRoleButtons[roleId] = roleButton
+        roleIndex = roleIndex + 1
+    end
 end
 
 -- item list
@@ -203,15 +208,11 @@ updateMemberInfo = function()
     createMemberInfo()
     local class = memberInfo.class
     memberNameField:SetText(memberInfo.name..", "..class)
-    for role in pairs(ROLES) do
-        local roleButton = memberRoleButtons[role]
-        if (memberInfo.roles[role]) then
+    for roleId, roleButton in pairs(memberRoleButtons) do
+        if (memberInfo.roles[roleId]) then
             roleButton:SetChecked(true)
         else
             roleButton:SetChecked(false)
-        end
-        if (CLASS_ROLES[class][role]) then
-            roleButton.text:SetFontObject("GameFontNormal")
         end
     end
     memberItemScrollList:Update()
