@@ -97,9 +97,8 @@ memberItemScrollList:SetContentProvider(function()
 end)
 memberItemScrollList:SetLabelProvider(function(itemId, item, button)
     local disabled = true
-    local player = memberInfo
-    if (player) then
-        if (player.needlist[itemId]) then disabled = false end
+    if (memberInfo) then
+        if (memberInfo.needlist[itemId]) then disabled = false end
     end
 
     button.Priority:SetText(item:getPriority(memberInfo))

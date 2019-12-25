@@ -30,4 +30,5 @@ ConfirmDialog.lua
 MasterUI.lua
 MemberUI.lua
 LootUI.lua
+RoleCheckUI.lua
 PersonalRollLoot.lua
