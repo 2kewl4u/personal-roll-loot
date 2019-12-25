@@ -40,114 +40,114 @@ local ROLES_LIST = {
         roleId = ROLE_WARLOCK,
         name = "Warlock",
         class = CLASS_WARLOCK,
-        texture = "Interface\\ICONS\\ClassIcon_Warlock"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\ClassIcon_Warlock"
     },
     [ROLE_MAGE] = {
         roleId = ROLE_MAGE,
         name = "Mage",
         class = CLASS_MAGE,
-        texture = "Interface\\ICONS\\ClassIcon_Mage"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\ClassIcon_Mage"
     },
     [ROLE_HUNTER] = {
         roleId = ROLE_HUNTER,
         name = "Hunter",
         class = CLASS_HUNTER,
-        texture = "Interface\\ICONS\\ClassIcon_Hunter"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\ClassIcon_Hunter"
     },
     [ROLE_ROGUE] = {
         roleId = ROLE_ROGUE,
         name = "Rogue",
         class = CLASS_ROGUE,
-        texture = "Interface\\ICONS\\ClassIcon_Rogue"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\ClassIcon_Rogue"
     },
     -- druid specializations
     [ROLE_FERAL_DRUID] = {
         roleId = ROLE_FERAL_DRUID,
         name = "Feral",
         class = CLASS_DRUID,
-        texture = "Interface\\ICONS\\TalentSpec_Druid_Feral_Cat"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\TalentSpec_Druid_Feral_Cat"
     },
     [ROLE_GUARDIAN_DRUID] = {
         roleId = ROLE_GUARDIAN_DRUID,
         name = "Guardian",
         class = CLASS_DRUID,
-        texture = "Interface\\ICONS\\TalentSpec_Druid_Feral_Bear"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\TalentSpec_Druid_Feral_Bear"
     },
     [ROLE_BALANCE_DRUID] = {
         roleId = ROLE_BALANCE_DRUID,
         name = "Balance",
         class = CLASS_DRUID,
-        texture = "Interface\\ICONS\\TalentSpec_Druid_Balance"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\TalentSpec_Druid_Balance"
     },
     [ROLE_RESTO_DRUID] = {
         roleId = ROLE_RESTO_DRUID,
         name = "Restoration",
         class = CLASS_DRUID,
-        texture = "Interface\\ICONS\\TalentSpec_Druid_Restoration"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\TalentSpec_Druid_Restoration"
     },
     -- priest specializations
     [ROLE_HOLY_PRIEST] = {
         roleId = ROLE_HOLY_PRIEST,
         name = "Holy",
         class = CLASS_PRIEST,
-        texture = "Interface\\ICONS\\Spell_Holy_GuardianSpirit"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\Spell_Holy_GuardianSpirit"
     },
     [ROLE_SHADOW_PRIEST] = {
         roleId = ROLE_SHADOW_PRIEST,
         name = "Shadow",
         class = CLASS_PRIEST,
-        texture = "Interface\\ICONS\\Spell_Shadow_ShadowWordPain"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\Spell_Shadow_ShadowWordPain"
     },
     -- shaman specializations
     [ROLE_RESTO_SHAMAN] = {
         roleId = ROLE_RESTO_SHAMAN,
         name = "Restoration",
         class = CLASS_SHAMAN,
-        texture = "Interface\\ICONS\\Spell_Nature_HealingWaveLesser"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\Spell_Nature_HealingWaveLesser"
     },
     [ROLE_ELEMENTAL_SHAMAN] = {
         roleId = ROLE_ELEMENTAL_SHAMAN,
         name = "Elemental",
         class = CLASS_SHAMAN,
-        texture = "Interface\\ICONS\\Spell_Nature_Lightning"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\Spell_Nature_Lightning"
     },
     [ROLE_ENHANCEMENT_SHAMAN] = {
         roleId = ROLE_ENHANCEMENT_SHAMAN,
         name = "Enhancement",
         class = CLASS_SHAMAN,
-        texture = "Interface\\ICONS\\Spell_Nature_LightningShield"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\Spell_Nature_LightningShield"
     },
     -- paladin specializations
     [ROLE_HOLY_PALADIN] = {
         roleId = ROLE_HOLY_PALADIN,
         name = "Holy",
         class = CLASS_PALADIN,
-        texture = "Interface\\ICONS\\Spell_Holy_HolyBolt"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\Spell_Holy_HolyBolt"
     },
     [ROLE_RETRI_PALADIN] = {
         roleId = ROLE_RETRI_PALADIN,
         name = "Retribution",
         class = CLASS_PALADIN,
-        texture = "Interface\\ICONS\\Spell_Holy_AuraOfLight"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\Spell_Holy_AuraOfLight"
     },
     [ROLE_PROT_PALADIN] = {
         roleId = ROLE_PROT_PALADIN,
         name = "Protection",
         class = CLASS_PALADIN,
-        texture = "Interface\\ICONS\\SPELL_HOLY_DEVOTIONAURA"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\SPELL_HOLY_DEVOTIONAURA"
     },
     -- warrior specializations
     [ROLE_PROT_WARRIOR] = {
         roleId = ROLE_PROT_WARRIOR,
         name = "Protection",
         class = CLASS_WARRIOR,
-        texture = "Interface\\ICONS\\INV_Shield_06"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\INV_Shield_06"
     },
     [ROLE_ARMS_WARRIOR] = {
         roleId = ROLE_ARMS_WARRIOR,
         name = "Arms",
         class = CLASS_WARRIOR,
-        texture = "Interface\\ICONS\\Ability_Rogue_Eviscerate"
+        texture = "Interface\\Addons\\PersonalRollLoot\\textures\\roles\\Ability_Rogue_Eviscerate"
     }
     
 }
