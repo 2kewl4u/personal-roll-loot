@@ -195,21 +195,20 @@ end
 -- @param #string arg
 --          the roleId string
 -- 
--- @return #string
---          the valid roleId or error
+-- @return #boolean
+--          true if the role is valid, false otherwise
 --          
 Roles.checkRoleId = function(arg)
-    if (not arg) then error("> No role specified.", 0) end
+    if (not arg) then
+        print("> No role specified.")
+        return false
+    end
     local role = arg
     if (not ROLES_LIST[role]) then
-        local errMsg = "> Undefined role '"..role.."'."
-        errMsg = errMsg.."\nPossible roles:"
-        for l,_ in pairs(ROLES_LIST) do
-            errMsg = errMsg.."\n  "..l
-        end
-        error(errMsg, 0)
+        print("> Undefined role '"..role.."'.")
+        return false
     end
-    return role
+    return true
 end
 
 ns.Roles = Roles

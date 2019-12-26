@@ -4,7 +4,7 @@ local _, ns = ...;
 local AddonMessage = ns.AddonMessage
 
 -- the addon message prefix - not the event prefix
-local EVENT_MESSAGE = "PRL_EVENT"
+local EVENT_MESSAGE = "PRL_EVENT_MSG"
 
 ---
 -- Contains utility methods to send and receive event messages.
@@ -32,7 +32,6 @@ eventFrame:RegisterEvent("CHAT_MSG_ADDON")
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_MESSAGE)
 eventFrame:SetScript("OnEvent", function(frame, event, arg1, arg2, arg3, arg4)
     if (event == "CHAT_MSG_ADDON" and arg1 == EVENT_MESSAGE) then
-        print(arg2)
         AddonMessage.Receive(arg1, arg2, arg3, arg4, function(prefix, message, type, sender)
             -- remove realm suffix
             sender = strsplit("-", sender, 2)

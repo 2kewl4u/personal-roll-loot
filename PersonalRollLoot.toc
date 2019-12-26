@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Title: Personal Roll Loot
-## Version: 0.3.1
+## Version: 0.4.0
 ## Author: Ben
 ## SavedVariables: PersonalRollLootDB
 
@@ -19,6 +19,7 @@ Libs\AceComm-3.0\ChatThrottleLib.lua
 AddonMessage.lua
 events\Events.lua
 events\RoleCheckEvent.lua
+events\RoleSelectionEvent.lua
 
 SavedVariables.lua
 

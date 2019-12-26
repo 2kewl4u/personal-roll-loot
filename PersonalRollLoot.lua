@@ -284,11 +284,12 @@ local COMMANDS = {
         local player = Players.get(arg1)
         if (player) then
             local name = player.name
-            local role = Roles.checkRoleId(arg2)
-    
-            -- add role to player
-            player.roles[role] = true
-            print("> Added role '"..role.."' to player '"..name.."'.")
+            local role = arg2
+            if (Roles.checkRoleId(role)) then
+                -- add role to player
+                player.roles[role] = true
+                print("> Added role '"..role.."' to player '"..name.."'.")
+            end
         end
     end,
 
@@ -298,11 +299,12 @@ local COMMANDS = {
         local player = Players.get(arg1)
         if (player) then
             local name = player["name"]
-            local role = Roles.checkRoleId(arg2)
-    
-            -- remove role from player
-            player["roles"][role] = nil
-            print("> Removed role '"..role.."' from player '"..name.."'.")
+            local role = arg2
+            if (Roles.checkRoleId(role)) then
+                -- remove role from player
+                player["roles"][role] = nil
+                print("> Removed role '"..role.."' from player '"..name.."'.")
+            end
         end
     end,
 

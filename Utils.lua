@@ -22,6 +22,40 @@ utils.tblsize = function(tbl)
 end
 
 ---
+-- Checks whether the given tables are equal, thus having the same size,
+-- both have the same keys and each value is reference equal (==) to the
+-- value referenced under the same key in the other table.
+-- 
+-- Note that if both tables are nil, this method also returns true.
+-- 
+-- @param #table tbl1
+--          the first table
+-- @param #table tbl2
+--          the second table
+-- 
+-- @return #boolean
+--          true if the tables are equal, false otherwise
+-- 
+utils.tblequals = function(tbl1, tbl2)
+    -- nil check
+    if (tbl1 == nil or tbl2 == nil) then
+        return tbl1 == tbl2
+    end
+    
+    for key, value in pairs(tbl1) do
+        if (value ~= tbl2[key]) then
+            return false
+        end
+    end
+    for key, value in pairs(tbl2) do
+        if (value ~= tbl1[key]) then
+            return false
+        end
+    end
+    return true
+end
+
+---
 -- Copies the key-value pairs from the given table into a new table. Note that
 -- the returned table is not a deep copy of the given table! Returns nil if the
 -- given table is nil.

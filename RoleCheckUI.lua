@@ -112,6 +112,9 @@ okButton:SetPoint("BOTTOMLEFT", roleCheckFrame, "BOTTOMLEFT", MARGIN, MARGIN)
 okButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 okButton:SetText("Ok")
 okButton:SetScript("OnClick", function()
+    if (player) then
+        ns.RoleSelectionEvent.send(player.roles)
+    end
     roleCheckFrame:Hide()
 end)
 
