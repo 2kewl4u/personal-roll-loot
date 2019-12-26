@@ -132,7 +132,7 @@ ns.roll = function(arg)
     return RollOrder.of(instance, item)
 end
 
-ns.sendMemberInfo = function(name)
+local function sendMemberInfo(name)
     -- only announce if you are the raid/group leader
     if (IsInGroup() and UnitIsGroupLeader("player")) then
         local player = ns.DB.PLAYER_LIST[name]
@@ -142,13 +142,6 @@ ns.sendMemberInfo = function(name)
         else
             print("> Player '"..name.."' is not registered for Personal Roll Loot.")
         end
-    end
-end
-
-ns.announceMemberInfo = function()
-    -- only announce if you are the raid/group leader
-    if (IsInGroup() and UnitIsGroupLeader("player")) then
-        utils.forEachRaidMember(ns.sendMemberInfo)
     end
 end
 
@@ -372,8 +365,7 @@ local COMMANDS = {
     ["roll"] = function(arg)
         local rollOrder = ns.roll(arg)
         rollOrder:print()
-    end,
-    ["announce"] = ns.announceMemberInfo
+    end
 }
 
 -- ------------------------------------------------------- --
@@ -557,7 +549,7 @@ eventHandler[MSG_ROLL_RESPONSE] = function(message, sender)
 end
 
 eventHandler[MSG_MEMBER_INFO_REQUEST] = function(message, sender)
-    ns.sendMemberInfo(sender)
+    sendMemberInfo(sender)
 end
 
 eventHandler[MSG_REMOVAL_REQUEST] = function(message, sender)
@@ -570,7 +562,7 @@ eventHandler[MSG_REMOVAL_REQUEST] = function(message, sender)
                 if (player and Items.canRemove(item, player)) then
                     removeItemFromPlayer(player, item)
                     -- respond back with an update of the player info
-                    ns.sendMemberInfo(sender)
+                    sendMemberInfo(sender)
                 end
             end
         end

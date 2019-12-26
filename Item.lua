@@ -148,18 +148,18 @@ function Item:hasRole(roles)
 end
 
 ---
--- Indicates whether the this item drops in the given instance.
+-- Indicates whether the this item drops in the given raid.
 --
--- @param #Instance instance
---          the instance to check for
+-- @param #string raid
+--          the raid name to check for
 --
 -- @return #boolean
---          true if this item drops in the instance, nil otherwise
+--          true if this item drops in the raid, nil otherwise
 --
-function Item:dropsIn(instance)
+function Item:dropsIn(raid)
     local item = self
-    if (instance) then
-        return item.raids[instance.raid]
+    if (raid) then
+        return item.raids[raid]
     end
 end
 

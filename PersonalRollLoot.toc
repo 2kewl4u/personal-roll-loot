@@ -17,6 +17,9 @@ RollOrder.lua
 
 Libs\AceComm-3.0\ChatThrottleLib.lua
 AddonMessage.lua
+events\Events.lua
+events\RoleCheckEvent.lua
+
 SavedVariables.lua
 
 frames\PersonalLootItemButton.xml

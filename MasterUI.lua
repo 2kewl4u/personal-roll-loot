@@ -415,7 +415,7 @@ local announceButton = CreateFrame("Button", nil, instancesTabFrame, "GameMenuBu
 announceButton:SetPoint("BOTTOMLEFT", inviteButton, "TOPLEFT", 0, SPACING)
 announceButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 announceButton:SetText("Announce")
-announceButton:SetScript("OnClick", function() ns.announceMemberInfo() end)
+announceButton:SetScript("OnClick", function() ns.RoleCheckEvent.broadcast() end)
 
 
 
@@ -444,7 +444,7 @@ rollItemsScrollList:SetFilter(function(itemId, item)
     if (ns.DB.activeInstance) then
         local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
         if (instance) then
-            return item:dropsIn(instance) and instance.history[item.itemId]
+            return item:dropsIn(instance.raid) and instance.history[item.itemId]
         end
     end
 end)
