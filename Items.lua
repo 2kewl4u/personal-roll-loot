@@ -2027,10 +2027,57 @@ Items.getLootItems = function()
     return items
 end
 
+---
+-- Returns the raid items from the current player's inventory and bags.
+--
+-- The items are placed into a map (itemId -> item).
+--
+-- @return #map
+--          the items in the inventory
+--
+Items.getInventoryItems = function()
+    local items = {}
+    -- check the inventory of the player
+    for invSlot = 1, 19, 1 do
+        local itemId = GetInventoryItemID("player", invSlot)
+        if (itemId) then
+            local item = ITEM_LIST[itemId]
+            if (item) then
+                items[itemId] = item
+            end
+        end
+    end
+    -- check all bags
+    for bagId = 0, 4, 1 do
+        for slot = 1, 18, 1 do
+            local itemId = GetContainerItemID(bagId, slot)
+            if (itemId) then
+                local item = ITEM_LIST[itemId]
+                if (item) then
+                    items[itemId] = item
+                end
+            end
+        end
+    end
+    return items
+end
+
+---
+-- Indicates whether the player with the given memberInfo can remove the item from its
+-- need-list.
+--
+-- @param #Item playerItem
+--          the item that shall be removed
+-- @param #table memberInfo
+--          the player from whom the item shall be removed
+--
+-- @return #boolean
+--          true if the item can be removed, false otherwise
+--
 Items.canRemove = function(playerItem, memberInfo)
     if (playerItem and memberInfo and
         memberInfo.needlist[playerItem.itemId]) then
-        
+
         if (playerItem.removable) then
             return true
         end
@@ -2052,7 +2099,7 @@ Items.canRemove = function(playerItem, memberInfo)
                     -- the player doesn't have the item
                     (not memberInfo.needlist[itemId])
                     ) then
-    
+
                     if (item.slotSize == 1 or found >= 1) then
                         return true
                     else
