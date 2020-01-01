@@ -411,13 +411,11 @@ inviteButton:SetScript("OnClick", function()
     end
 end)
 
-local announceButton = CreateFrame("Button", nil, instancesTabFrame, "GameMenuButtonTemplate")
-announceButton:SetPoint("BOTTOMLEFT", inviteButton, "TOPLEFT", 0, SPACING)
-announceButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
-announceButton:SetText("Announce")
-announceButton:SetScript("OnClick", function() ns.RoleCheckEvent.broadcast() end)
-
-
+local roleCheckButton = CreateFrame("Button", nil, instancesTabFrame, "GameMenuButtonTemplate")
+roleCheckButton:SetPoint("BOTTOMLEFT", inviteButton, "TOPLEFT", 0, SPACING)
+roleCheckButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
+roleCheckButton:SetText("Role Check")
+roleCheckButton:SetScript("OnClick", function() ns.RoleCheckEvent.broadcast() end)
 
 local rollItemsScrollList = ScrollList.new("PersonalRollLootRollItemScrollFrame", rollTabFrame, 10, "LargeItemButtonTemplate")
 rollItemsScrollList:SetPoint("TOPLEFT", rollTabFrame, "TOPLEFT", MARGIN, -MARGIN)
