@@ -1770,8 +1770,8 @@ local ITEM_LIST = {
         itemId = 17064,
         name = "Shard of the Scale",
         roles = { [ROLE_HOLY_PALADIN] = 1, [ROLE_RESTO_SHAMAN] = 1, [ROLE_ELEMENTAL_SHAMAN] = 2, [ROLE_RESTO_DRUID] = 1, [ROLE_BALANCE_DRUID] = 2,
-            [ROLE_HOLY_PRIEST] = 1, [ROLE_SHADOW_PRIEST] = 2, [ROLE_MAGE] = 2 },
-        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_MAGE] = true },
+            [ROLE_HOLY_PRIEST] = 1, [ROLE_SHADOW_PRIEST] = 2 },
+        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true },
         raids = { [RAID_ONYXIA] = true },
         slot = SLOT_TRINKET,
         slotSize = 2,
@@ -2062,6 +2062,34 @@ Items.getInventoryItems = function()
     return items
 end
 
+Items.checkInventoryItems = function(player)
+    local items = Items.getInventoryItems()
+    for itemId, item in pairs(items) do
+        if (not player.needlist[itemId]) then
+            -- the item was already removed from the list 
+            items[itemId] = nil
+        end
+    end
+    return items
+end
+
+---
+-- Removes the items in the inventory of the player from its need-list.
+-- 
+-- Note that this method is only intended to remove the items from the raid or group leader.
+-- It does not send an event to the leader to get some items removed.
+-- 
+Items.removeInventoryItems = function()
+    local playerName = UnitName("player")
+    local player = ns.DB.PLAYER_LIST[playerName]
+    if (player) then
+        local items  = Items.getInventoryItems()
+        for itemId, item in pairs(items) do
+            Items.removeFromPlayer(player, item)
+        end
+    end
+end
+
 ---
 -- Indicates whether the player with the given memberInfo can remove the item from its
 -- need-list.
@@ -2107,6 +2135,29 @@ Items.canRemove = function(playerItem, memberInfo)
                     end
                 end
             end
+        end
+    end
+end
+
+---
+-- Removes the given item from the given player and also all addition items (like quest
+-- items).
+-- 
+-- @param #Player player
+--          the player from who to remove the item
+-- @param #Item item
+--          the item to be removed from the player
+-- 
+Items.removeFromPlayer = function(player, item)
+    if (player and item) then
+        if (player:removeItem(item)) then
+            print("> Removed item '"..item:getName().."' ("..item.itemId..") from player '"..player.name.."'.")
+        end
+
+        -- swallow additional items
+        for index, itemId in ipairs(item.swallows or {}) do
+            local addItem = ITEM_LIST[itemId]
+            Items.removeFromPlayer(player, addItem)
         end
     end
 end

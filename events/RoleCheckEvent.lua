@@ -2,6 +2,7 @@
 local _, ns = ...;
 -- imports
 local Events = ns.Events
+local Items = ns.Items
 local Player = ns.Player
 local utils = ns.utils
 
@@ -81,35 +82,32 @@ function RoleCheckEvent.decode(encoded)
 end
 
 ---
--- Sends a RoleCheckEvent to the player with the given name.
--- 
--- @param #string playerName
---          the name of the player to which the event will be sent
--- 
-function RoleCheckEvent.send(playerName)
-    -- only announce if you are the raid/group leader
-    if (IsInGroup() and UnitIsGroupLeader("player")) then
-        local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
-        if (instance) then
-            local player = ns.DB.PLAYER_LIST[playerName]
-            if (player) then
-                Events.sent(RoleCheckEvent.new(player, instance.raid))
-            else
-                print("> Player '"..playerName.."' is not registered for Personal Roll Loot.")
-            end
-        else
-            print("> No active instance.")
-        end
-    end
-end
-
----
 -- Sends a RoleCheckEvent to all players in the party or raid group.
 -- 
 function RoleCheckEvent.broadcast()
     -- only announce if you are the raid/group leader
     if (IsInGroup() and UnitIsGroupLeader("player")) then
-        utils.forEachRaidMember(RoleCheckEvent.send)
+        if (ns.DB.activeInstance) then
+            local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
+            if (instance) then
+                utils.forEachRaidMember(function(playerName)
+                    if (not instance.players[playerName] and not instance.rolecheck[playerName]) then
+                        local player = ns.DB.PLAYER_LIST[playerName]
+                        if (player) then
+                            Events.sent(RoleCheckEvent.new(player, instance.raid))
+                        else
+                            print("> Player '"..playerName.."' is not registered for Personal Roll Loot.")
+                        end
+                    end
+                end)
+            else
+                print("> Unknown instance '"..ns.DB.activeInstance.."'.")
+            end
+        else
+            print("> No active instance.")
+        end
+    else
+        print("> You must be the group or raid leader to send a role check.")
     end    
 end
 
@@ -122,6 +120,15 @@ ns.eventHandler[EVENT_ID] = function(message, sender)
     -- only accept announcements from raid/group leader
     if (message and IsInGroup() and utils.isGroupLeader(sender)) then
         local event = RoleCheckEvent.decode(message)
-        ns.RoleCheckUI.open(event)
+        if (event) then
+            -- check the inventory for items already present in the need-list
+            local items = Items.checkInventoryItems(event.player)
+            if (utils.tblempty(items)) then
+                ns.RoleCheckUI.open(event)
+            else
+                -- delay the role check and report the already present items
+                ns.InventoryReportEvent.send(sender, items)
+            end
+        end
     end
 end

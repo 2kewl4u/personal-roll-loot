@@ -22,6 +22,24 @@ utils.tblsize = function(tbl)
 end
 
 ---
+-- Indicates whether the given table is empty. Returns also true if the table is nil.
+-- 
+-- @param #table tbl
+--          the table to check
+-- 
+-- @return #boolean
+--          true if the table is empty or nil, false otherwise
+-- 
+utils.tblempty = function(tbl)
+    if (tbl) then
+        for _ in pairs(tbl) do
+            return false            
+        end
+    end
+    return true
+end
+
+---
 -- Checks whether the given tables are equal, thus having the same size,
 -- both have the same keys and each value is reference equal (==) to the
 -- value referenced under the same key in the other table.

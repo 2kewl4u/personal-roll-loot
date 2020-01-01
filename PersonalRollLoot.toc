@@ -20,6 +20,7 @@ AddonMessage.lua
 events\Events.lua
 events\RoleCheckEvent.lua
 events\RoleSelectionEvent.lua
+events\InventoryReportEvent.lua
 
 SavedVariables.lua
 

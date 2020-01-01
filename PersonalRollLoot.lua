@@ -519,7 +519,7 @@ eventHandler[MSG_ROLL_RESPONSE] = function(message, sender)
             if (rollType == ROLL_REMOVE) then
                 local player = ns.DB.PLAYER_LIST[sender]
                 if (player) then
-                    removeItemFromPlayer(player, currentRollOrder.item)
+                    Items.removeFromPlayer(player, currentRollOrder.item)
                 end
             end
 
@@ -562,7 +562,7 @@ eventHandler[MSG_REMOVAL_REQUEST] = function(message, sender)
             if (item) then
                 local player = ns.DB.PLAYER_LIST[sender]
                 if (player and Items.canRemove(item, player)) then
-                    removeItemFromPlayer(player, item)
+                    Items.removeFromPlayer(player, item)
                     -- respond back with an update of the player info
                     sendMemberInfo(sender)
                 end
@@ -614,7 +614,7 @@ local function parseLootMessage(msg, member)
             local itemName = getItemNameFromChat(msg)
             if (itemName) then
                 local item = Items.forName(itemName)
-                removeItemFromPlayer(player, item)
+                Items.removeFromPlayer(player, item)
             end
         end
     end
@@ -630,7 +630,7 @@ local function inspectTarget()
                 local itemId = GetInventoryItemID(unit, i)
                 if (itemId) then
                     local item = ITEM_LIST[itemId]
-                    removeItemFromPlayer(player, item)
+                    Items.removeFromPlayer(player, item)
                 end
             end
         end

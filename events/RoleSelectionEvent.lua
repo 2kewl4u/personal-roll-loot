@@ -103,6 +103,7 @@ ns.eventHandler[EVENT_ID] = function(message, sender)
     if (player) then
         local event = RoleSelectionEvent.decode(message)
         if (event) then
+            -- assign the new roles if changed
             if (not utils.tblequals(player.roles, event.roles)) then
                 local roles = {}
                 for roleId in pairs(event.roles) do
@@ -115,6 +116,13 @@ ns.eventHandler[EVENT_ID] = function(message, sender)
                     -- override the players roles
                     player.roles = roles
                     print("> Player '"..player.name.."' changed roles to '"..utils.toCSV(roles, tostring).."'.")
+                end
+            end
+            -- mark the player in the active instance as ready
+            if (ns.DB.activeInstance) then
+                local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
+                if (instance) then
+                    instance.rolecheck[sender] = true
                 end
             end
         end

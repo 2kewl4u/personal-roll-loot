@@ -19,7 +19,9 @@ local Instance = {
     -- a map of player names pointing to their priority lists
     players,
     -- a set of items that dropped in the instance so far
-    history
+    history,
+    -- a set of players that responded to the role check
+    rolecheck
 }
 Instance.__index = Instance
 ns.Instance = Instance
@@ -42,6 +44,7 @@ function Instance.new(name, raid)
     self.created = date("%y-%m-%d %H:%M:%S")
     self.players = {}
     self.history = {}
+    self.rolecheck = {}
     return self
 end
 
@@ -60,6 +63,7 @@ function Instance.copy(instance)
     copy.raid = instance.raid
     copy.created = instance.created
     copy.history = utils.copy(instance.history) or {}
+    copy.rolecheck = utils.copy(instance.rolecheck) or {}
     copy.players = {}
     for name, list in pairs(instance.players) do
         copy.players[name] = utils.copy(list)

@@ -1,6 +1,7 @@
 -- namespace
 local _, ns = ...;
 -- imports
+local Items = ns.Items
 local Players = ns.Players
 local RAIDS = ns.RAIDS
 local Roles = ns.Roles
@@ -529,6 +530,9 @@ MasterUI.setLootItems = function(items)
         ShowUIPanel(MasterUIFrame)
     end
 end
+
+-- scan the master inventory when the frame is opened
+MasterUIFrame:SetScript("OnShow", Items.removeInventoryItems)
 
 MasterUI.toggleUI = function() utilsUI.toggleUI(MasterUIFrame) end
 
