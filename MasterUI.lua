@@ -1,6 +1,7 @@
 -- namespace
 local _, ns = ...;
 -- imports
+local ConfirmDialog = ns.ConfirmDialog
 local Instances = ns.Instances
 local Items = ns.Items
 local Players = ns.Players
@@ -390,8 +391,24 @@ inviteButton:SetPoint("BOTTOMLEFT", deleteInstanceButton, "TOPLEFT", 0, SPACING)
 inviteButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 inviteButton:SetText("Invite")
 inviteButton:SetScript("OnClick", function()
-    Instances.invite()
-    instancePlayersScrollList:Update()
+    local ready, members = Instances.ready()
+    if (ready) then
+        -- the function to invite the players
+        local invite = function()
+            Instances.invite(nil) -- invite all
+            instancePlayersScrollList:Update()
+        end
+        
+        if (ready < members) then
+            ConfirmDialog.open("Only "..ready.." of "..members.." raid or party members responded to the role check. Continue?", function(result)
+                if (result) then
+                    invite()
+                end
+            end)
+        else
+            invite()
+        end
+    end
 end)
 
 local roleCheckButton = CreateFrame("Button", nil, instancesTabFrame, "GameMenuButtonTemplate")

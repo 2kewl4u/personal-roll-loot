@@ -2,18 +2,14 @@
 local _, ns = ...;
 -- imports
 local AddonMessage = ns.AddonMessage
-local Instance = ns.Instance
 local Instances = ns.Instances
 local ITEM_LIST = ns.ITEM_LIST
 local Items = ns.Items
 local Player = ns.Player
 local Players = ns.Players
-local RAIDS = ns.RAIDS
 local Roles = ns.Roles
 local RollOrder = ns.RollOrder
-local ScrollList = ns.ScrollList
 local utils = ns.utils
-local utilsUI = ns.utilsUI
 
 local MasterUI = ns.MasterUI
 local MemberUI = ns.MemberUI

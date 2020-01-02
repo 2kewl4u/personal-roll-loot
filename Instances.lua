@@ -148,6 +148,35 @@ Instances.invite = function(arg)
 end
 
 ---
+-- Returns how many members of the raid or party did respond to the role check.
+-- 
+-- Returns two values: the number of players that responded to the role check and the number of
+-- players in the raid. Returns nil if there is no instance active.
+-- 
+-- @return #number
+--          number of players ready and total number of players
+-- 
+Instances.ready = function()
+    if (not ns.DB.activeInstance) then
+        print("> No active instance.")
+    else
+        local instance = Instances.get(ns.DB.activeInstance)
+        if (instance) then
+            local ready = 0
+            local members = 0
+            utils.forEachRaidMember(function(name)
+                if (instance.rolecheck[name]) then
+                    ready = ready + 1
+                end
+                -- count total raid members
+                members = members + 1
+            end)
+            return ready, members
+        end
+    end
+end
+
+---
 -- Creates and returns the RollOrder for the item with the given itemId or name within the
 -- currently active instance.
 -- 
