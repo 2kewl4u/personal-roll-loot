@@ -3,6 +3,7 @@ local _, ns = ...;
 -- imports
 local AddonMessage = ns.AddonMessage
 local Instance = ns.Instance
+local Instances = ns.Instances
 local ITEM_LIST = ns.ITEM_LIST
 local Items = ns.Items
 local Player = ns.Player
@@ -45,93 +46,7 @@ local currentRollOrder
 local SYNC_DELAY = 30
 local syncRequestTimes = {}
 
--- helper functions
-local function getItem(arg)
-    if (not arg) then error("> No item id or name specified.", 0) end
-    local itemId = tonumber(arg) -- will be nil if not a number
-    for _, item in pairs(ITEM_LIST) do
-        if (item.itemId == itemId or item:getName() == arg) then
-            return item
-        end
-    end
-    error("> Item with itemId or name '"..arg.."' not found.", 0)
-end
-
-local function getInstance(name)
-    if (not name) then error("> No instance name specified.", 0) end
-    local instance = ns.DB.INSTANCE_LIST[name]
-    if (not instance) then error("> No instance with the name '"..name.."' found.", 0) end
-    return instance
-end
-
 -- core functions
-ns.createInstance = function(name, raidName)
-	name = name or ""
-    if (strlen(name) < 1) then error("> Invalid instance name '"..name.."'.", 0) end
-    if (not raidName) then error("> No raid name specified.", 0) end
-    if (not RAIDS[raidName]) then error("> No raid with the name '"..raidName.."' found.", 0) end
-
-    if (ns.DB.INSTANCE_LIST[name]) then error("> An instance with the name '"..name.."' is already registered.", 0) end
-    ns.DB.INSTANCE_LIST[name] = Instance.new(name, raidName)
-    print("> Created new instance '"..name.."'.")
-end
-
-ns.deleteInstance = function(arg)
-    local instance = getInstance(arg)
-    local name = instance.name
-    ns.DB.INSTANCE_LIST[name] = nil
-    print("> Removed instance '"..name.."'.")
-    if (ns.DB.activeInstance == name) then ns.DB.activeInstance = nil end
-end
-
-ns.activeInstance = function(arg)
-    local instance = getInstance(arg)
-    ns.DB.activeInstance = instance.name
-    print("> Instance '"..ns.DB.activeInstance.."' is now the active instance.")
-end
-
-ns.invite = function(arg)
-    if (not ns.DB.activeInstance) then error("> No active instance.", 0) end
-    local instance = getInstance(ns.DB.activeInstance)
-
-    if (not arg) then
-        local invited = 0
-        utils.forEachRaidMember(function(name)
-            local player = Players.get(name)
-            if (instance:addPlayer(player)) then
-                invited = invited + 1
-            end
-        end)
-        print("> Invited "..invited.." players.")
-    else
-        local player = Players.get(arg)
-        if (instance:addPlayer(player, true)) then
-            print("> Created loot table for player '"..player.name.."'.")
-        end
-    end
-end
-
-local function removeItemFromPlayer(player, item)
-    if (item) then
-        if (player:removeItem(item)) then
-            print("> Removed item '"..item:getName().."' ("..item.itemId..") from player '"..player.name.."'.")
-        end
-
-        -- swallow additional items
-        for index, itemId in ipairs(item.swallows or {}) do
-            local addItem = ITEM_LIST[itemId]
-            removeItemFromPlayer(player, addItem)
-        end
-    end
-end
-
--- expect itemId or name
-ns.roll = function(arg)
-    local item = getItem(arg)
-    local instance = getInstance(ns.DB.activeInstance)
-    return RollOrder.of(instance, item)
-end
-
 local function sendMemberInfo(name)
     -- only announce if you are the raid/group leader
     if (IsInGroup() and UnitIsGroupLeader("player")) then
@@ -313,13 +228,14 @@ local COMMANDS = {
         local arg1, arg2 = strsplit(" ", arg, 2)
         local player = Players.get(arg1)
         if (player) then
-            local item = getItem(arg2)
-    
-            -- add item to player
-            if (not player:addItem(item)) then
-                error("> Item '"..item.name.."' ("..item.itemId..") is not assigned to the class '"..player.class.."'.", 0)
+            local item = Items.get(arg2)
+            if (item) then
+                -- add item to player
+                if (not player:addItem(item)) then
+                    error("> Item '"..item.name.."' ("..item.itemId..") is not assigned to the class '"..player.class.."'.", 0)
+                end
+                print("> Added item '"..item.name.."' ("..item.itemId..") to player '"..player.name.."'.")
             end
-            print("> Added item '"..item.name.."' ("..item.itemId..") to player '"..player.name.."'.")
         end
     end,
 
@@ -328,14 +244,16 @@ local COMMANDS = {
         local arg1, arg2 = strsplit(" ", arg, 2)
         local player = Players.get(arg1)
         if (player) then
-            local item = getItem(arg2)
-            local name = player.name
-    
-            -- remove item from player
-            if (player:removeItem(item)) then
-                print("> Removed item '"..item.name.."' ("..item.itemId..") from player '"..name.."'.")
-            else
-                print("> The item '"..item.name.."' ("..item.itemId..") was not on the need-list for player '"..name.."'.")
+            local item = Items.get(arg2)
+            if (item) then
+                local name = player.name
+        
+                -- remove item from player
+                if (player:removeItem(item)) then
+                    print("> Removed item '"..item.name.."' ("..item.itemId..") from player '"..name.."'.")
+                else
+                    print("> The item '"..item.name.."' ("..item.itemId..") was not on the need-list for player '"..name.."'.")
+                end
             end
         end
     end,
@@ -343,9 +261,9 @@ local COMMANDS = {
     ["create-instance"] = function(arg)
         arg = arg or ""
         local name, raidName = strsplit(" ", arg, 2)
-        ns.createInstance(name, raidName)
+        Instances.create(name, raidName)
     end,
-    ["delete-instance"] = ns.deleteInstance,
+    ["delete-instance"] = Instances.delete,
 
     ["instance-info"] = function(arg)
         -- no arguments, print all instances
@@ -357,16 +275,20 @@ local COMMANDS = {
             end
             if (empty) then print("> No instances found.") end
         else
-            local instance = getInstance(arg)
-            instance:print()
+            local instance = Instances.get(arg)
+            if (instance) then
+                instance:print()
+            end
         end
     end,
 
-    ["active-instance"] = ns.activeInstance,
-    ["invite"] = ns.invite,
+    ["active-instance"] = Instances.activate,
+    ["invite"] = Instances.invite,
     ["roll"] = function(arg)
-        local rollOrder = ns.roll(arg)
-        rollOrder:print()
+        local rollOrder = Instances.roll(arg)
+        if (rollOrder) then
+            rollOrder:print()
+        end
     end
 }
 
@@ -396,20 +318,6 @@ end
 -- event handling                                          --
 -- ------------------------------------------------------- --
 local eventHandler = {}
-
-local function removeItemFromPlayer(player, item)
-    if (item) then
-        if (player:removeItem(item)) then
-            print("> Removed item '"..item:getName().."' ("..item.itemId..") from player '"..player.name.."'.")
-        end
-
-        -- swallow additional items
-        for index, itemId in ipairs(item.swallows or {}) do
-            local addItem = ITEM_LIST[itemId]
-            removeItemFromPlayer(player, addItem)
-        end
-    end
-end
 
 local function updateLootItems()
     if (IsInGroup()) then
@@ -450,11 +358,6 @@ local function receiveRollOrderInfo(message, sender)
         if (rollOrder) then
             MemberUI.setRollOrder(rollOrder)
         end
-        --        if (not isGroupLeader(playerName) and not MemberUI.isShown()) then
-        --            print("> Received a personal roll announcement. Type /prl to see the order.")
-        -- TODO maybe open the UI automatically:
-        -- MemberUI.toggleUI()
-        --        end
     end
 end
 eventHandler[MSG_ROLL_ORDER_INFO] = receiveRollOrderInfo

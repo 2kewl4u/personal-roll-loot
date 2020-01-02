@@ -1,6 +1,7 @@
 -- namespace
 local _, ns = ...;
 -- imports
+local Instances = ns.Instances
 local Items = ns.Items
 local Players = ns.Players
 local RAIDS = ns.RAIDS
@@ -41,18 +42,13 @@ local rollOrderScrollList
 local updateRoleButtons
 local function updateRollOrderFields(index, button, itemId, item)
     -- perform the roll before
-    local status, result = pcall(ns.roll, itemId)
-    if (not status) then
-        print(result)
-    else
-        rollOrder = result
-        if (rollOrder) then
-            local itemName = rollOrder.item:getName()
-            rollItemField:SetText("Item: "..itemName)
-            rollOrderScrollList:Update()
-            -- announce roll order
-            ns.announceRollOrder(rollOrder)
-        end
+    rollOrder = Instances.roll(itemId)
+    if (rollOrder) then
+        local itemName = rollOrder.item:getName()
+        rollItemField:SetText("Item: "..itemName)
+        rollOrderScrollList:Update()
+        -- announce roll order
+        ns.announceRollOrder(rollOrder)
     end
 end
 
@@ -266,10 +262,7 @@ instanceScrollList:SetButtonHeight(TEXT_FIELD_HEIGHT)
 instanceScrollList:SetLabelProvider(function(k, v) return k end)
 instanceScrollList:SetContentProvider(function() return ns.DB.INSTANCE_LIST end)
 instanceScrollList:SetButtonScript("OnClick", function(index, button, name, instance)
-    local status, err = pcall(ns.activeInstance, name)
-    if (not status) then
-        print(err)
-    else
+    if (Instances.activate(name)) then
         instanceNameField:SetText("Instance: "..name)
         instanceRaidField:SetText("Raid: "..instance.raid)
         instanceCreatedField:SetText(instance.created)
@@ -314,12 +307,8 @@ addInstanceButton:SetScript("OnClick", function()
     local name = newInstanceEditBox:GetText()
     local raid = newInstanceRaidDropDown.value
     if (name and raid) then
-        local status, err = pcall(ns.createInstance, name, raid)
-        if (not status) then
-            print(err)
-        else
-            instanceScrollList:Update()
-        end
+        Instances.create(name, raid)
+        instanceScrollList:Update()
         -- clear name
         newInstanceEditBox:SetText("")
         newInstanceEditBox:ClearFocus()
@@ -387,10 +376,7 @@ deleteInstanceButton:SetPoint("BOTTOMLEFT", instancesTabFrame, "BOTTOMLEFT", WIN
 deleteInstanceButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 deleteInstanceButton:SetText("Delete Instance")
 deleteInstanceButton:SetScript("OnClick", function()
-    local status, err = pcall(ns.deleteInstance, ns.DB.activeInstance)
-    if (not status) then
-        print(err)
-    else
+    if (Instances.delete(ns.DB.activeInstance)) then
         instanceNameField:SetText("Instance:")
         instanceRaidField:SetText("Raid:")
         --    instanceCreatedField:SetText("Created:")
@@ -404,12 +390,8 @@ inviteButton:SetPoint("BOTTOMLEFT", deleteInstanceButton, "TOPLEFT", 0, SPACING)
 inviteButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 inviteButton:SetText("Invite")
 inviteButton:SetScript("OnClick", function()
-    local status, err = pcall(ns.invite)
-    if (not status) then
-        print(err)
-    else
-        instancePlayersScrollList:Update()
-    end
+    Instances.invite()
+    instancePlayersScrollList:Update()
 end)
 
 local roleCheckButton = CreateFrame("Button", nil, instancesTabFrame, "GameMenuButtonTemplate")

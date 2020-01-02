@@ -14,6 +14,7 @@ Player.lua
 Players.lua
 Instance.lua
 RollOrder.lua
+Instances.lua
 
 Libs\AceComm-3.0\ChatThrottleLib.lua
 AddonMessage.lua

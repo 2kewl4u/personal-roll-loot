@@ -1988,6 +1988,34 @@ end
 local Items = {}
 
 ---
+-- Returns the item with the given itemId or name, or nil if no such item could be found.
+-- 
+-- @param #string arg
+--          the itemId or name
+-- 
+-- @return #Item
+--          the item
+-- 
+Items.get = function(arg)
+    if (not arg) then
+        print("> No item id or name specified.")
+    else
+        local itemId = tonumber(arg) -- will be nil if not a number
+        local item
+        if (itemId) then
+            item = ITEM_LIST[itemId]
+        else
+            item = Items.forName(arg)
+        end
+        
+        if (not item) then
+            print("> Item with itemId or name '"..arg.."' not found.")
+        end
+        return item
+    end
+end
+
+---
 -- Returns the item from the ITEM_LIST with the given localized name if present
 -- or nil if no such item was found.
 --
