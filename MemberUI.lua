@@ -231,6 +231,7 @@ MemberUI.setMemberInfo = function(player)
     createMemberInfo()
     memberInfo.roles = utils.copy(player.roles) or {}
     memberInfo.needlist = utils.copy(player.needlist) or {}
+    memberInfo.trial = player.trial or false
     -- update the member info
     updateMemberInfo()
 end

@@ -21,7 +21,9 @@ local Player = {
     -- a set of roles that the player has selected to receive loot for
     roles,
     -- a set of itemIds that define the players equipment progress
-    needlist
+    needlist,
+    -- indicates whether the player is a trail member with restricted access to items
+    trial
 }
 Player.__index = Player
 ns.Player = Player
@@ -83,6 +85,7 @@ function Player.new(name, realm, class)
     self.class = class
     self.roles = getRoleIds(class)
     self.needlist = createNeedList(class)
+    self.trial = true
     return self
 end
 
@@ -101,6 +104,7 @@ function Player.copy(player)
     copy.realm = player.realm
     copy.class = player.class
     copy.needlist = utils.copy(player.needlist)
+    copy.trial = player.trial or false
     
     -- copy the roles
     copy.roles = {}
@@ -195,6 +199,9 @@ function Player:synchronize(playerInfo)
     for itemId in pairs(player.needlist) do
         player.needlist[itemId] = playerInfo.needlist[itemId]
     end
+    if (playerInfo.trail == false) then
+        player.trial = false
+    end
 end
 
 ---
@@ -211,6 +218,7 @@ function Player:encode()
     encoded = encoded.." class:"..player.class
     encoded = encoded.." roles:"..utils.toCSV(player.roles, tostring)
     encoded = encoded.." needlist:"..utils.toCSV(player.needlist, tostring)
+    encoded = encoded.." trial:"..tostring(player.trial)
     return encoded
 end
 
@@ -253,6 +261,13 @@ function Player.decode(encoded)
             end)
         end
         player.roles = roles
+        
+        -- convert the trial boolean flag
+        if (player.trial == "true") then
+            player.trial = true
+        else
+            player.trial = false
+        end
         return player
     end
 end
