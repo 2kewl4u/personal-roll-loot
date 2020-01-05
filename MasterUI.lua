@@ -38,6 +38,7 @@ local instanceCreatedField
 local instancePlayersScrollList
 local rollItemField
 local rollOrderScrollList
+local trialButton
 
 -- menu functions
 local updateRoleButtons
@@ -86,6 +87,7 @@ playerScrollList:SetButtonScript("OnClick", function(index, button, name, player
     playerNameField.player = player
     playerItemScrollList:Update()
     updateRoleButtons()
+    trialButton:SetChecked(player.trial == true)
 end)
 playerScrollList:SetButtonScript("OnEnter", function(index, button, name, player)
     utilsUI.showPlayerTooltip(button, name)
@@ -179,6 +181,18 @@ updateRoleButtons = function()
     end
 end
 updateRoleButtons()
+
+trialButton = CreateFrame("CheckButton", nil, playerTabFrame, "UICheckButtonTemplate")
+trialButton:SetPoint("TOPLEFT", playerNameField, "BOTTOMLEFT", 0, (-MARGIN - TEXT_FIELD_HEIGHT * 4))
+trialButton.text:SetFontObject("GameFontNormal")
+trialButton.text:SetText("Trial")
+trialButton:SetScript("OnClick", function()
+    local player = playerNameField.player
+    if (player) then
+        player.trial = trialButton:GetChecked()
+    end
+end)
+
 
 -- item list
 playerItemScrollList = ScrollList.new("PersonalRollLootPlayerItemListScrollFrame", playerTabFrame, 6, "PersonalLootItemButtonTemplate")

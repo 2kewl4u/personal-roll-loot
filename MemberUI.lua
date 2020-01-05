@@ -83,6 +83,13 @@ if (utils.tblsize(roles) > 1) then
     end
 end
 
+local trialField = memberTabFrame:CreateFontString(nil, "OVERLAY")
+trialField:SetPoint("TOPLEFT", memberNameField, "BOTTOMLEFT", 0, -(MARGIN + SPACING + TEXT_FIELD_HEIGHT * 4))
+trialField:SetFontObject("GameFontNormalLEFT")
+trialField:SetText("You are marked as trial.")
+trialField:Hide()
+
+
 -- item list
 local memberItemScrollList = ScrollList.new("PersonalRollLootMemberItemListScrollFrame", memberTabFrame, 6, "PersonalLootItemButtonTemplate")
 memberItemScrollList:SetPoint("BOTTOMLEFT", memberTabFrame, "BOTTOMLEFT", MARGIN, TEXT_FIELD_HEIGHT + MARGIN + SPACING)
@@ -228,6 +235,12 @@ updateMemberInfo = function()
     end
     memberItemScrollList:Update()
     memberRollOrderScrollList:Update()
+    
+    if (memberInfo.trial == true) then
+        trialField:Show()
+    else
+        trialField:Hide()
+    end
 end
 
 local MemberUI = {}

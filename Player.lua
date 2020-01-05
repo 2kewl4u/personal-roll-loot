@@ -22,7 +22,7 @@ local Player = {
     roles,
     -- a set of itemIds that define the players equipment progress
     needlist,
-    -- indicates whether the player is a trail member with restricted access to items
+    -- indicates whether the player is a trial member with restricted access to items
     trial
 }
 Player.__index = Player
@@ -199,7 +199,7 @@ function Player:synchronize(playerInfo)
     for itemId in pairs(player.needlist) do
         player.needlist[itemId] = playerInfo.needlist[itemId]
     end
-    if (playerInfo.trail == false) then
+    if (playerInfo.trial == false) then
         player.trial = false
     end
 end

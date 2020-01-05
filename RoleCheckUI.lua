@@ -24,7 +24,7 @@ local raid
 
 local roleCheckFrame = CreateFrame("Frame", "RoleCheckUIFrame", UIParent, "UIPanelDialogTemplate")
 roleCheckFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-roleCheckFrame:SetSize(WINDOW_WIDTH / 2, 380)
+roleCheckFrame:SetSize(WINDOW_WIDTH / 2, 395)
 roleCheckFrame.Title:SetText("Role Check")
 roleCheckFrame:Hide()
 
@@ -64,6 +64,12 @@ local function updateRoleButtons()
         end
     end
 end
+
+local trialField = roleCheckFrame:CreateFontString(nil, "OVERLAY")
+trialField:SetPoint("TOPLEFT", roleCheckFrame, "TOPLEFT", 20, -(MARGIN + SPACING + TEXT_FIELD_HEIGHT * 4) - 25)
+trialField:SetFontObject("GameFontNormalLEFT")
+trialField:SetText("You are marked as trial.")
+trialField:Hide()
 
 -- item list
 itemScrollList = ScrollList.new("PersonalLootRoleCheckItemListScrollFrame", roleCheckFrame, 5, "PersonalLootItemButtonTemplate")
@@ -134,5 +140,11 @@ RoleCheckUI.open = function(event)
         updateRoleButtons()
         itemScrollList:Update()
         roleCheckFrame:Show()
+        
+        if (player.trial == true) then
+            trialField:Show()
+        else
+            trialField:Hide()
+        end
     end
 end
