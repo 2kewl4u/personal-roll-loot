@@ -176,10 +176,13 @@ function Player:needsItem(item)
     if (item.classes[player.class]) then
         -- check if the item is on the players need-list
         if (player.needlist[item.itemId]) then
-            -- check if the item is assigned the players role
-            for role in pairs(item.roles) do
-                if (player.roles[role]) then
-                    return true
+            -- check if the item is restricted
+            if (not (item.restricted and player.trial)) then
+                -- check if the item is assigned the players role
+                for role in pairs(item.roles) do
+                    if (player.roles[role]) then
+                        return true
+                    end
                 end
             end
         end
