@@ -16,7 +16,7 @@ local Item = {
     link,
     -- the item quality color
     color,
-    -- a set of roles assigned to this item
+    -- a map (role -> priority) of roles assigned to this item
     roles,
     -- a set of classes that can use this item
     classes,
