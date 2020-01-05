@@ -9,6 +9,7 @@
         <Layers>
             <Layer level="ARTWORK">
                 <Texture
+                    parentKey="PriorityBorder"
                     file="Interface\Addons\PersonalRollLoot\textures\role-icons">
                     <Size x="18" y="18" />
                     <TexCoords left="0" right="0.26171875"

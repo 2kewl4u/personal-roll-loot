@@ -155,7 +155,7 @@ memberLootItemsField:SetFontObject("GameFontNormalLEFT")
 memberLootItemsField:SetText("Loot")
 memberLootItemsField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 
-local memberLootItemsScrollList = ScrollList.new("PersonalRollLootMemberLootItemScrollFrame", memberTabFrame, 3, "LargeItemButtonTemplate")
+local memberLootItemsScrollList = ScrollList.new("PersonalRollLootMemberLootItemScrollFrame", memberTabFrame, 3, "PersonalLootItemButtonTemplate")
 memberLootItemsScrollList:SetPoint("TOPLEFT", memberLootItemsField, "BOTTOMLEFT", 0, -SPACING)
 memberLootItemsScrollList:SetSize(COLUMN_WIDTH, 3 * ITEM_BUTTON_HEIGHT + SPACING)
 memberLootItemsScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
@@ -171,6 +171,8 @@ memberLootItemsScrollList:SetLabelProvider(function(itemId, item, button)
     else
         button.Restricted:Hide()
     end
+    button.Priority:Hide()
+    button.PriorityBorder:Hide()
 end)
 memberLootItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
     utilsUI.showItemTooltip(button, itemId)
