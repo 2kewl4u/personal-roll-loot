@@ -88,6 +88,7 @@ playerScrollList:SetButtonScript("OnClick", function(index, button, name, player
     playerItemScrollList:Update()
     updateRoleButtons()
     trialButton:SetChecked(player.trial == true)
+    trialButton:Show()
 end)
 playerScrollList:SetButtonScript("OnEnter", function(index, button, name, player)
     utilsUI.showPlayerTooltip(button, name)
@@ -191,7 +192,9 @@ trialButton:SetScript("OnClick", function()
     if (player) then
         player.trial = trialButton:GetChecked()
     end
+    playerItemScrollList:Update()
 end)
+trialButton:Hide()
 
 
 -- item list
@@ -229,6 +232,9 @@ playerItemScrollList:SetLabelProvider(function(itemId, item, button)
     
     if (item.restricted) then
         button.Restricted:Show()
+        if (not disabled and player.trial) then
+            button.Name:SetFontObject("GameFontHighlight")
+        end
     else
         button.Restricted:Hide()
     end

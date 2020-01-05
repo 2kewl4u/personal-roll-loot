@@ -1,10 +1,6 @@
-- history of the drops and loots of the raid grps
 - invite players into the raidgrp for the selected instance
 - whisper the new player what items you have detected
 - items might not be unique and can be equipped twice
 - players out of range are not be registered when they receive loot
 
 - sound effect during role check
-- automatic setup check from clients
-
-- trial status and restricted items

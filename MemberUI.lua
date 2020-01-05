@@ -123,6 +123,9 @@ memberItemScrollList:SetLabelProvider(function(itemId, item, button)
     
     if (item.restricted) then
         button.Restricted:Show()
+        if (not disabled and memberInfo.trial) then
+            button.Name:SetFontObject("GameFontHighlight")
+        end
     else
         button.Restricted:Hide()
     end
