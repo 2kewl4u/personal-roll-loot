@@ -212,6 +212,12 @@ playerItemScrollList:SetLabelProvider(function(itemId, item, button)
             button.Name:SetFontObject("GameFontHighlight")
         end
     end
+    
+    if (item.restricted) then
+        button.Restricted:Show()
+    else
+        button.Restricted:Hide()
+    end
 end)
 playerItemScrollList:SetButtonScript("OnClick", function(index, button, itemId, item)
     local player = playerNameField.player
@@ -431,6 +437,12 @@ end)
 rollItemsScrollList:SetLabelProvider(function(itemId, item, button)
     button.Name:SetText(item:getName())
     button.Icon:SetTexture(item:getTexture())
+    
+    if (item.restricted) then
+        button.Restricted:Show()
+    else
+        button.Restricted:Hide()
+    end
 end)
 utilsUI.createBorder(rollItemsScrollList:GetFrame())
 rollItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
@@ -463,6 +475,12 @@ lootItemsScrollList:SetLabelProvider(function(itemId, item, button)
     button.Icon:SetTexture(item:getTexture())
     button.Name:SetText(item:getName())
     button.Name:SetFontObject("GameFontHighlight")
+    
+    if (item.restricted) then
+        button.Restricted:Show()
+    else
+        button.Restricted:Hide()
+    end
 end)
 lootItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
     utilsUI.showItemTooltip(button, itemId)

@@ -113,6 +113,12 @@ memberItemScrollList:SetLabelProvider(function(itemId, item, button)
             button.Name:SetFontObject("GameFontHighlight")
         end
     end
+    
+    if (item.restricted) then
+        button.Restricted:Show()
+    else
+        button.Restricted:Hide()
+    end
 end)
 memberItemScrollList:SetFilter(function(itemId, item)
     local player = memberInfo
@@ -152,6 +158,12 @@ memberLootItemsScrollList:SetLabelProvider(function(itemId, item, button)
     button.Icon:SetTexture(item:getTexture())
     button.Name:SetText(item:getName())
     button.Name:SetFontObject("GameFontHighlight")
+    
+    if (item.restricted) then
+        button.Restricted:Show()
+    else
+        button.Restricted:Hide()
+    end
 end)
 memberLootItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
     utilsUI.showItemTooltip(button, itemId)

@@ -83,6 +83,12 @@ itemScrollList:SetLabelProvider(function(itemId, item, button)
         button.Icon:SetTexture(item:getTexture())
         button.Name:SetText(item:getName())
         button.Name:SetFontObject("GameFontNormal")
+        
+        if (item.restricted) then
+            button.Restricted:Show()
+        else
+            button.Restricted:Hide()
+        end
     end
 end)
 itemScrollList:SetFilter(function(itemId, item)
