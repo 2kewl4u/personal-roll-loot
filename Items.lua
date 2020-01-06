@@ -984,7 +984,8 @@ local ITEM_LIST = {
         slot = SLOT_OFF_HAND,
         slotSize = 1,
         tier = 1,
-        replaceable = true
+        replaceable = true,
+        removable = true
     },
     [17069] = {
         itemId = 17069,
@@ -1146,7 +1147,8 @@ local ITEM_LIST = {
         slot = SLOT_OFF_HAND,
         slotSize = 1,
         tier = 1,
-        replaceable = true
+        replaceable = true,
+        removable = true
     },
     [17107] = {
         itemId = 17107,
@@ -1619,7 +1621,8 @@ local ITEM_LIST = {
         slot = SLOT_OFF_HAND,
         slotSize = 1,
         tier = 1,
-        replaceable = true
+        replaceable = true,
+        removable = true
     },
     [19143] = {
         itemId = 19143,
@@ -1800,7 +1803,8 @@ local ITEM_LIST = {
         slot = SLOT_OFF_HAND,
         slotSize = 1,
         tier = 1,
-        replaceable = true
+        replaceable = true,
+        removable = true
     },
     [17068] = {
         itemId = 17068,
