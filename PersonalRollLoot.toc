@@ -22,6 +22,7 @@ events\Events.lua
 events\RoleCheckEvent.lua
 events\RoleSelectionEvent.lua
 events\InventoryReportEvent.lua
+events\MemberInfoEvent.lua
 
 SavedVariables.lua
 

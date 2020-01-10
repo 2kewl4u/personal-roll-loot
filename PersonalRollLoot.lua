@@ -43,19 +43,6 @@ local SYNC_DELAY = 30
 local syncRequestTimes = {}
 
 -- core functions
-local function sendMemberInfo(name)
-    -- only announce if you are the raid/group leader
-    if (IsInGroup() and UnitIsGroupLeader("player")) then
-        local player = ns.DB.PLAYER_LIST[name]
-        if (player) then
-            local message = player:encode()
-            AddonMessage.Send(EVENT_MESSAGE, MSG_MEMBER_INFO.."#"..message, "WHISPER", player.name)
-        else
-            print("> Player '"..name.."' is not registered for Personal Roll Loot.")
-        end
-    end
-end
-
 ns.sendMemberInfoRequest = function()
     if (IsInGroup()) then
         local raidLeader = utils.getRaidLeader()
@@ -336,17 +323,6 @@ local function updateLootItems()
     end
 end
 
-local function receiveMemberInfo(message, sender)
-    -- only accept announcements from raid/group leader
-    if (message and IsInGroup() and utils.isGroupLeader(sender)) then
-        local player = Player.decode(message)
-        if (player) then
-            MemberUI.setMemberInfo(player)
-        end
-    end
-end
-eventHandler[MSG_MEMBER_INFO] = receiveMemberInfo
-
 local function receiveRollOrderInfo(message, sender)
     if (message and IsInGroup() and utils.isGroupLeader(sender)) then
         -- local playerName = UnitName("player")
@@ -450,7 +426,7 @@ eventHandler[MSG_ROLL_RESPONSE] = function(message, sender)
 end
 
 eventHandler[MSG_MEMBER_INFO_REQUEST] = function(message, sender)
-    sendMemberInfo(sender)
+    ns.MemberInfoEvent.send(sender)
 end
 
 eventHandler[MSG_REMOVAL_REQUEST] = function(message, sender)
@@ -463,7 +439,7 @@ eventHandler[MSG_REMOVAL_REQUEST] = function(message, sender)
                 if (player and Items.canRemove(item, player)) then
                     Items.removeFromPlayer(player, item)
                     -- respond back with an update of the player info
-                    sendMemberInfo(sender)
+                    ns.MemberInfoEvent.send(sender)
                 end
             end
         end
