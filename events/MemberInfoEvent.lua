@@ -41,7 +41,7 @@ function MemberInfoEvent.new(player)
 end
 
 ---
--- Encodes this RoleCheckEvent into a string representation to be
+-- Encodes this MemberInfoEvent into a string representation to be
 -- serialized. The string can be decoded back into the event using the
 -- decode() function.
 -- 

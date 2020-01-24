@@ -43,15 +43,6 @@ local SYNC_DELAY = 30
 local syncRequestTimes = {}
 
 -- core functions
-ns.sendMemberInfoRequest = function()
-    if (IsInGroup()) then
-        local raidLeader = utils.getRaidLeader()
-        local playerName = UnitName("player")
-        local message = playerName
-        AddonMessage.Send(EVENT_MESSAGE, MSG_MEMBER_INFO_REQUEST.."#"..message, "WHISPER", raidLeader)
-    end
-end
-
 local function postChatMessage(message)
     if (IsInGroup()) then
         local chatType = "PARTY"
@@ -423,10 +414,6 @@ eventHandler[MSG_ROLL_RESPONSE] = function(message, sender)
             end
         end
     end
-end
-
-eventHandler[MSG_MEMBER_INFO_REQUEST] = function(message, sender)
-    ns.MemberInfoEvent.send(sender)
 end
 
 eventHandler[MSG_REMOVAL_REQUEST] = function(message, sender)

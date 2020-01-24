@@ -54,7 +54,7 @@ memberTabFrame:SetPoint("TOPLEFT", PersonalRollLootMemberDialogBG, "TOPLEFT", 0,
 memberTabFrame:SetPoint("BOTTOMRIGHT", PersonalRollLootMemberDialogBG, "BOTTOMRIGHT", 0, 0)
 memberTabFrame:SetScript("OnShow", function()
     updateMemberInfo()
-    ns.sendMemberInfoRequest()
+    ns.MemberInfoRequestEvent.send()
 end)
 
 local memberNameField = memberTabFrame:CreateFontString(nil, "OVERLAY")
