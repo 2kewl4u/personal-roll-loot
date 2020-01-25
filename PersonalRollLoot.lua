@@ -37,11 +37,6 @@ local ROLL_REMOVE = "remove"
 
 local currentRollOrder
 
-
--- set a delay in seconds until sending again a sync request or info
-local SYNC_DELAY = 30
-local syncRequestTimes = {}
-
 -- core functions
 local function postChatMessage(message)
     if (IsInGroup()) then
@@ -113,32 +108,6 @@ ns.respondRollOrder = function(item, rollType)
 
         local message = MSG_ROLL_RESPONSE.."#"..item.itemId..":"..rollType
         AddonMessage.Send(EVENT_MESSAGE, message, "WHISPER", raidLeader)
-    end
-end
-
-local function isSyncDelay(sender)
-    sender = strsplit("-", sender, 2)
-    local lastSent = syncRequestTimes[sender]
-    local now = time()
-    local delay = lastSent and ((now - lastSent) < SYNC_DELAY)
-    if (not delay) then
-        syncRequestTimes[sender] = now
-    end
-    return delay
-end
-
-ns.requestSync = function()
-    -- only send request to raid/group leader
-    if (IsInGroup() and not UnitIsGroupLeader("player")) then
-        if (isSyncDelay(UnitName("player"))) then
-            print("> Cannot send to many synchronize requests. Please wait "..SYNC_DELAY.." seconds.")
-        else
-            local name = utils.getRaidLeader()
-            if (name) then
-                print("> Requesting synchronize from party leader '"..name.."'.")
-                AddonMessage.Send(EVENT_MESSAGE, MSG_SYNC_REQUEST.."#".."all", "WHISPER", name)
-            end
-        end
     end
 end
 
@@ -324,41 +293,6 @@ local function receiveRollOrderInfo(message, sender)
     end
 end
 eventHandler[MSG_ROLL_ORDER_INFO] = receiveRollOrderInfo
-
-local function receiveSyncRequest(message, sender)
-    if (IsInGroup() and not isSyncDelay(sender) and UnitIsGroupLeader("player")) then
-        print("> Got synchronize request from member '"..sender.."'.")
-        -- send the encoded player infos
-        local message = utils.toCSV(ns.DB.PLAYER_LIST, function(name, player)
-            return player:encode()
-        end, "/")
-        AddonMessage.Send(EVENT_MESSAGE, MSG_SYNC_INFO.."#"..message, "WHISPER", sender)
-    end
-end
-eventHandler[MSG_SYNC_REQUEST] = receiveSyncRequest
-
-local function receiveSyncInfo(message, sender)
-    -- only accept sync info from raid/group leader
-    if (IsInGroup() and utils.isGroupLeader(sender)) then
-        print("> Got synchronize info from party leader '"..sender.."'.")
-        local syncCount = 0
-        local addCount = 0
-        utils.fromCSV(message, function(list, element)
-            local playerInfo = Player.decode(element)
-            -- synchronize the player info
-            local player = ns.DB.PLAYER_LIST[playerInfo.name]
-            if (player) then
-                player:synchronize(playerInfo)
-                syncCount = syncCount + 1
-            else
-                ns.DB.PLAYER_LIST[playerInfo.name] = Player.copy(playerInfo)
-                addCount = addCount + 1
-            end
-        end, "/")
-        print("> Synchronized "..syncCount.." and added "..addCount.." players.")
-    end
-end
-eventHandler[MSG_SYNC_INFO] = receiveSyncInfo
 
 eventHandler[MSG_ROLL_REQUEST] = function(message, sender)
     -- only accept sync info from raid/group leader

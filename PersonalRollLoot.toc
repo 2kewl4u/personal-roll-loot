@@ -24,6 +24,8 @@ events\RoleSelectionEvent.lua
 events\InventoryReportEvent.lua
 events\MemberInfoEvent.lua
 events\MemberInfoRequestEvent.lua
+events\SyncRequestEvent.lua
+events\SyncInfoEvent.lua
 
 SavedVariables.lua
 

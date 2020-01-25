@@ -109,12 +109,7 @@ local syncButton = CreateFrame("Button", nil, playerTabFrame, "GameMenuButtonTem
 syncButton:SetPoint("BOTTOMLEFT", addPlayerButton, "TOPLEFT", 0, SPACING)
 syncButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 syncButton:SetText("Synchronize")
-syncButton:SetScript("OnClick", function()
-    local status, err = pcall(ns.requestSync)
-    if (not status) then
-        print(err)
-    end
-end)
+syncButton:SetScript("OnClick", ns.SyncRequestEvent.send)
 
 playerNameField = playerTabFrame:CreateFontString(nil, "OVERLAY")
 playerNameField:SetPoint("TOPLEFT", playerTabFrame, "TOPLEFT", WINDOW_WIDTH / 2 + SPACING, -MARGIN)
