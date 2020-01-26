@@ -111,17 +111,6 @@ ns.respondRollOrder = function(item, rollType)
     end
 end
 
-ns.requestItemRemoval = function(item)
-    -- only send request to raid/group leader
-    if (IsInGroup()) then
-        local name = utils.getRaidLeader()
-        if (name) then
-            print("> Request item removal for '"..item:getName().."' ("..item.itemId..").")
-            AddonMessage.Send(EVENT_MESSAGE, MSG_REMOVAL_REQUEST.."#"..item.itemId, "WHISPER", name)
-        end
-    end
-end
-
 -- ------------------------------------------------------- --
 -- slash commands                                          --
 -- ------------------------------------------------------- --
@@ -345,23 +334,6 @@ eventHandler[MSG_ROLL_RESPONSE] = function(message, sender)
             -- trigger the next rolling
             if (not missingResponse and not need) then
                 sendRollRequest()
-            end
-        end
-    end
-end
-
-eventHandler[MSG_REMOVAL_REQUEST] = function(message, sender)
-    if (message and sender) then
-        local itemId = tonumber(message)
-        if (itemId) then
-            local item = ITEM_LIST[itemId]
-            if (item) then
-                local player = ns.DB.PLAYER_LIST[sender]
-                if (player and Items.canRemove(item, player)) then
-                    Items.removeFromPlayer(player, item)
-                    -- respond back with an update of the player info
-                    ns.MemberInfoEvent.send(sender)
-                end
             end
         end
     end

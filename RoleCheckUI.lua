@@ -111,7 +111,7 @@ itemScrollList:SetButtonScript("OnClick", function(index, button, itemId, item)
     if (Items.canRemove(item, player)) then
         ConfirmDialog.open("Do you really want to permanently remove "..item:getLink().." from your need list?", function(result)
             if (result) then
-                ns.requestItemRemoval(item)
+                ns.ItemRemovalRequestEvent.send(item)
             end
         end)
     end

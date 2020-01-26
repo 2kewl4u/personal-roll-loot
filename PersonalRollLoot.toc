@@ -26,6 +26,7 @@ events\MemberInfoEvent.lua
 events\MemberInfoRequestEvent.lua
 events\SyncRequestEvent.lua
 events\SyncInfoEvent.lua
+events\ItemRemovalRequestEvent.lua
 
 SavedVariables.lua
 
