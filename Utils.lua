@@ -231,6 +231,15 @@ utils.isInRaid = function(playerName)
     end
 end
 
+utils.sendGroupMessage = function(message)
+    if (IsInGroup()) then
+        local chatType = "PARTY"
+        if (IsInRaid()) then chatType = "RAID" end
+
+        SendChatMessage(message, chatType)
+    end    
+end
+
 ns.utils = utils
 
 

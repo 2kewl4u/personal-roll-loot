@@ -38,15 +38,6 @@ local ROLL_REMOVE = "remove"
 local currentRollOrder
 
 -- core functions
-local function postChatMessage(message)
-    if (IsInGroup()) then
-        local chatType = "PARTY"
-        if (IsInRaid()) then chatType = "RAID" end
-
-        SendChatMessage(message, chatType)
-    end
-end
-
 local function sendRollRequest()
     if (currentRollOrder) then
         local currentRound
@@ -62,7 +53,7 @@ local function sendRollRequest()
                 local player = ns.DB.PLAYER_LIST[playerName]
                 if (player and player.needlist[item.itemId]) then
                     AddonMessage.Send(EVENT_MESSAGE, MSG_ROLL_REQUEST.."#"..item.itemId, "WHISPER", playerName)
-                    postChatMessage(round.." - "..playerName)
+                    utils.sendGroupMessage(round.." - "..playerName)
                     currentRound = round
                     currentRollOrder.currentRound = round
                 end
@@ -76,7 +67,7 @@ ns.announceRollOrder = function(rollOrder)
     local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
     if (instance) then
         currentRollOrder = rollOrder
-        postChatMessage(rollOrder.item:getLink())
+        utils.sendGroupMessage(rollOrder.item:getLink())
 
         local message = rollOrder:encode()
         utils.forEachRaidMember(function(name)
@@ -104,7 +95,7 @@ end
 ns.respondRollOrder = function(item, rollType)
     local raidLeader = utils.getRaidLeader()
     if (raidLeader and item) then
-        postChatMessage(rollType.." - "..item:getLink())
+        utils.sendGroupMessage(rollType.." - "..item:getLink())
 
         local message = MSG_ROLL_RESPONSE.."#"..item.itemId..":"..rollType
         AddonMessage.Send(EVENT_MESSAGE, message, "WHISPER", raidLeader)
