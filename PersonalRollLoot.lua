@@ -1,106 +1,14 @@
 -- namespace
 local _, ns = ...;
 -- imports
-local AddonMessage = ns.AddonMessage
 local Instances = ns.Instances
 local ITEM_LIST = ns.ITEM_LIST
 local Items = ns.Items
-local Player = ns.Player
 local Players = ns.Players
 local Roles = ns.Roles
-local RollOrder = ns.RollOrder
-local utils = ns.utils
 
 local MasterUI = ns.MasterUI
 local MemberUI = ns.MemberUI
-local LootButton = ns.LootButton
-
--- events
-local EVENT_MESSAGE = "PRL_EVENT"
-local EVENTS = {
-    [EVENT_MESSAGE] = true
-}
-
-local MSG_MEMBER_INFO =         1
-local MSG_ROLL_ORDER_INFO =     2
-local MSG_SYNC_REQUEST =        3
-local MSG_SYNC_INFO =           4
-local MSG_ROLL_REQUEST =        5
-local MSG_ROLL_RESPONSE =       6
-local MSG_MEMBER_INFO_REQUEST = 7
-local MSG_REMOVAL_REQUEST =		8
-
-local ROLL_NEED = "need"
-local ROLL_GREED = "greed"
-local ROLL_PASS = "pass"
-local ROLL_REMOVE = "remove"
-
-local currentRollOrder
-
--- core functions
-local function sendRollRequest()
-    if (currentRollOrder) then
-        local currentRound
-        for index = currentRollOrder.sentIndex, #currentRollOrder.rounds, 1 do
-            local entry = currentRollOrder.rounds[index]
-            local round = entry[1]
-            if (currentRound and currentRound < round) then break end
-
-            -- send a role request for the current round
-            local playerName = entry[2]
-            local item = currentRollOrder.item
-            if (utils.isInRaid(playerName)) then
-                local player = ns.DB.PLAYER_LIST[playerName]
-                if (player and player.needlist[item.itemId]) then
-                    AddonMessage.Send(EVENT_MESSAGE, MSG_ROLL_REQUEST.."#"..item.itemId, "WHISPER", playerName)
-                    utils.sendGroupMessage(round.." - "..playerName)
-                    currentRound = round
-                    currentRollOrder.currentRound = round
-                end
-            end
-            currentRollOrder.sentIndex = index + 1
-        end
-    end
-end
-
-ns.announceRollOrder = function(rollOrder)
-    local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
-    if (instance) then
-        currentRollOrder = rollOrder
-        utils.sendGroupMessage(rollOrder.item:getLink())
-
-        local message = rollOrder:encode()
-        utils.forEachRaidMember(function(name)
-            local player = ns.DB.PLAYER_LIST[name]
-            if (player) then
-                if (instance.players[name]) then
-                    AddonMessage.Send(EVENT_MESSAGE, MSG_ROLL_ORDER_INFO.."#"..message, "WHISPER", name)
-                else
-                    print("> Player '"..name.."' is not invited to the currently active instance.")
-                end
-            else
-                print("> Player '"..name.."' is not registered for Personal Roll Loot.")
-            end
-        end)
-
-        -- prepare protocol
-        currentRollOrder.sentIndex = 1
-        currentRollOrder.responses = {}
-        sendRollRequest()
-    else
-        print("> No active instance.")
-    end
-end
-
-ns.respondRollOrder = function(item, rollType)
-    local raidLeader = utils.getRaidLeader()
-    if (raidLeader and item) then
-        utils.sendGroupMessage(rollType.." - "..item:getLink())
-
-        local message = MSG_ROLL_RESPONSE.."#"..item.itemId..":"..rollType
-        AddonMessage.Send(EVENT_MESSAGE, message, "WHISPER", raidLeader)
-    end
-end
 
 -- ------------------------------------------------------- --
 -- slash commands                                          --
@@ -240,8 +148,6 @@ end
 -- ------------------------------------------------------- --
 -- event handling                                          --
 -- ------------------------------------------------------- --
-local eventHandler = {}
-
 local function updateLootItems()
     if (IsInGroup()) then
         local lootItems = Items.getLootItems()
@@ -260,94 +166,6 @@ local function updateLootItems()
         -- update the UI
         MasterUI.setLootItems(lootItems)
         MemberUI.setLootItems(lootItems)
-    end
-end
-
-local function receiveRollOrderInfo(message, sender)
-    if (message and IsInGroup() and utils.isGroupLeader(sender)) then
-        -- local playerName = UnitName("player")
-        local rollOrder = RollOrder.decode(message)
-        if (rollOrder) then
-            MemberUI.setRollOrder(rollOrder)
-        end
-    end
-end
-eventHandler[MSG_ROLL_ORDER_INFO] = receiveRollOrderInfo
-
-eventHandler[MSG_ROLL_REQUEST] = function(message, sender)
-    -- only accept sync info from raid/group leader
-    if (IsInGroup() and utils.isGroupLeader(sender)) then
-        -- message contains the itemId to roll
-        local itemId = tonumber(message)
-        if (itemId) then
-            local item = ITEM_LIST[itemId]
-            if (item) then
-                LootButton.setItem(item)
-            end
-        end
-    end
-end
-
-eventHandler[MSG_ROLL_RESPONSE] = function(message, sender)
-    if (currentRollOrder) then
-        local itemId, rollType = strsplit(":", message, 2)
-        itemId = tonumber(itemId)
-        if (itemId and rollType and currentRollOrder.item.itemId == itemId) then
-            currentRollOrder.responses[sender] = rollType
-
-            -- remove the unwanted item from the list
-            if (rollType == ROLL_REMOVE) then
-                local player = ns.DB.PLAYER_LIST[sender]
-                if (player) then
-                    Items.removeFromPlayer(player, currentRollOrder.item)
-                end
-            end
-
-            -- evaluate the response
-            local missingResponse = false
-            local need = false
-            for index, entry in ipairs(currentRollOrder.rounds) do
-                local round = entry[1]
-                if (round == currentRollOrder.currentRound) then
-                    local playerName = entry[2]
-                    local response = currentRollOrder.responses[playerName]
-                    if (not response and utils.isInRaid(playerName)) then
-                        missingResponse = true
-                        break
-                    elseif (response == ROLL_NEED) then
-                        need = true
-                    end
-                elseif (round > currentRollOrder.currentRound) then
-                    break
-                end
-            end
-
-            -- trigger the next rolling
-            if (not missingResponse and not need) then
-                sendRollRequest()
-            end
-        end
-    end
-end
-
-local function receive(prefix, message, type, sender)
-    --     print("prefix: "..tostring(prefix))
-    --     print("message: "..tostring(message))
-    if (EVENTS[prefix]) then
-        AddonMessage.Receive(prefix, message, type, sender, function(prefix, message, type, sender)
-            if (prefix == EVENT_MESSAGE) then
-                sender = strsplit("-", sender, 2) -- remove realm suffix
-                prefix, message = strsplit("#", message, 2)
-                -- prefix must be a number
-                prefix = tonumber(prefix)
-                if (prefix) then
-                    local handler = eventHandler[prefix]
-                    if (handler) then
-                        handler(message, sender)
-                    end
-                end
-            end
-        end)
     end
 end
 
@@ -410,15 +228,11 @@ local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("VARIABLES_LOADED")
 eventFrame:RegisterEvent("INSPECT_READY")
 eventFrame:RegisterEvent("CHAT_MSG_LOOT")
-eventFrame:RegisterEvent("CHAT_MSG_ADDON")
 eventFrame:RegisterEvent("LOOT_OPENED")
 eventFrame:RegisterEvent("LOOT_SLOT_CLEARED")
-C_ChatInfo.RegisterAddonMessagePrefix(EVENT_MESSAGE)
 function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4, arg5, ...)
     if (event == "VARIABLES_LOADED") then
         ns.loadSavedVariables()
-    elseif (event == "CHAT_MSG_ADDON") then
-        receive(arg1, arg2, arg3, arg4)
     elseif (event == "LOOT_OPENED" or event == "LOOT_SLOT_CLEARED") then
         updateLootItems()
     elseif (event == "CHAT_MSG_LOOT") then

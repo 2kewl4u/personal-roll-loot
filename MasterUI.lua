@@ -50,7 +50,7 @@ local function updateRollOrderFields(index, button, itemId, item)
         rollItemField:SetText("Item: "..itemName)
         rollOrderScrollList:Update()
         -- announce roll order
-        ns.announceRollOrder(rollOrder)
+        ns.RollOrderEvent.broadcast(rollOrder)
     end
 end
 

@@ -15,7 +15,7 @@ local LootButton = {
 }
 
 local function response(rollType)
-    ns.respondRollOrder(LootButton.item, rollType)
+    ns.RollResponseEvent.send(LootButton.item, rollType)
     LootButton.frame:Hide()
 end
 

@@ -15,6 +15,7 @@ Players.lua
 Instance.lua
 RollOrder.lua
 Instances.lua
+RollSystem.lua
 
 Libs\AceComm-3.0\ChatThrottleLib.lua
 AddonMessage.lua
@@ -27,6 +28,9 @@ events\MemberInfoRequestEvent.lua
 events\SyncRequestEvent.lua
 events\SyncInfoEvent.lua
 events\ItemRemovalRequestEvent.lua
+events\RollOrderEvent.lua
+events\RollRequestEvent.lua
+events\RollResponseEvent.lua
 
 SavedVariables.lua
 
