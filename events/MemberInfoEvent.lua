@@ -3,6 +3,7 @@ local _, ns = ...;
 -- imports
 local Events = ns.Events
 local Player = ns.Player
+local utils = ns.utils
 
 local EVENT_ID = "MemberInfoEvent"
 

@@ -67,7 +67,7 @@ end
 -- 
 function SyncInfoEvent.decode(encoded)
     if (encoded) then
-        local players = utils.fromCSV(message, function(list, element)
+        local players = utils.fromCSV(encoded, function(list, element)
             local player = Player.decode(element)
             list[player.name] = player
         end, "/")
