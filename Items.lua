@@ -1341,7 +1341,8 @@ local ITEM_LIST = {
     [18814] = {
         itemId = 18814,
         name = "Choker of the Fire Lord",
-        roles = { [ROLE_ELEMENTAL_SHAMAN] = 1, [ROLE_BALANCE_DRUID] = 1, [ROLE_SHADOW_PRIEST] = 1, [ROLE_MAGE] = 1, [ROLE_WARLOCK] = 1 },
+        roles = { [ROLE_ELEMENTAL_SHAMAN] = 1, [ROLE_BALANCE_DRUID] = 1, [ROLE_SHADOW_PRIEST] = 1, [ROLE_MAGE] = 1, [ROLE_WARLOCK] = 1,
+            [ROLE_HOLY_PALADIN] = 2, [ROLE_HOLY_PRIEST] = 2, [ROLE_RESTO_DRUID] = 2, [ROLE_RESTO_SHAMAN] = 2 },
         classes = { [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
         raids = { [RAID_MOLTEN_CORE] = true },
         slot = SLOT_NECK,
@@ -2005,13 +2006,13 @@ local Items = {}
 
 ---
 -- Returns the item with the given itemId or name, or nil if no such item could be found.
--- 
+--
 -- @param #string arg
 --          the itemId or name
--- 
+--
 -- @return #Item
 --          the item
--- 
+--
 Items.get = function(arg)
     if (not arg) then
         print("> No item id or name specified.")
@@ -2023,7 +2024,7 @@ Items.get = function(arg)
         else
             item = Items.forName(arg)
         end
-        
+
         if (not item) then
             print("> Item with itemId or name '"..arg.."' not found.")
         end
@@ -2110,7 +2111,7 @@ Items.checkInventoryItems = function(player)
     local items = Items.getInventoryItems()
     for itemId, item in pairs(items) do
         if (not player.needlist[itemId]) then
-            -- the item was already removed from the list 
+            -- the item was already removed from the list
             items[itemId] = nil
         end
     end
@@ -2119,10 +2120,10 @@ end
 
 ---
 -- Removes the items in the inventory of the player from its need-list.
--- 
+--
 -- Note that this method is only intended to remove the items from the raid or group leader.
 -- It does not send an event to the leader to get some items removed.
--- 
+--
 Items.removeInventoryItems = function()
     local playerName = UnitName("player")
     local player = ns.DB.PLAYER_LIST[playerName]
@@ -2186,12 +2187,12 @@ end
 ---
 -- Removes the given item from the given player and also all addition items (like quest
 -- items).
--- 
+--
 -- @param #Player player
 --          the player from who to remove the item
 -- @param #Item item
 --          the item to be removed from the player
--- 
+--
 Items.removeFromPlayer = function(player, item)
     if (player and item) then
         if (player:removeItem(item)) then
