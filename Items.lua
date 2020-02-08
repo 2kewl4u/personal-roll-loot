@@ -1557,7 +1557,7 @@ local ITEM_LIST = {
         itemId = 19136,
         name = "Mana Igniting Cord",
         roles = { [ROLE_MAGE] = 1, [ROLE_WARLOCK] = 1, [ROLE_SHADOW_PRIEST] = 1, [ROLE_HOLY_PRIEST] = 2, [ROLE_BALANCE_DRUID] = 2,
-            [ROLE_RESTO_DRUID] = 3, [ROLE_ELEMENTAL_SHAMAN] = 2 },
+            [ROLE_RESTO_DRUID] = 3, [ROLE_ELEMENTAL_SHAMAN] = 2, [ROLE_HOLY_PALADIN] = 3, [ROLE_RESTO_SHAMAN] = 3 },
         classes = { [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_MAGE] = true, [CLASS_WARLOCK] = true },
         raids = { [RAID_MOLTEN_CORE] = true },
         slot = SLOT_WAIST,
