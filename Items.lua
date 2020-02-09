@@ -261,7 +261,7 @@ local ITEM_LIST = {
     [16813] = {
         itemId = 16813,
         name = "Circlet of Prophecy",
-        roles = { [ROLE_HOLY_PRIEST] = 1, [ROLE_SHADOW_PRIEST] = 2 },
+        roles = { [ROLE_HOLY_PRIEST] = 1, [ROLE_SHADOW_PRIEST] = 1 },
         classes = { [CLASS_PRIEST] = true },
         raids = { [RAID_MOLTEN_CORE] = true },
         slot = SLOT_HEAD,
@@ -294,7 +294,7 @@ local ITEM_LIST = {
     [16816] = {
         itemId = 16816,
         name = "Mantle of Prophecy",
-        roles = { [ROLE_HOLY_PRIEST] = 1, [ROLE_SHADOW_PRIEST] = 2 },
+        roles = { [ROLE_HOLY_PRIEST] = 1, [ROLE_SHADOW_PRIEST] = 1 },
         classes = { [CLASS_PRIEST] = true },
         raids = { [RAID_MOLTEN_CORE] = true },
         slot = SLOT_SHOULDER,
@@ -305,7 +305,7 @@ local ITEM_LIST = {
     [16817] = {
         itemId = 16817,
         name = "Girdle of Prophecy",
-        roles = { [ROLE_HOLY_PRIEST] = 1, [ROLE_SHADOW_PRIEST] = 2 },
+        roles = { [ROLE_HOLY_PRIEST] = 1, [ROLE_SHADOW_PRIEST] = 1 },
         classes = { [CLASS_PRIEST] = true },
         raids = { [RAID_MOLTEN_CORE] = true },
         slot = SLOT_WAIST,
@@ -525,7 +525,7 @@ local ITEM_LIST = {
     [16839] = {
         itemId = 16839,
         name = "Earthfury Gauntlets",
-        roles = { [ROLE_RESTO_SHAMAN] = 1, [ROLE_ELEMENTAL_SHAMAN] = 2 },
+        roles = { [ROLE_RESTO_SHAMAN] = 1, [ROLE_ELEMENTAL_SHAMAN] = 1 },
         classes = { [CLASS_SHAMAN] = true },
         raids = { [RAID_MOLTEN_CORE] = true },
         slot = SLOT_HANDS,
@@ -536,7 +536,7 @@ local ITEM_LIST = {
     [16840] = {
         itemId = 16840,
         name = "Earthfury Bracers",
-        roles = { [ROLE_RESTO_SHAMAN] = 1, [ROLE_ELEMENTAL_SHAMAN] = 2 },
+        roles = { [ROLE_RESTO_SHAMAN] = 1, [ROLE_ELEMENTAL_SHAMAN] = 1 },
         classes = { [CLASS_SHAMAN] = true },
         raids = { [RAID_MOLTEN_CORE] = true },
         slot = SLOT_WRIST,
@@ -569,7 +569,7 @@ local ITEM_LIST = {
     [16843] = {
         itemId = 16843,
         name = "Earthfury Legguards",
-        roles = { [ROLE_RESTO_SHAMAN] = 1, [ROLE_ELEMENTAL_SHAMAN] = 2 },
+        roles = { [ROLE_RESTO_SHAMAN] = 1, [ROLE_ELEMENTAL_SHAMAN] = 1 },
         classes = { [CLASS_SHAMAN] = true },
         raids = { [RAID_MOLTEN_CORE] = true },
         slot = SLOT_LEGS,
@@ -921,7 +921,7 @@ local ITEM_LIST = {
     [16946] = {
         itemId = 16946,
         name = "Legplates of Ten Storms",
-        roles = { [ROLE_RESTO_SHAMAN] = 1, [ROLE_ELEMENTAL_SHAMAN] = 2 },
+        roles = { [ROLE_RESTO_SHAMAN] = 1, [ROLE_ELEMENTAL_SHAMAN] = 1 },
         classes = { [CLASS_SHAMAN] = true },
         raids = { [RAID_MOLTEN_CORE] = true },
         slot = SLOT_LEGS,
