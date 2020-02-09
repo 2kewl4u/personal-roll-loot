@@ -1,0 +1,121 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+    <Button name="PersonalLootPlayerButtonTemplate"
+        virtual="true">
+        <Size x="155" y="36" />
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="ResultBG">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="0" y="-2" />
+                        <Anchor point="BOTTOMRIGHT" x="-12" y="0" />
+                    </Anchors>
+                    <Color r="1" g="1" b="1" a="0.04" />
+                </Texture>
+                <Texture parentKey="ApplicationBG"
+                    atlas="groupfinder-highlightbar-green"
+                    alphaMode="ADD">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="0" y="-2" />
+                        <Anchor point="BOTTOMRIGHT" x="-12" y="0" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <FontString parentKey="Name"
+                    inherits="GameFontNormal" justifyH="LEFT">
+                    <Size x="0" y="14" />
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="2" y="-6" />
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="Trial"
+                    text="TRIAL"
+                    inherits="GameFontDisableSmallLeft">
+                    <Size x="0" y="15" />
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" x="2" y="2" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+            <Layer level="HIGHLIGHT">
+                <Texture parentKey="Highlight"
+                    atlas="groupfinder-highlightbar-blue"
+                    alphaMode="ADD">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="0" y="-3" />
+                        <Anchor point="BOTTOMRIGHT" x="-12" y="-1" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <Texture
+                    file="Interface\ICONS\INV_Misc_QuestionMark"
+                    parentArray="RoleIcons"
+                    parentKey="RoleIcon1">
+                    <Size x="18" y="18" />
+                    <Anchors>
+                        <Anchor point="RIGHT"
+                            relativeKey="$parent" relativePoint="RIGHT"
+                            x="-15" y="-1" />
+                    </Anchors>
+                </Texture>
+                <Texture
+                    file="Interface\ICONS\INV_Misc_QuestionMark"
+                    parentArray="RoleIcons"
+                    parentKey="RoleIcon2">
+                    <Size x="18" y="18" />
+                    <Anchors>
+                        <Anchor point="RIGHT"
+                            relativeKey="$parent.RoleIcon1" relativePoint="LEFT"
+                            x="-2" y="0" />
+                    </Anchors>
+                </Texture>
+                <Texture
+                    file="Interface\ICONS\INV_Misc_QuestionMark"
+                    parentArray="RoleIcons"
+                    parentKey="RoleIcon3">
+                    <Size x="18" y="18" />
+                    <Anchors>
+                        <Anchor point="RIGHT"
+                            relativeKey="$parent.RoleIcon2" relativePoint="LEFT"
+                            x="-2" y="0" />
+                    </Anchors>
+                </Texture>
+                <Texture
+                    file="Interface\ICONS\INV_Misc_QuestionMark"
+                    parentArray="RoleIcons"
+                    parentKey="RoleIcon4">
+                    <Size x="18" y="18" />
+                    <Anchors>
+                        <Anchor point="RIGHT"
+                            relativeKey="$parent.RoleIcon3" relativePoint="LEFT"
+                            x="-2" y="0" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame parentKey="RoleDisplay"
+                inherits="DungeonFinderGroupDataDisplayTemplate"
+                hidden="true">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeKey="$parent"
+                        relativePoint="RIGHT" x="0" y="-1" />
+                </Anchors>
+            </Frame>
+            <Frame parentKey="ClassDisplay"
+                inherits="DungeonFinderGroupClassesTemplate"
+                hidden="true">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeKey="$parent"
+                        relativePoint="RIGHT" x="0" y="-1" />
+                </Anchors>
+            </Frame>
+        </Frames>
+    </Button>
+
+</Ui>

@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Title: Personal Roll Loot
-## Version: 0.4.1
+## Version: 0.5.1
 ## Author: Ben
 ## SavedVariables: PersonalRollLootDB
 
@@ -37,6 +37,7 @@ SavedVariables.lua
 frames\PersonalLootItemButton.xml
 frames\PersonalLootFrame.xml
 frames\PersonalLootRoleButton.xml
+frames\PersonalLootPlayerButton.xml
 
 UtilsUI.lua
 ScrollList.lua

@@ -75,12 +75,38 @@ local rollTabFrame = tabs[3].contentFrame
 -- --------------------------------------------------------- --
 -- the player list to add and remove players to the tracking --
 -- --------------------------------------------------------- --
-local playerScrollList = ScrollList.new("PersonalRollLootPlayerListScrollFrame", playerTabFrame, 18)
+local playerScrollList = ScrollList.new("PersonalRollLootPlayerListScrollFrame", playerTabFrame, 10, "PersonalLootPlayerButtonTemplate")
 playerScrollList:SetPoint("TOPLEFT", playerTabFrame, "TOPLEFT", MARGIN, -MARGIN)
 playerScrollList:SetPoint("BOTTOMLEFT", playerTabFrame, "BOTTOMLEFT", MARGIN, 2 * (TEXT_FIELD_HEIGHT + SPACING) + MARGIN)
 playerScrollList:SetWidth(COLUMN_WIDTH)
-playerScrollList:SetButtonHeight(TEXT_FIELD_HEIGHT)
-playerScrollList:SetLabelProvider(function(k, v) return k end)
+playerScrollList:SetButtonHeight(36)
+playerScrollList:SetLabelProvider(function(name, player, button)
+    button.Name:SetText(name)
+    -- set the role icons
+    local roleIndex = 1
+    for playerRole in pairs(player.roles) do
+        if (roleIndex > 4) then break end -- limit the roles
+        
+        local role = ns.ROLES_LIST[playerRole]
+        if (role) then
+            local texture = button.RoleIcons[roleIndex]
+            texture:SetTexture(role.texture)
+            texture:Show()
+            roleIndex = roleIndex + 1
+        end
+    end
+    -- hide the rest of the textures
+    for index = roleIndex, 4 do
+        local texture = button.RoleIcons[index]
+        texture:Hide()
+    end
+    -- set the text field for the trial status
+    if (player.trial) then
+        button.Trial:Show()
+    else
+        button.Trial:Hide()
+    end
+end)
 playerScrollList:SetContentProvider(function() return ns.DB.PLAYER_LIST end)
 playerScrollList:SetButtonScript("OnClick", function(index, button, name, player)
     playerNameField:SetText(name..", "..player.class)
@@ -134,6 +160,7 @@ for roleIndex = 1, 4, 1 do
                 player.roles[roleId] = nil
             end
             playerItemScrollList:Update()
+            playerScrollList:Update()
         end
     end)
     roleButtons[roleIndex] = roleButton
@@ -188,6 +215,7 @@ trialButton:SetScript("OnClick", function()
         player.trial = trialButton:GetChecked()
     end
     playerItemScrollList:Update()
+    playerScrollList:Update()
 end)
 trialButton:Hide()
 
