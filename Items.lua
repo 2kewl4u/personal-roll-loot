@@ -28,13 +28,10 @@ local CLASS_PALADIN = "PALADIN"
 local CLASS_HUNTER = "HUNTER"
 local CLASS_ROGUE = "ROGUE"
 local CLASS_PRIEST = "PRIEST"
-local CLASS_DEATH_KNIGHT = "DEATHKNIGHT"
 local CLASS_SHAMAN = "SHAMAN"
 local CLASS_MAGE = "MAGE"
 local CLASS_WARLOCK = "WARLOCK"
-local CLASS_MONK = "MONK"
 local CLASS_DRUID = "DRUID"
-local CLASS_DEMON_HUNTER = "DEMONHUNTER"
 
 local RAID_MOLTEN_CORE = "Molten Core"
 local RAID_BLACKWING_LAIR = "Blackwing Lair"
@@ -1859,7 +1856,7 @@ local ITEM_LIST = {
         roles = { [ROLE_PROT_PALADIN] = 1, [ROLE_PROT_WARRIOR] = 1, [ROLE_GUARDIAN_DRUID] = 1, [ROLE_HUNTER] = 1, [ROLE_HOLY_PRIEST] = 3,
             [ROLE_RESTO_DRUID] = 3, [ROLE_HOLY_PALADIN] = 2, [ROLE_RESTO_SHAMAN] = 3, [ROLE_ROGUE] = 1, [ROLE_FERAL_DRUID] = 1,
             [ROLE_ENHANCEMENT_SHAMAN] = 1, [ROLE_RETRI_PALADIN] = 1, [ROLE_ELEMENTAL_SHAMAN] = 2, [ROLE_BALANCE_DRUID] = 2, [ROLE_SHADOW_PRIEST] = 3,
-            [ROLE_MAGE] = 2, [ROLE_WARLOCK] = 2 },
+            [ROLE_MAGE] = 2, [ROLE_WARLOCK] = 2, [ROLE_ARMS_WARRIOR] = 1 },
         classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true,
             [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
         raids = { [RAID_ONYXIA] = true },
