@@ -4,3 +4,4 @@
 - players out of range are not be registered when they receive loot
 
 - sound effect during role check
+- low prio items may be always removed
