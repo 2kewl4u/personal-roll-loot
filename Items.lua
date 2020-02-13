@@ -3358,7 +3358,7 @@ local ITEM_LIST = {
         raids = { [RAID_BLACKWING_LAIR] = true },
         slot = SLOT_FINGERS,
         slotSize = 2,
-        tier = 1,
+        tier = 2,
         replaceable = true
     },
     [19433] = {
@@ -3380,7 +3380,7 @@ local ITEM_LIST = {
         raids = { [RAID_BLACKWING_LAIR] = true },
         slot = SLOT_FINGERS,
         slotSize = 2,
-        tier = 1,
+        tier = 2,
         replaceable = true,
         removable = false
     },

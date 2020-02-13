@@ -2,7 +2,6 @@
 local _, ns = ...;
 -- imports
 local ITEM_LIST = ns.ITEM_LIST
-local RAIDS = ns.RAIDS
 local utils = ns.utils
 
 ---
