@@ -91,7 +91,7 @@ function RoleCheckEvent.broadcast()
             local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
             if (instance) then
                 utils.forEachRaidMember(function(playerName)
-                    if (not instance.players[playerName] and not instance.rolecheck[playerName]) then
+                    if (not instance.players[playerName]) then
                         local player = ns.DB.PLAYER_LIST[playerName]
                         if (player) then
                             Events.sent(RoleCheckEvent.new(player, instance.raid))
