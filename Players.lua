@@ -123,3 +123,20 @@ Players.get = function(arg)
         end
     end
 end
+
+Players.checkGroupStatus = function()
+    local playerCount = 0
+    local raidMembers = 0
+    local missing = 0
+    utils.forEachRaidMember(function(playerName)
+        local player = ns.DB.PLAYER_LIST[playerName]
+        if (player) then
+            playerCount = playerCount + 1
+        else
+            missing = missing + 1
+            --print("> Player '"..playerName.."' is not registered for Personal Roll Loot.")
+        end
+        raidMembers = raidMembers + 1
+    end)
+    return playerCount, missing, raidMembers
+end

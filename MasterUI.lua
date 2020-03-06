@@ -464,7 +464,20 @@ local roleCheckButton = CreateFrame("Button", nil, instancesTabFrame, "GameMenuB
 roleCheckButton:SetPoint("BOTTOMLEFT", inviteButton, "TOPLEFT", 0, SPACING)
 roleCheckButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
 roleCheckButton:SetText("Role Check")
-roleCheckButton:SetScript("OnClick", function() ns.RoleCheckEvent.broadcast() end)
+roleCheckButton:SetScript("OnClick", function()
+    local playerCount, missing, raidMembers = Players.checkGroupStatus()
+    if (playerCount < raidMembers) then
+        ConfirmDialog.open("Only "..playerCount.." of "..raidMembers.." raid or party members are registered for Personal Roll Loot. Do you want to add the missing players?", function(result)
+            if (result) then
+                -- add all missing players
+                Players.add(nil)
+            end
+            ns.RoleCheckEvent.broadcast()
+        end)
+    else
+        ns.RoleCheckEvent.broadcast()
+    end
+end)
 
 local rollItemsScrollList = ScrollList.new("PersonalRollLootRollItemScrollFrame", rollTabFrame, 10, "PersonalLootItemButtonTemplate")
 rollItemsScrollList:SetPoint("TOPLEFT", rollTabFrame, "TOPLEFT", MARGIN, -MARGIN)
