@@ -2,11 +2,17 @@
 local _, ns = ...;
 -- imports
 local Events = ns.Events
+local Items = ns.Items
 local utils = ns.utils
 
 local ITEM_LIST = ns.ITEM_LIST
 
 local EVENT_ID = "InventoryReportEvent"
+
+-- indicates whether items should be automatically be removed from the player settings
+local autoRemove
+-- events received while the confirmation dialog is open will be save here
+local pendingEvents = {}
 
 ---
 -- The event is sent to report potential miss-configuration back to the raid leader. It contains
@@ -92,6 +98,63 @@ function InventoryReportEvent.send(receiver, items)
 end
 
 ---
+-- Prints the contents of this event to the console output.
+-- 
+function InventoryReportEvent:print()
+    local event = self
+    local items = event.items
+    local size = utils.tblsize(items)
+    local msg = "> The player '"..event.sender.."' reports "..size.." items in the inventory still present in the need-list. "
+    local i = 0
+    for itemId in pairs(items) do
+        local item = ITEM_LIST[itemId]
+        if (item) then
+            msg = msg..item:getName().." ("..itemId.."), "
+        end
+        i = i + 1
+        if (i >= 5) then break end
+    end
+    local rest = size - i
+    if (rest > 0) then
+        msg = msg.."and "..rest.." more; "
+    end
+    msg = msg.."you should inspect the player."
+    print(msg)
+end
+
+---
+-- Removes the items in the given event from the given player and sends back another RoleCheckEvent.
+-- 
+-- @param #InventoryReportEvent event
+--          the event containing the reported items
+-- @param #Player player
+--          the player to remove the items from
+-- 
+local function removeItems(event, player)
+    -- remove the reported items
+    for itemId in pairs(event.items) do
+        local item = ITEM_LIST[itemId]
+        Items.removeFromPlayer(player, item)
+    end
+    -- resent the role check
+    ns.RoleCheckEvent.send(player)
+end
+
+---
+-- Removes the items from the players within the pending events that were received while the
+-- confirmation dialog was open .
+-- 
+local function removePending()
+    for playerName, event in pairs(pendingEvents) do
+        local player = ns.DB.PLAYER_LIST[playerName]
+        if (player) then
+            removeItems(event, player)
+        end
+    end
+    pendingEvents = {}   
+end
+
+---
 -- The event handler is called when an InventoryReportEvent is received.
 -- 
 -- The reported items will be printed to the console.
@@ -99,25 +162,24 @@ end
 ns.eventHandler[EVENT_ID] = function(message, sender)
     if (message) then
         local event = InventoryReportEvent.decode(message)
-        if (event) then
-            local items = event.items
-            local size = utils.tblsize(items)
-            local msg = "> The player '"..sender.."' reports "..size.." items in the inventory still present in the need-list. "
-            local i = 0
-            for itemId in pairs(items) do
-                local item = ITEM_LIST[itemId]
-                if (item) then
-                    msg = msg..item:getName().." ("..itemId.."), "
-                end
-                i = i + 1
-                if (i >= 5) then break end
+        event.sender = sender
+        local player = ns.DB.PLAYER_LIST[sender]
+        if (event and player) then
+            event:print()
+            if (ns.ConfirmDialog.isShown()) then
+                -- save the events during user prompt for automatic removal
+                pendingEvents[player.name] = event
+            elseif (autoRemove == nil) then
+                ns.ConfirmDialog.open("Players report items in the inventory still present in the need-list. Would you like to automatically remove reported items?", function(result)
+                    autoRemove = result
+                    if (result) then
+                        removeItems(event, player)
+                        removePending()
+                    end
+                end)
+            elseif (autoRemove) then
+                removeItems(event, player)
             end
-            local rest = size - i
-            if (rest > 0) then
-                msg = msg.."and "..rest.." more; "
-            end
-            msg = msg.."you should inspect the player."
-            print(msg)
         end
     end
 end

@@ -41,9 +41,10 @@ StaticPopupDialogs[CONFIRM_DIALOG] = ConfirmDialog.dialog
 --          the function that will be invoked with the user choice
 -- 
 ConfirmDialog.open = function(text, action)
-    local dialog = StaticPopup_Show(CONFIRM_DIALOG, text)
-    if (dialog) then
-        dialog.data = action
+    local frame = StaticPopup_Show(CONFIRM_DIALOG, text)
+    if (frame) then
+        ConfirmDialog.dialog.frame = frame
+        frame.data = action
     end
 end
 
@@ -52,4 +53,19 @@ end
 -- 
 ConfirmDialog.close = function()
     StaticPopup_Hide(CONFIRM_DIALOG)
+end
+
+---
+-- Indicates whether the ConfirmDialog is currently shown.
+--
+-- @return #boolean
+--          true if the dialog is currently shown, false otherwise
+--
+ConfirmDialog.isShown = function()
+    local frame = ConfirmDialog.dialog.frame
+    if (frame) then
+    	return frame:IsShown()
+    else
+        return false
+    end
 end

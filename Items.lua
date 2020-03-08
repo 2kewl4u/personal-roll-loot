@@ -3621,7 +3621,7 @@ Items.getInventoryItems = function()
     end
     -- check all bags
     for bagId = 0, 4, 1 do
-        for slot = 1, 18, 1 do
+        for slot = 1, 25, 1 do
             local itemId = GetContainerItemID(bagId, slot)
             if (itemId) then
                 local item = ITEM_LIST[itemId]

@@ -112,6 +112,21 @@ function RoleCheckEvent.broadcast()
 end
 
 ---
+-- Sends a single RoleCheckEvent to the given player.
+-- 
+-- @param #Player player
+--          the player to send the event to
+-- 
+function RoleCheckEvent.send(player)
+    if (player and ns.DB.activeInstance) then
+        local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
+        if (instance) then
+            Events.sent(RoleCheckEvent.new(player, instance.raid))
+        end
+    end
+end
+
+---
 -- The event handler is called when a RoleCheckEvent is received.
 -- 
 -- If the message is valid, the RoleCheckUI will be opened.
