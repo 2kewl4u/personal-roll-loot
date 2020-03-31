@@ -1259,8 +1259,8 @@ local ITEM_LIST = {
     [18805] = {
         itemId = 18805,
         name = "Core Hound Tooth",
-        roles = { [ROLE_ROGUE] = 1, [ROLE_ARMS_WARRIOR] = 2 },
-        classes = { [CLASS_WARRIOR] = true, [CLASS_ROGUE] = true },
+        roles = { [ROLE_ROGUE] = 1, [ROLE_ARMS_WARRIOR] = 2, [ROLE_HUNTER] = 3 },
+        classes = { [CLASS_WARRIOR] = true, [CLASS_ROGUE] = true, [CLASS_HUNTER] = true },
         raids = { [RAID_MOLTEN_CORE] = true },
         slot = SLOT_MAIN_HAND,
         slotSize = 2,
