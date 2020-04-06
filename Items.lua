@@ -2615,7 +2615,8 @@ local ITEM_LIST = {
         slot = SLOT_TRINKET,
         slotSize = 2,
         tier = 2,
-        replaceable = true
+        replaceable = true,
+        restricted = true
     },
     [19342] = {
         itemId = 19342,
@@ -2744,7 +2745,8 @@ local ITEM_LIST = {
         slotSize = 2,
         tier = 2,
         replaceable = true,
-        removable = true
+        removable = true,
+        restricted = true
     },
     [19353] = {
         itemId = 19353,
@@ -2793,7 +2795,8 @@ local ITEM_LIST = {
         slotSize = 1,
         tier = 2.5,
         replaceable = true,
-        removable = true
+        removable = true,
+        restricted = true
     },
     [19357] = {
         itemId = 19357,
@@ -2830,7 +2833,8 @@ local ITEM_LIST = {
         slotSize = 1,
         tier = 2.5,
         replaceable = true,
-        removable = true
+        removable = true,
+        restricted = true
     },
     [19361] = {
         itemId = 19361,
@@ -2842,7 +2846,8 @@ local ITEM_LIST = {
         slotSize = 1,
         tier = 2,
         replaceable = true,
-        removable = true
+        removable = true,
+        restricted = true
     },
     [19362] = {
         itemId = 19362,
@@ -2866,7 +2871,8 @@ local ITEM_LIST = {
         slotSize = 2,
         tier = 2.5,
         replaceable = true,
-        removable = true
+        removable = true,
+        restricted = true
     },
     [19364] = {
         itemId = 19364,
@@ -2878,7 +2884,8 @@ local ITEM_LIST = {
         slotSize = 1,
         tier = 2.5,
         replaceable = true,
-        removable = true
+        removable = true,
+        restricted = true
     },
     [19365] = {
         itemId = 19365,
@@ -2996,7 +3003,8 @@ local ITEM_LIST = {
         slot = SLOT_HEAD,
         slotSize = 1,
         tier = 2,
-        replaceable = true
+        replaceable = true,
+        restricted = true
     },
     [19376] = {
         itemId = 19376,
@@ -3043,7 +3051,8 @@ local ITEM_LIST = {
         slotSize = 2,
         tier = 2.5,
         replaceable = true,
-        removable = true
+        removable = true,
+        restricted = true
     },
     [19380] = {
         itemId = 19380,
@@ -3076,7 +3085,8 @@ local ITEM_LIST = {
         slot = SLOT_FINGERS,
         slotSize = 2,
         tier = 2,
-        replaceable = true
+        replaceable = true,
+        restricted = true
     },
     [19385] = {
         itemId = 19385,
@@ -3120,7 +3130,8 @@ local ITEM_LIST = {
         slot = SLOT_WAIST,
         slotSize = 1,
         tier = 2,
-        replaceable = true
+        replaceable = true,
+        restricted = true
     },
     [19389] = {
         itemId = 19389,
@@ -3197,7 +3208,8 @@ local ITEM_LIST = {
         slot = SLOT_TRINKET,
         slotSize = 2,
         tier = 2,
-        replaceable = true
+        replaceable = true,
+        restricted = true
     },
     [19396] = {
         itemId = 19396,
@@ -3313,7 +3325,8 @@ local ITEM_LIST = {
         slotSize = 2,
         tier = 2,
         replaceable = true,
-        removable = true
+        removable = true,
+        restricted = true
     },
     [19407] = {
         itemId = 19407,
@@ -3335,7 +3348,8 @@ local ITEM_LIST = {
         slot = SLOT_BACK,
         slotSize = 1,
         tier = 2,
-        replaceable = true
+        replaceable = true,
+        restricted = true
     },
     [19431] = {
         itemId = 19431,
