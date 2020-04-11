@@ -30,7 +30,7 @@ local createMemberInfo = function()
     if (not memberInfo) then
         local name, realm = UnitName("player")
         local _, class = UnitClass("player")
-        memberInfo = Player.new(name,realm,class)
+        memberInfo = Player.new(name,realm,class,false)
         memberInfo.roles = {}
         memberInfo.needlist = {}
     end

@@ -67,10 +67,11 @@ MasterUIFrame.Title:SetText("Personal Roll Loot - Master")
 HideUIPanel(MasterUIFrame)
 
 -- create tabs
-local tabs = utilsUI.createTabs(MasterUIFrame, { "Players", "Instances", "Roll" })
+local tabs = utilsUI.createTabs(MasterUIFrame, { "Players", "Instances", "Roll", "Options" })
 local playerTabFrame = tabs[1].contentFrame
 local instancesTabFrame = tabs[2].contentFrame
 local rollTabFrame = tabs[3].contentFrame
+local optionsTabFrame = tabs[4].contentFrame
 
 -- --------------------------------------------------------- --
 -- the player list to add and remove players to the tracking --
@@ -590,6 +591,17 @@ end)
 rollOrderScrollList:SetButtonScript("OnLeave", utilsUI.hideTooltip)
 utilsUI.createBorder(rollOrderScrollList:GetFrame())
 
+-- OPTIONS PANEL
+local trialOptionButton = CreateFrame("CheckButton", nil, optionsTabFrame, "UICheckButtonTemplate")
+trialOptionButton:SetPoint("TOPLEFT", optionsTabFrame, "TOPLEFT", MARGIN, -MARGIN)
+trialOptionButton.text:SetFontObject("GameFontNormal")
+trialOptionButton.text:SetText("Automatically mark newly added players as 'Trial'")
+trialOptionButton:SetScript("OnShow", function()
+    trialOptionButton:SetChecked(ns.DB.options.markNewPlayersAsTrial or false)
+end)
+trialOptionButton:SetScript("OnClick", function()
+    ns.DB.options.markNewPlayersAsTrial =  trialOptionButton:GetChecked()
+end)
 
 local MasterUI = {}
 MasterUI.__index = MasterUI

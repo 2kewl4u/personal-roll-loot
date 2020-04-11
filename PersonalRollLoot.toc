@@ -1,11 +1,12 @@
 ## Interface: 11304
 ## Title: Personal Roll Loot
-## Version: 0.6.3
+## Version: 0.6.4
 ## Author: Ben
 ## SavedVariables: PersonalRollLootDB
 
 Utils.lua
 Constants.lua
+Options.lua
 Role.lua
 Roles.lua
 Item.lua

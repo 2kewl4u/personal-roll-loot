@@ -48,6 +48,7 @@ Players.add = function(arg)
         if (UnitName("target")) then arg = "target" end
     end
     
+    local trial = ns.DB.options.markNewPlayersAsTrial
     if (not arg) then
         -- no argument given, so add all players in the group
         local added = 0
@@ -55,7 +56,7 @@ Players.add = function(arg)
             local name, realm = getPlayerNameAndRealm(name)
             if (name and (not ns.DB.PLAYER_LIST[name])) then
                 local _,class,_ = UnitClass(name)
-                ns.DB.PLAYER_LIST[name] = Player.new(name,realm,class)
+                ns.DB.PLAYER_LIST[name] = Player.new(name, realm, class, trial)
                 added = added + 1
             end
         end)
@@ -72,7 +73,7 @@ Players.add = function(arg)
                 else
                     -- add the player to our database
                     local _,class,_ = UnitClass(arg)
-                    ns.DB.PLAYER_LIST[name] = Player.new(name,realm,class)
+                    ns.DB.PLAYER_LIST[name] = Player.new(name, realm, class, trial)
                     print("> Added player '"..name.."-"..realm.."', "..class..".")
                 end
             end
