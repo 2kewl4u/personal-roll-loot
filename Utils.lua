@@ -240,6 +240,17 @@ utils.sendGroupMessage = function(message)
     end    
 end
 
+utils.isMasterLooter = function(playerName)
+    local lootmethod, masterlooterPartyID, masterlooterRaidID = GetLootMethod()
+    if (lootmethod == "master" and
+        (masterlooterPartyID == 0 or
+        (masterlooterRaidID and GetRaidRosterInfo(masterlooterRaidID) == playerName))) then
+        return true
+    else
+        return false
+    end
+end
+
 ns.utils = utils
 
 

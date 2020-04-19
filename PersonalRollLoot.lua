@@ -5,7 +5,9 @@ local Instances = ns.Instances
 local ITEM_LIST = ns.ITEM_LIST
 local Items = ns.Items
 local Players = ns.Players
+local Raids = ns.Raids
 local Roles = ns.Roles
+local utils = ns.utils
 
 local MasterUI = ns.MasterUI
 local MemberUI = ns.MemberUI
@@ -78,7 +80,7 @@ local COMMANDS = {
             local item = Items.get(arg2)
             if (item) then
                 local name = player.name
-        
+
                 -- remove item from player
                 if (player:removeItem(item)) then
                     print("> Removed item '"..item.name.."' ("..item.itemId..") from player '"..name.."'.")
@@ -214,6 +216,47 @@ local function inspectTarget()
     end
 end
 
+local function rollJunkItems()
+    -- check that master loot is enabled and the player is the master looter
+    if (ns.DB.options.rollJunkItems and
+        Raids.isInRaidInstance() and
+        utils.isMasterLooter(UnitName("player"))
+        ) then
+        
+        local lootCount = GetNumLootItems()
+        for slotIndex = 1, lootCount do
+            if (LootSlotHasItem(slotIndex)) then
+                local itemLink = GetLootSlotLink(slotIndex)
+                if (itemLink) then
+                    local itemId = GetItemInfoInstant(itemLink)
+                    -- filter junk items
+                    if (Items.isJunk(itemId)) then
+                        local lootIcon, lootName, lootQuantity, _, rarity, locked,
+                            isQuestItem, questId, isActive = GetLootSlotInfo(slotIndex)
+                        -- we roll out greens and blues only
+                        if (rarity == 2 or rarity == 3) then
+                            local candidates = {}
+                            for raidIndex = 1, 50 do
+                                local candidate = GetMasterLootCandidate(slotIndex, raidIndex)
+                                if (candidate) then
+                                    table.insert(candidates, raidIndex)
+                                else
+                                    break -- no more candidates
+                                end
+                            end
+                            if (#candidates > 0) then
+                                local pos = math.random(1, #candidates)
+                                local rndIndex = candidates[pos]
+                                GiveMasterLoot(slotIndex, rndIndex)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
 -- for testing
 local test
 SLASH_PersonalRollLootTest1 = "/test"
@@ -235,6 +278,7 @@ function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4, arg5, ...)
         ns.loadSavedVariables()
     elseif (event == "LOOT_OPENED" or event == "LOOT_SLOT_CLEARED") then
         updateLootItems()
+        rollJunkItems()
     elseif (event == "CHAT_MSG_LOOT") then
         -- arg5 "playerName2" - Name of player who received the loot
         parseLootMessage(arg1, arg5)

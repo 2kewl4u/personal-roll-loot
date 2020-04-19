@@ -74,18 +74,20 @@ end
 --          the realm of the player
 -- @param #string class
 --          the class constant, e.g. WARRIOR
+-- @param #boolean trial
+--          if the player should be marked as trial
 --
 -- @return #Player
 --          the new player
 --
-function Player.new(name, realm, class)
+function Player.new(name, realm, class, trial)
     local self = setmetatable({}, Player)
     self.name = name
     self.realm = realm
     self.class = class
     self.roles = getRoleIds(class)
     self.needlist = createNeedList(class)
-    self.trial = true
+    self.trial = trial or false
     return self
 end
 

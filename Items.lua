@@ -33,12 +33,6 @@ local CLASS_MAGE = "MAGE"
 local CLASS_WARLOCK = "WARLOCK"
 local CLASS_DRUID = "DRUID"
 
-local RAID_MOLTEN_CORE = "Molten Core"
-local RAID_ONYXIA = "Onyxia's Lair"
-local RAID_BLACKWING_LAIR = "Blackwing Lair"
-local RAID_ZUL_GURUB = "Zul'Gurub"
-local RAID_AHN_QIRAJ = "Ahn'Qiraj"
-
 local SLOT_HEAD = 1
 local SLOT_NECK = 2
 local SLOT_SHOULDER = 3
@@ -54,6 +48,14 @@ local SLOT_BACK = 15
 local SLOT_MAIN_HAND = 16
 local SLOT_OFF_HAND = 17
 local SLOT_RANGED = 18
+
+-- raids
+local RAID_MOLTEN_CORE = "Molten Core"
+local RAID_BLACKWING_LAIR = "Blackwing Lair"
+local RAID_ONYXIA = "Onyxia's Lair"
+local RAID_ZUL_GURUB = "Zul'Gurub"
+local RAID_RUINS_AHN_QIRAJ = "Ruins of Ahn'Qiraj"
+local RAID_AHN_QIRAJ_TEMPLE = "Ahn'Qiraj Temple"
 
 -- the item list
 local ITEM_LIST = {
@@ -5116,6 +5118,49 @@ Items.forName = function(name)
     end
 end
 
+Items.isJunk = function(itemId)
+    if (not itemId or ITEM_LIST[itemId]) then
+        return false
+    end
+
+    local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount,
+        itemEquipLoc, itemIcon, itemSellPrice, itemClassID, itemSubClassID, bindType, expacID, itemSetID, 
+        isCraftingReagent = GetItemInfo(itemId)
+    
+    -- bind on pickup
+    if (bindType == 1) then
+        return false
+    end
+    
+    -- should be common or rare quality
+    if (itemRarity == 2 or itemRarity == 3) then
+        if (-- junk class
+            (itemClassID == 15 and itemSubClassID == 0) or
+            -- trade goods
+            (itemClassID == 7 and itemSubClassID == 0) or
+            -- bags
+            (itemClassID == 1 and itemSubClassID == 0) or
+            -- green reagent
+            (itemClassID == 5 and itemSubClassID == 0 and itemRarity == 2) or
+            -- books
+            (itemClassID == 9 and itemSubClassID == 0) or
+            -- not bound quest items
+            (itemClassID == 12 and bindType == 0)
+            ) then
+            return true
+        end
+        -- exclude recipes
+        if (itemClassID == 9) then
+            return false
+        end
+        -- bind on equip
+        if (bindType == 2) then
+            return true
+        end
+    end
+    return false
+end
+
 ---
 -- Returns a map (itemId -> item) of Item's that are currently in the loot window.
 --
@@ -5126,11 +5171,12 @@ Items.getLootItems = function()
     local items = {}
     local lootCount = GetNumLootItems()
     for index = 1, lootCount do
-        local lootIcon, lootName, lootQuantity, rarity, locked,
-            isQuestItem, questId, isActive = GetLootSlotInfo(index)
-        local item = Items.forName(lootName)
-        if (item) then
-            items[item.itemId] = item
+        local itemLink = GetLootSlotLink(index)
+        if (itemLink) then
+            local itemId = GetItemInfoInstant(itemLink)
+            if (itemId) then
+                items[itemId] = ITEM_LIST[itemId]
+            end
         end
     end
     return items
