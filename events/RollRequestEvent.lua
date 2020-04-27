@@ -80,8 +80,12 @@ end
 -- 
 -- Does nothing if there is currently no roll order selected in the RollSystem.
 -- 
+-- @return #boolean
+--          true if new events were sent, false the no players are left
+-- 
 function RollRequestEvent.send()
     local currentRollOrder = ns.RollSystem.currentRollOrder
+    local sentEvent = false
     if (currentRollOrder) then
         local currentRound
         for index = ns.RollSystem.sentIndex, #currentRollOrder.rounds, 1 do
@@ -89,13 +93,14 @@ function RollRequestEvent.send()
             local round = entry[1]
             if (currentRound and currentRound < round) then break end
 
-            -- send a role request for the current round
+            -- send a roll request for the current round
             local playerName = entry[2]
             local item = currentRollOrder.item
             if (utils.isInRaid(playerName)) then
                 local player = ns.DB.PLAYER_LIST[playerName]
                 if (player and player.needlist[item.itemId]) then
                     Events.sent(RollRequestEvent.new(playerName, item.itemId))
+                    sentEvent = true
                     utils.sendGroupMessage(round.." - "..playerName)
                     currentRound = round
                     ns.RollSystem.currentRound = round
@@ -103,7 +108,8 @@ function RollRequestEvent.send()
             end
             ns.RollSystem.sentIndex = index + 1
         end
-    end    
+    end
+    return sentEvent
 end
 
 ---
