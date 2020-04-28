@@ -137,7 +137,10 @@ function RollSystem.evaluateResponse(event)
             if (round == currentRound) then
                 local playerName = entry[2]
                 local response = RollSystem.responses[playerName]
-                if (not response and utils.isInRaid(playerName)) then
+                local player = ns.DB.PLAYER_LIST[playerName]
+                if (not response and player and
+                    player.needlist[currentRollOrder.item.itemId] and
+                    utils.isInRaid(playerName)) then
                     missingResponse = true
                     break
                 elseif (response == ROLL_NEED) then
