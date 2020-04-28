@@ -164,6 +164,33 @@ function RollSystem.evaluateResponse(event)
     end
 end
 
+local function assignToRandomPlayer(slotIndex)
+    local candidates = {}
+    for raidIndex = 1, 50 do
+        local candidate = GetMasterLootCandidate(slotIndex, raidIndex)
+        if (candidate) then
+            table.insert(candidates, raidIndex)
+        else
+            break -- no more candidates
+        end
+    end
+    if (#candidates > 0) then
+        local pos = math.random(1, #candidates)
+        local rndIndex = candidates[pos]
+        GiveMasterLoot(slotIndex, rndIndex)
+    end
+end
+
+function RollSystem.rollCurrentItem()
+    if (Raids.isInRaidInstance() and utils.isMasterLooter(UnitName("player"))) then
+        local item = RollSystem.currentRollOrder.item
+        local slotIndex = getLootSlotIndex(item)
+        if (slotIndex) then
+            assignToRandomPlayer(slotIndex)
+        end
+    end
+end
+
 function RollSystem.rollJunkItems()
     -- check that master loot is enabled and the player is the master looter
     if (ns.DB.options.rollJunkItems and
@@ -183,20 +210,7 @@ function RollSystem.rollJunkItems()
                             isQuestItem, questId, isActive = GetLootSlotInfo(slotIndex)
                         -- we roll out greens and blues only
                         if (rarity == 2 or rarity == 3) then
-                            local candidates = {}
-                            for raidIndex = 1, 50 do
-                                local candidate = GetMasterLootCandidate(slotIndex, raidIndex)
-                                if (candidate) then
-                                    table.insert(candidates, raidIndex)
-                                else
-                                    break -- no more candidates
-                                end
-                            end
-                            if (#candidates > 0) then
-                                local pos = math.random(1, #candidates)
-                                local rndIndex = candidates[pos]
-                                GiveMasterLoot(slotIndex, rndIndex)
-                            end
+                            assignToRandomPlayer(slotIndex)
                         end
                     end
                 end

@@ -3,6 +3,7 @@ local _, ns = ...;
 -- imports
 local Events = ns.Events
 local RollOrder = ns.RollOrder
+local RollSystem = ns.RollSystem
 local utils = ns.utils
 
 local EVENT_ID = "RollOrderEvent"
@@ -84,7 +85,6 @@ function RollOrderEvent.broadcast(rollOrder)
         ns.RollSystem.setRollOrder(rollOrder)
         utils.sendGroupMessage(rollOrder.item:getLink())
 
-        local message = rollOrder:encode()
         utils.forEachRaidMember(function(name)
             local player = ns.DB.PLAYER_LIST[name]
             if (player) then
@@ -97,8 +97,16 @@ function RollOrderEvent.broadcast(rollOrder)
                 print("> Player '"..name.."' is not registered for Personal Roll Loot.")
             end
         end)
-
-        ns.RollRequestEvent.send()
+        
+        -- send the request to roll for the item
+        local sentEvent = ns.RollRequestEvent.send()
+        if (not sentEvent) then
+            ns.ConfirmDialog.open("No candidates on the priority list are active. Assign '"..rollOrder.item:getLink().."' randomly?", function(result)
+                if (result) then
+                    RollSystem.rollCurrentItem()
+                end
+            end)
+        end
     else
         print("> No active instance.")
     end
