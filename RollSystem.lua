@@ -75,14 +75,7 @@ local function assign(item, playerName)
     end
 end
 
-local function announceWinner(need)
-    local rollType
-    if (need) then
-        rollType = ROLL_NEED
-    else
-        rollType = ROLL_GREED
-    end
-
+local function findWinnerByRollType(rollType)
     local currentRollOrder = RollSystem.currentRollOrder
     local candidates = {}
     local winRound
@@ -103,11 +96,20 @@ local function announceWinner(need)
     -- roll between all candidates
     if (#candidates > 0) then
         local pos = math.random(1, #candidates)
-        local winner = candidates[pos]
-        utils.sendGroupMessage(winner.." wins "..currentRollOrder.item:getLink())
-        assign(currentRollOrder.item, winner)
-    else
-        -- TODO roll between all players
+        return candidates[pos]
+    end
+end
+
+local function announceWinner()
+    local rollTypes = { ROLL_NEED, ROLL_GREED, ROLL_PASS, ROLL_REMOVE }
+    for i, rollType in ipairs(rollTypes) do
+        local winner = findWinnerByRollType(rollType)
+        if (winner) then
+            local currentRollOrder = RollSystem.currentRollOrder
+            utils.sendGroupMessage(winner.." wins "..currentRollOrder.item:getLink())
+            assign(currentRollOrder.item, winner)
+            break
+        end
     end
 end
 
@@ -153,7 +155,7 @@ function RollSystem.evaluateResponse(event)
                 sentEvent = ns.RollRequestEvent.send()
             end
             if (need or not sentEvent) then
-                announceWinner(need)
+                announceWinner()
             end
         end
     end
