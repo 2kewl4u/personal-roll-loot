@@ -196,6 +196,13 @@ utils.forEachRaidMember = function(action)
     end
 end
 
+---
+-- Returns the name of the current raid or party leader or nil if the player is
+-- currently in no party or raid group.
+-- 
+-- @return #string
+--          the name of the raid or party leader
+-- 
 utils.getRaidLeader = function()
     local memberCount = GetNumGroupMembers()
     for index = 1, memberCount do
@@ -210,6 +217,13 @@ utils.getRaidLeader = function()
     end
 end
 
+---
+-- Indicates whether the player with the given name is currently the raid or
+-- party leader.
+-- 
+-- @return #boolean
+--          true if the player is party or raid leader, false otherwise
+--  
 utils.isGroupLeader = function(name)
     if (utils.getRaidLeader() == name) then
         return true
@@ -218,6 +232,17 @@ utils.isGroupLeader = function(name)
     end
 end
 
+---
+-- Indicates whether the player with the given name is in the current party or
+-- raid group.
+-- 
+-- @param #string playerName
+--          the name of the player to be checked
+-- 
+-- @return #boolean
+--          true if the player is in the current party or raid group, false
+--          otherwise
+--          
 utils.isInRaid = function(playerName)
     if (playerName) then
         local memberCount = GetNumGroupMembers()
@@ -229,8 +254,16 @@ utils.isInRaid = function(playerName)
             end
         end
     end
+    return false
 end
 
+---
+-- Sends the given message to the party or raid chat. Does nothing it the player
+-- is not in any kind of group.
+-- 
+-- @param #string message
+--          the message to be appended to the group chat
+-- 
 utils.sendGroupMessage = function(message)
     if (IsInGroup()) then
         local chatType = "PARTY"
@@ -240,6 +273,15 @@ utils.sendGroupMessage = function(message)
     end    
 end
 
+---
+-- Indicates whether the player if the given name is the current master looter,
+-- thus has the privilege to assign loot to players.
+-- 
+-- @param #string playerName
+--          the name of the player
+-- @return #boolean true
+--          if the player is master looter, false otherwise
+--  
 utils.isMasterLooter = function(playerName)
     local lootmethod, masterlooterPartyID, masterlooterRaidID = GetLootMethod()
     if (lootmethod == "master" and

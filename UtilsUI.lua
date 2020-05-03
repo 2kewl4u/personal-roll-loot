@@ -11,6 +11,27 @@ utilsUI.WINDOW_HEIGHT = 485
 utilsUI.MARGIN = 12
 utilsUI.SPACING = 6
 
+---
+-- Appends tabs to the given frame. That are little labels at the bottom of a
+-- frame that can be clicked on to change the contents of the frame.
+-- 
+-- This functions expects a list of labels for the tab buttons and the return
+-- value is a list of tab buttons. Each button contains a content frame where
+-- new UI widgets can be appended to.
+-- 
+-- e.g.
+-- local tabs = utilsUI.createTabs(mainFrame, { "Hello", "Stuff" })
+-- local helloFrame = tabs[1].contentFrame
+-- local stuffFrame = tabs[2].contentFrame
+--
+-- @param #Frame parentFrame
+--          the frame to append the tabs to
+-- @param #list tabLabels
+--          a list of labels for the tabs
+-- 
+-- @return #list
+--          a list containing the tab buttons
+--   
 utilsUI.createTabs = function(parentFrame, tabLabels)
     local tabs = {}
     local numTabs = #tabLabels
@@ -41,6 +62,15 @@ utilsUI.createTabs = function(parentFrame, tabLabels)
     return tabs
 end
 
+---
+-- Makes the tab of the given frame with the given index visible, hiding all
+-- other tabs.
+-- 
+-- @param #Frame parentFrame
+--          the frame that contains the tabs
+-- @param #number tabIndex
+--          the index of the tab that shall be visible
+-- 
 utilsUI.showTab = function(parentFrame, tabIndex)
     PanelTemplates_SetTab(parentFrame, tabIndex)
     for index, tab in pairs(parentFrame.tabs) do
@@ -103,11 +133,29 @@ utilsUI.showPlayerTooltip = function(owner, playerName)
     GameTooltip:SetUnit(unitName)
 end
 
+---
+-- Displays the tooltip of the item with the given itemId at the given widget.
+-- 
+-- @param #widget owner
+--          the button or widget to append the tooltip to
+-- @param #number itemId
+--          the itemId of the item to be shown in the tooltip
+--  
 utilsUI.showItemTooltip = function(owner, itemId)
     GameTooltip:SetOwner(owner, "ANCHOR_BOTTOMRIGHT")
     GameTooltip:SetItemByID(itemId)
 end
 
+---
+-- Displays the given text as tooltip at the given widget.
+-- 
+-- @param #widget owner
+--          the button or widget to append the tooltip to
+-- @param #string text
+--          the text to be displayed in the tooltip
+-- @param #string anchor
+--          the anchor point at the widget (optional)
+--  
 utilsUI.addTooltipText = function(owner, text, anchor)
     anchor = anchor or "ANCHOR_BOTTOMRIGHT"
     owner:SetScript("OnEnter", function()

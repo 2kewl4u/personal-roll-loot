@@ -22,11 +22,12 @@ ns.DB = {
 }
 
 ---
--- This method is used to upgrade the player items in case that the ITEM_LIST got updated for new
--- raid tiers and now the stored player need-lists do not contain the new items.
+-- This method is used to upgrade the player items in case that the ITEM_LIST
+-- got updated for new raid tiers and now the stored player need-lists do not
+-- contain the new items.
 -- 
--- To upgrade, we check if a player has no items in a raid and activate all of them. This strategy
--- should do more good than bad.
+-- To upgrade, we check if a player has no items in a raid and activate all of
+-- them. This strategy should do more good than bad.
 -- 
 local function upgradePlayerItems()
     for name, player in pairs(ns.DB.PLAYER_LIST or {}) do

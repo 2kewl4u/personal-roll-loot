@@ -125,6 +125,17 @@ Players.get = function(arg)
     end
 end
 
+---
+-- Checks how many players in the current party or raid group are registered for
+-- personal loot.
+-- 
+-- @return #number
+--          the number of
+--              1. registered players
+--              2. missing players and
+--              3. total raid members
+--          within the current party or raid group
+--          
 Players.checkGroupStatus = function()
     local playerCount = 0
     local raidMembers = 0
@@ -135,7 +146,6 @@ Players.checkGroupStatus = function()
             playerCount = playerCount + 1
         else
             missing = missing + 1
-            --print("> Player '"..playerName.."' is not registered for Personal Roll Loot.")
         end
         raidMembers = raidMembers + 1
     end)

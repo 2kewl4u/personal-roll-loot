@@ -22,6 +22,16 @@ local RAIDS = {
 -- 
 local Raids = {}
 
+---
+-- Returns the English name of the current raid instance or nil if the player
+-- is currently not in a raid instance.
+-- 
+-- Note that this only returns the currently known and configured instances used
+-- by the addon.
+-- 
+-- @return #string
+--          the name of the raid instance or nil
+-- 
 Raids.getCurrentInstance = function()
     local name, type, difficultyIndex, difficultyName, maxPlayers,
         dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo()
@@ -34,6 +44,13 @@ Raids.getCurrentInstance = function()
     end
 end
 
+---
+-- Indicates whether the player is currently in a raid instance for personal
+-- loot.
+-- 
+-- @return #boolean
+--          true if the player is in a raid instance, false otherwise
+-- 
 Raids.isInRaidInstance = function()
     if (Raids.getCurrentInstance()) then
         return true

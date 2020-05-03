@@ -3473,7 +3473,7 @@ local ITEM_LIST = {
         raids = { [RAID_BLACKWING_LAIR] = true },
         removable = true
     },
-    
+
     -- QUEST ITEMS
     [19383] = {
         itemId = 19383,
@@ -3499,7 +3499,7 @@ local ITEM_LIST = {
         raids = {},
         swallows = { 19002 } -- Head of Nefarian
     },
-    
+
     -- ZUL'GURUB
     [19716] = {
         itemId = 19716,
@@ -4780,7 +4780,7 @@ local ITEM_LIST = {
         replaceable = true,
         removable = false
     },
-    
+
     -- QUEST ITEMS
     [19822] = {
         itemId = 19822,
@@ -5022,7 +5022,7 @@ local ITEM_LIST = {
         raids = {},
         swallows = { 19723 } -- Primal Hakkari Kossack
     },
-    
+
 --    [18422] = {
 --        itemId = 18422,
 --        name = "Head of Onyxia",
@@ -5118,20 +5118,29 @@ Items.forName = function(name)
     end
 end
 
+---
+-- Returns whether the item with the given itemId is considered a 'junk' or 'trash' item.
+--
+-- @param #number itemId
+--          the itemId of the item to be checked
+--
+-- @return #boolean
+--          true if the item is a junk item, false otherwise
+--
 Items.isJunk = function(itemId)
     if (not itemId or ITEM_LIST[itemId]) then
         return false
     end
 
     local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount,
-        itemEquipLoc, itemIcon, itemSellPrice, itemClassID, itemSubClassID, bindType, expacID, itemSetID, 
+        itemEquipLoc, itemIcon, itemSellPrice, itemClassID, itemSubClassID, bindType, expacID, itemSetID,
         isCraftingReagent = GetItemInfo(itemId)
-    
+
     -- bind on pickup
     if (bindType == 1) then
         return false
     end
-    
+
     -- should be common or rare quality
     if (itemRarity == 2 or itemRarity == 3) then
         if (-- junk class
@@ -5183,9 +5192,8 @@ Items.getLootItems = function()
 end
 
 ---
--- Returns the raid items from the current player's inventory and bags.
---
--- The items are placed into a map (itemId -> item).
+-- Returns a map [itemId -> item] of the raid items from the current player's
+-- inventory and bags.
 --
 -- @return #map
 --          the items in the inventory
@@ -5217,6 +5225,19 @@ Items.getInventoryItems = function()
     return items
 end
 
+---
+--  Returns a map [itemId -> item] of the raid items from the current player's
+--  inventory and bags that are also in the given player's need-list.
+--  
+--  This is particularly useful when checking if a player's need-list still
+--  contains items that the player already has.
+--  
+--  @param #playerInfo player
+--          the player info containing the need-list to be checked
+--  
+--  @return #map
+--          the inventory items still on the need-list
+--  
 Items.checkInventoryItems = function(player)
     local items = Items.getInventoryItems()
     for itemId, item in pairs(items) do
