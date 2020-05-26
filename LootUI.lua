@@ -21,6 +21,7 @@ end
 
 LootButton.frame = CreateFrame("Frame", "PersonalRollLootFrame", UIParent, "PersonalLootFrameTemplate")
 LootButton.frame:SetPoint("CENTER", UIParent, "BOTTOM", 0, displayHeight / 3)
+LootButton.frame:SetToplevel(true)
 LootButton.frame.NeedButton:SetScript("OnClick", function() response(ROLL_NEED) end)
 LootButton.frame.PassButton:SetScript("OnClick", function() response(ROLL_PASS) end)
 LootButton.frame.GreedButton:SetScript("OnClick", function() response(ROLL_GREED) end)

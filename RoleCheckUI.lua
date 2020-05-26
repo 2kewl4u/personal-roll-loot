@@ -28,6 +28,7 @@ roleCheckFrame:EnableMouse(true)
 roleCheckFrame:RegisterForDrag("LeftButton")
 roleCheckFrame:SetScript("OnDragStart", roleCheckFrame.StartMoving)
 roleCheckFrame:SetScript("OnDragStop", roleCheckFrame.StopMovingOrSizing)
+roleCheckFrame:SetToplevel(true)
 
 roleCheckFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
 roleCheckFrame:SetSize(WINDOW_WIDTH / 2, 395)

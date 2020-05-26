@@ -2,7 +2,7 @@
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
-    <Frame name="PersonalLootRoleCheckFrame" inherits="UIPanelDialogTemplate">
+    <Frame name="PersonalLootRoleCheckFrame" toplevel="true" inherits="UIPanelDialogTemplate">
         <Size x="300" y="200" />
         <Anchors>
             <Anchor point="CENTER" />
