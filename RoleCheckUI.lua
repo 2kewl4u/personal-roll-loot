@@ -140,18 +140,28 @@ end)
 local RoleCheckUI = {}
 ns.RoleCheckUI = RoleCheckUI
 
+local setMemberInfo = function(memberInfo)
+    player = memberInfo
+    updateRoleButtons()
+    itemScrollList:Update()
+    
+    if (player.trial == true) then
+        trialField:Show()
+    else
+        trialField:Hide()
+    end
+end
+
+RoleCheckUI.setMemberInfo = function(memberInfo)
+    if (roleCheckFrame:IsShown()) then
+        setMemberInfo(memberInfo)
+    end
+end
+
 RoleCheckUI.open = function(event)
     if (event) then
-        player = event.player
         raid = event.raid
-        updateRoleButtons()
-        itemScrollList:Update()
         roleCheckFrame:Show()
-        
-        if (player.trial == true) then
-            trialField:Show()
-        else
-            trialField:Hide()
-        end
+        setMemberInfo(event.player)
     end
 end

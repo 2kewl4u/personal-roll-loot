@@ -102,6 +102,7 @@ ns.eventHandler[EVENT_ID] = function(message, sender)
         local event = MemberInfoEvent.decode(message)
         if (event) then
             ns.MemberUI.setMemberInfo(event.player)
+            ns.RoleCheckUI.setMemberInfo(event.player)
         end
     end
 end
