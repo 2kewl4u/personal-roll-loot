@@ -7,6 +7,7 @@ local Items = ns.Items
 local Players = ns.Players
 local RAIDS = ns.RAIDS
 local Roles = ns.Roles
+local RollSystem = ns.RollSystem
 local ScrollList = ns.ScrollList
 local utils = ns.utils
 local utilsUI = ns.utilsUI
@@ -42,15 +43,63 @@ local trialButton
 
 -- menu functions
 local updateRoleButtons
-local function updateRollOrderFields(index, button, itemId, item)
-    -- perform the roll before
-    rollOrder = Instances.roll(itemId)
-    if (rollOrder) then
-        local itemName = rollOrder.item:getName()
-        rollItemField:SetText("Item: "..itemName)
-        rollOrderScrollList:Update()
-        -- announce roll order
-        ns.RollOrderEvent.broadcast(rollOrder)
+
+local ignoreUnregistered = false
+local ignoreUninvited = false
+local function performItemRoll(index, button, itemId, item)
+    local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
+    if (instance) then
+        -- check the player status
+        if (not ignoreUnregistered) then
+            local playerCount, missing, raidMembers = Players.checkGroupStatus()
+            if (playerCount < raidMembers) then
+                ConfirmDialog.open("Only "..playerCount.." of "..raidMembers.." raid or party members are registered for Personal Roll Loot. Do you want to ignore missing players?", function(result)
+                    if (result) then
+                        ignoreUnregistered = true
+                        return performItemRoll(index, button, itemId, item)
+                    end
+                end)
+                -- leaves the previous dialog open
+                return true
+            end
+        end
+
+        if (not ignoreUninvited) then
+            local invited, raidMembers = Instances.invited();
+            if (invited and invited < raidMembers) then
+                ConfirmDialog.open("Only "..invited.." of "..raidMembers.." raid or party members are invited into the current instance. Do you want to ignore missing players?", function(result)
+                    if (result) then
+                        ignoreUninvited = true
+                        return performItemRoll(index, button, itemId, item)
+                    end
+                end)
+                -- leaves the previous dialog open
+                return true
+            end
+        end
+
+        -- perform the roll before
+        rollOrder = Instances.roll(itemId)
+        if (rollOrder) then
+            local itemName = rollOrder.item:getName()
+            rollItemField:SetText("Item: "..itemName)
+            rollOrderScrollList:Update()
+            -- announce roll order
+            ns.RollOrderEvent.broadcast(rollOrder)
+            -- send the request to roll for the item
+            local sentEvent = ns.RollRequestEvent.send()
+            if (not sentEvent) then
+                ns.ConfirmDialog.open("No candidates on the priority list are active. Assign '"..rollOrder.item:getLink().."' randomly?", function(result)
+                    if (result) then
+                        RollSystem.rollCurrentItem()
+                    end
+                end)
+                -- leaves the previous dialog open
+                return true
+            end
+        end
+    else
+        print("> No active instance.")
     end
 end
 
@@ -88,7 +137,7 @@ playerScrollList:SetLabelProvider(function(name, player, button)
     local roleIndex = 1
     for playerRole in pairs(player.roles) do
         if (roleIndex > 4) then break end -- limit the roles
-        
+
         local role = ns.ROLES_LIST[playerRole]
         if (role) then
             local texture = button.RoleIcons[roleIndex]
@@ -254,7 +303,7 @@ playerItemScrollList:SetLabelProvider(function(itemId, item, button)
             button.Name:SetFontObject("GameFontHighlight")
         end
     end
-    
+
     if (item.restricted) then
         button.Restricted:Show()
         if (not disabled and player.trial) then
@@ -449,7 +498,7 @@ inviteButton:SetScript("OnClick", function()
             Instances.invite(nil) -- invite all
             instancePlayersScrollList:Update()
         end
-        
+
         if (ready < members) then
             ConfirmDialog.open("Only "..ready.." of "..members.." raid or party members responded to the role check. Continue?", function(result)
                 if (result) then
@@ -495,7 +544,7 @@ end)
 rollItemsScrollList:SetLabelProvider(function(itemId, item, button)
     button.Name:SetText(item:getName())
     button.Icon:SetTexture(item:getTexture())
-    
+
     if (item.restricted) then
         button.Restricted:Show()
     else
@@ -509,7 +558,7 @@ rollItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, i
     utilsUI.showItemTooltip(button, itemId)
 end)
 rollItemsScrollList:SetButtonScript("OnLeave", utilsUI.hideTooltip)
-rollItemsScrollList:SetButtonScript("OnClick", updateRollOrderFields)
+rollItemsScrollList:SetButtonScript("OnClick", performItemRoll)
 rollItemsScrollList:SetFilter(function(itemId, item)
     if (ns.DB.activeInstance) then
         local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
@@ -535,7 +584,7 @@ lootItemsScrollList:SetLabelProvider(function(itemId, item, button)
     button.Icon:SetTexture(item:getTexture())
     button.Name:SetText(item:getName())
     button.Name:SetFontObject("GameFontHighlight")
-    
+
     if (item.restricted) then
         button.Restricted:Show()
     else
@@ -548,7 +597,7 @@ lootItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, i
     utilsUI.showItemTooltip(button, itemId)
 end)
 lootItemsScrollList:SetButtonScript("OnLeave", utilsUI.hideTooltip)
-lootItemsScrollList:SetButtonScript("OnClick", updateRollOrderFields)
+lootItemsScrollList:SetButtonScript("OnClick", performItemRoll)
 
 local lootPrioField = rollTabFrame:CreateFontString(nil, "OVERLAY")
 lootPrioField:SetPoint("TOPLEFT", lootItemsScrollList:GetFrame(), "BOTTOMLEFT", 0, -SPACING)

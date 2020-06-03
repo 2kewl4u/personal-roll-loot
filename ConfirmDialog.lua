@@ -1,6 +1,8 @@
 -- namespace
 local _, ns = ...;
 
+local CONFIRM_DIALOG = "ConfirmDialog"
+
 ---
 -- The static ConfirmDialog is a pop-up window that can be opened to prompt the
 -- user with a message dialog that can contain a question and has two buttons
@@ -15,19 +17,19 @@ local ConfirmDialog = {
         text = "%s",
         button1 = "Yes",
         button2 = "No",
-        OnAccept = function(self, action) action(true) end,
-        OnCancel = function(self, action) action(false) end,
+        OnAccept = function(self, action) return action(true) end,
+        OnCancel = function(self, action) return action(false) end,
         timeout = 0,
         whileDead = true,
         hideOnEscape = true,
         showAlert = true,
         exclusive = true,
         preferredIndex = 3,  -- avoid some UI taint
+        cancels = CONFIRM_DIALOG
     }
 }
 ConfirmDialog.__index = ConfirmDialog
 ns.ConfirmDialog = ConfirmDialog
-local CONFIRM_DIALOG = "ConfirmDialog"
 -- register the dialog in the static global array
 StaticPopupDialogs[CONFIRM_DIALOG] = ConfirmDialog.dialog
 

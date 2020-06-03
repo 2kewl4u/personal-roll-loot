@@ -177,6 +177,36 @@ Instances.ready = function()
 end
 
 ---
+-- Returns how many members of the raid or party are invited into the currently
+-- active instance.
+-- 
+-- Returns two values: the number of invited players and the number of players
+-- in the raid. Returns nil if there is no instance active.
+-- 
+-- @return #number
+--          number of players invited and total number of players
+-- 
+Instances.invited = function()
+    if (not ns.DB.activeInstance) then
+        print("> No active instance.")
+    else
+        local instance = Instances.get(ns.DB.activeInstance)
+        if (instance) then
+            local invited = 0
+            local members = 0
+            utils.forEachRaidMember(function(name)
+                if (instance.players[name]) then
+                    invited = invited + 1
+                end
+                -- count total raid members
+                members = members + 1
+            end)
+            return invited, members
+        end
+    end
+end
+
+---
 -- Creates and returns the RollOrder for the item with the given itemId or name within the
 -- currently active instance.
 -- 
