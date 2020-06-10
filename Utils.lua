@@ -32,9 +32,7 @@ end
 -- 
 utils.tblempty = function(tbl)
     if (tbl) then
-        for _ in pairs(tbl) do
-            return false            
-        end
+        return next(tbl) == nil
     end
     return true
 end

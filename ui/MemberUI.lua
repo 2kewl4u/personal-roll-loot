@@ -104,32 +104,7 @@ memberItemScrollList:SetContentProvider(function()
     end
 end)
 memberItemScrollList:SetLabelProvider(function(itemId, item, button)
-    local disabled = true
-    if (memberInfo) then
-        if (memberInfo.needlist[itemId]) then disabled = false end
-    end
-
-    button.Priority:SetText(item:getPriority(memberInfo))
-    button.Icon:SetTexture(item:getTexture())
-    button.Name:SetText(item:getName())
-    if (disabled) then
-        button.Name:SetFontObject("GameFontDisable")
-    else
-        if (item:hasRole(memberInfo.roles)) then
-            button.Name:SetFontObject("GameFontNormal")
-        else
-            button.Name:SetFontObject("GameFontHighlight")
-        end
-    end
-    
-    if (item.restricted) then
-        button.Restricted:Show()
-        if (not disabled and memberInfo.trial) then
-            button.Name:SetFontObject("GameFontHighlight")
-        end
-    else
-        button.Restricted:Hide()
-    end
+    ns.ItemLabelProvider.display(itemId, item, button, memberInfo)
 end)
 memberItemScrollList:SetFilter(function(itemId, item)
     local player = memberInfo
@@ -165,19 +140,7 @@ memberLootItemsScrollList:SetSize(COLUMN_WIDTH, 3 * ITEM_BUTTON_HEIGHT + SPACING
 memberLootItemsScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
 utilsUI.createBorder(memberLootItemsScrollList:GetFrame())
 memberLootItemsScrollList:SetContentProvider(function() return lootItems end)
-memberLootItemsScrollList:SetLabelProvider(function(itemId, item, button)
-    button.Icon:SetTexture(item:getTexture())
-    button.Name:SetText(item:getName())
-    button.Name:SetFontObject("GameFontHighlight")
-    
-    if (item.restricted) then
-        button.Restricted:Show()
-    else
-        button.Restricted:Hide()
-    end
-    button.Priority:Hide()
-    button.PriorityBorder:Hide()
-end)
+memberLootItemsScrollList:SetLabelProvider(ns.ItemLabelProvider.display)
 memberLootItemsScrollList:SetButtonScript("OnEnter", function(index, button, itemId, item)
     utilsUI.showItemTooltip(button, itemId)
 end)

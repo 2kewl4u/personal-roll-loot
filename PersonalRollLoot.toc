@@ -1,6 +1,6 @@
 ## Interface: 11304
 ## Title: Personal Roll Loot
-## Version: 0.7.5
+## Version: 0.7.6
 ## Author: Ben
 ## SavedVariables: PersonalRollLootDB
 
@@ -44,8 +44,14 @@ UtilsUI.lua
 ScrollList.lua
 
 ConfirmDialog.lua
-MasterUI.lua
-MemberUI.lua
-LootUI.lua
-RoleCheckUI.lua
+ui\provider\PlayerLabelProvider.lua
+ui\provider\ItemLabelProvider.lua
+ui\master\PlayersTab.lua
+ui\master\InstancesTab.lua
+ui\master\RollTab.lua
+ui\master\OptionsTab.lua
+ui\master\MasterUI.lua
+ui\MemberUI.lua
+ui\LootUI.lua
+ui\RoleCheckUI.lua
 PersonalRollLoot.lua
