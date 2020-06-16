@@ -135,6 +135,11 @@ function Instance:addPlayer(player, force)
     if (player) then
         if ((not instance.players[player.name]) or force) then
             instance.players[player.name] = createLootList(instance, player)
+            -- update the role check status
+            local rolecheck = instance.rolecheck[player.name] or {}
+            rolecheck.roles = utils.copy(player.roles)
+            rolecheck.trial = player.trial or false
+            instance.rolecheck[player.name] = rolecheck
             return true
         end
     end

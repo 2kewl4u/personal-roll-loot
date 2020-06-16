@@ -44,6 +44,8 @@ UtilsUI.lua
 ScrollList.lua
 
 ConfirmDialog.lua
+ui\provider\InstancePlayerContentProvider.lua
+ui\provider\InstancePlayerLabelProvider.lua
 ui\provider\PlayerLabelProvider.lua
 ui\provider\ItemLabelProvider.lua
 ui\master\PlayersTab.lua

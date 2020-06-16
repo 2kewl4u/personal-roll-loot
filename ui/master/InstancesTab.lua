@@ -26,6 +26,10 @@ local instancePlayersScrollList
 local rollItemField
 
 local InstancesTab = {
+    -- the list viewer showing the created instances
+    instanceScrollList,
+    -- the list viewer showing the players for the currently active instance
+    playerScrollList
 }
 InstancesTab.__index = InstancesTab
 ns.InstancesTab = InstancesTab
@@ -49,6 +53,7 @@ function InstancesTab.new(parentFrame)
         end
     end)
     utilsUI.createBorder(instanceScrollList:GetFrame())
+    tab.instanceScrollList = instanceScrollList
     
     local newInstanceLabel = parentFrame:CreateFontString(nil, "OVERLAY")
     newInstanceLabel:SetPoint("TOPLEFT", instanceScrollList:GetFrame(), "BOTTOMLEFT", SPACING, -SPACING)
@@ -124,31 +129,24 @@ function InstancesTab.new(parentFrame)
     end)
     
     local instancePlayersField = parentFrame:CreateFontString(nil, "OVERLAY")
-    instancePlayersField:SetPoint("TOPLEFT", instanceCreatedField, "BOTTOMLEFT", 0, -SPACING)
+    instancePlayersField:SetPoint("TOPLEFT", instanceCreatedField, "BOTTOMLEFT", 0, 0)
     instancePlayersField:SetFontObject("GameFontNormalLEFT")
     instancePlayersField:SetText("Players")
     instancePlayersField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
     
-    instancePlayersScrollList = ScrollList.new("PersonalRollLootInstancePlayerListScrollFrame", parentFrame, 12)
+    instancePlayersScrollList = ScrollList.new("PersonalRollLootInstancePlayerListScrollFrame", parentFrame, 7, "PersonalLootPlayerButtonTemplate")
     instancePlayersScrollList:SetPoint("TOPLEFT", instancePlayersField, "BOTTOMLEFT", 0, -SPACING)
-    instancePlayersScrollList:SetPoint("BOTTOMLEFT", instancePlayersField, "BOTTOMLEFT", -6, -262)
+    instancePlayersScrollList:SetPoint("BOTTOMLEFT", instancePlayersField, "BOTTOMLEFT", -6, -268)
     instancePlayersScrollList:SetWidth(COLUMN_WIDTH)
-    instancePlayersScrollList:SetButtonHeight(TEXT_FIELD_HEIGHT)
-    instancePlayersScrollList:SetLabelProvider(function(name, lootlist) return name end)
-    instancePlayersScrollList:SetContentProvider(function()
-        if (ns.DB.activeInstance) then
-            local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
-            if (instance) then
-                return instance.players or {}
-            end
-        end
-        return {}
-    end)
+    instancePlayersScrollList:SetButtonHeight(36)
+    instancePlayersScrollList:SetLabelProvider(ns.InstancePlayerLabelProvider.display)
+    instancePlayersScrollList:SetContentProvider(ns.InstancePlayerContentProvider.getElements)
     instancePlayersScrollList:SetButtonScript("OnEnter", function(index, button, name, lootlist)
         utilsUI.showPlayerTooltip(button, name)
     end)
     instancePlayersScrollList:SetButtonScript("OnLeave", utilsUI.hideTooltip)
     utilsUI.createBorder(instancePlayersScrollList:GetFrame())
+    tab.playerScrollList = instancePlayersScrollList
     
     local deleteInstanceButton = CreateFrame("Button", nil, parentFrame, "GameMenuButtonTemplate")
     deleteInstanceButton:SetPoint("BOTTOMLEFT", parentFrame, "BOTTOMLEFT", WINDOW_WIDTH / 2 + SPACING, MARGIN)
@@ -209,4 +207,10 @@ function InstancesTab.new(parentFrame)
     end)
     
     return tab
+end
+
+function InstancesTab:Update()
+    local tab = self
+    tab.instanceScrollList:Update()
+    tab.playerScrollList:Update()
 end

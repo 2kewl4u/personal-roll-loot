@@ -54,9 +54,16 @@ function MasterUI.setLootItems(items)
     end
 end
 
+function MasterUI.toggleUI()
+    utilsUI.toggleUI(MasterUIFrame)
+end
+
+function MasterUI.Update()
+    instancesTab:Update()
+end
+
 -- scan the master inventory when the frame is opened
 MasterUIFrame:SetScript("OnShow", Items.removeInventoryItems)
 
-MasterUI.toggleUI = function() utilsUI.toggleUI(MasterUIFrame) end
 
 ns.MasterUI = MasterUI

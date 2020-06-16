@@ -34,7 +34,8 @@
                 </FontString>
                 <FontString parentKey="Trial"
                     text="TRIAL"
-                    inherits="GameFontDisableSmallLeft">
+                    inherits="GameFontDisableSmallLeft"
+                    hidden="true">
                     <Size x="0" y="15" />
                     <Anchors>
                         <Anchor point="BOTTOMLEFT" x="2" y="2" />
@@ -55,7 +56,8 @@
                 <Texture
                     file="Interface\ICONS\INV_Misc_QuestionMark"
                     parentArray="RoleIcons"
-                    parentKey="RoleIcon1">
+                    parentKey="RoleIcon1"
+                    hidden="true">
                     <Size x="18" y="18" />
                     <Anchors>
                         <Anchor point="RIGHT"
@@ -66,7 +68,8 @@
                 <Texture
                     file="Interface\ICONS\INV_Misc_QuestionMark"
                     parentArray="RoleIcons"
-                    parentKey="RoleIcon2">
+                    parentKey="RoleIcon2"
+                    hidden="true">
                     <Size x="18" y="18" />
                     <Anchors>
                         <Anchor point="RIGHT"
@@ -77,7 +80,8 @@
                 <Texture
                     file="Interface\ICONS\INV_Misc_QuestionMark"
                     parentArray="RoleIcons"
-                    parentKey="RoleIcon3">
+                    parentKey="RoleIcon3"
+                    hidden="true">
                     <Size x="18" y="18" />
                     <Anchors>
                         <Anchor point="RIGHT"
@@ -88,7 +92,8 @@
                 <Texture
                     file="Interface\ICONS\INV_Misc_QuestionMark"
                     parentArray="RoleIcons"
-                    parentKey="RoleIcon4">
+                    parentKey="RoleIcon4"
+                    hidden="true">
                     <Size x="18" y="18" />
                     <Anchors>
                         <Anchor point="RIGHT"
