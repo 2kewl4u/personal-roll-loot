@@ -152,8 +152,20 @@ local setMemberInfo = function(memberInfo)
     end
 end
 
+local function getSelectedRoles()
+    local roles = {}
+    for roleId, button in pairs(memberRoleButtons) do
+        if (button:GetChecked()) then
+            roles[roleId] = true
+        end
+    end
+    return roles
+end
+
 RoleCheckUI.setMemberInfo = function(memberInfo)
     if (roleCheckFrame:IsShown()) then
+        -- preserve the current role selection
+        memberInfo.roles = getSelectedRoles()
         setMemberInfo(memberInfo)
     end
 end
