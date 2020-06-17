@@ -36,11 +36,9 @@ function InstancePlayerLabelProvider.display(name, arg2, button)
             -- check the role check status
             if (instance.rolecheck) then
                 local rolecheck = instance.rolecheck[name]
-                if (rolecheck) then
-                    if (type(rolecheck) == "table") then
-                        roles = rolecheck.roles or {}
-                        trial = rolecheck.trial
-                    end
+                if (rolecheck and type(rolecheck) == "table") then
+                    roles = rolecheck.roles or {}
+                    trial = rolecheck.trial
                 end
             end
         end

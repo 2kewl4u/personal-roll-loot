@@ -7,6 +7,17 @@
         inherits="LargeItemButtonTemplate" virtual="true">
         <Size x="155" y="41" />
         <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="SelectBG"
+                    atlas="groupfinder-highlightbar-green"
+                    alphaMode="ADD"
+                    hidden="true">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="0" y="-2" />
+                        <Anchor point="BOTTOMRIGHT" x="-12" y="0" />
+                    </Anchors>
+                </Texture>
+            </Layer>
             <Layer level="ARTWORK">
                 <Texture
                     parentKey="PriorityBorder"

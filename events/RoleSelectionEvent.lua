@@ -2,6 +2,7 @@
 local _, ns = ...;
 -- imports
 local Events = ns.Events
+local ITEM_LIST = ns.ITEM_LIST
 local Roles = ns.Roles
 local utils = ns.utils
 
@@ -17,7 +18,9 @@ local RoleSelectionEvent = {
     -- the receiver of the event message
     receiver,
     -- a set of roles that have been selected
-    roles
+    roles,
+    -- a list of itemIds of selected priority items
+    prioItems
 }
 RoleSelectionEvent.__index = RoleSelectionEvent
 ns.RoleSelectionEvent = RoleSelectionEvent
@@ -31,14 +34,17 @@ ns.RoleSelectionEvent = RoleSelectionEvent
 --          the receiver of the event, should be the raid leader
 -- @param #set roles
 --          the selected roles
+-- @param #list prioItems
+--          a list of itemIds of selected priority items
 -- 
 -- @return #RoleSelectionEvent
 --          the new event
 -- 
-function RoleSelectionEvent.new(receiver, roles)
+function RoleSelectionEvent.new(receiver, roles, prioItems)
     local self = setmetatable({}, RoleSelectionEvent)
     self.receiver = receiver
     self.roles = roles
+    self.prioItems = prioItems or {}
     return self
 end
 
@@ -52,7 +58,11 @@ end
 --
 function RoleSelectionEvent:encode()
     local event = self
-    return utils.toCSV(event.roles, tostring)
+    local encodedRoles = utils.toCSV(event.roles, tostring)
+    local encodedPrioItems = utils.toCSV(event.prioItems, function(index, itemId)
+        return tostring(itemId)
+    end)
+    return encodedRoles..";"..encodedPrioItems
 end
 
 ---
@@ -67,11 +77,23 @@ end
 -- 
 function RoleSelectionEvent.decode(encoded)
     if (encoded) then
+        local encodedRoles, encodedPrioItems = strsplit(";", encoded, 2)
+        
         local roles = {}
-        utils.fromCSV(encoded, function(l, element)
-            roles[element] = true
+        utils.fromCSV(encodedRoles, function(l, element)
+            if (Roles.checkRoleId(element)) then
+                roles[element] = true
+            end
         end)
-        return RoleSelectionEvent.new(nil, roles)
+        local prioItems = {}
+        utils.fromCSV(encodedPrioItems, function(l, element)
+            local itemId = tonumber(element)
+            if (itemId and ITEM_LIST[itemId]) then
+                table.insert(prioItems, itemId)
+            end
+        end)
+        
+        return RoleSelectionEvent.new(nil, roles, prioItems)
     end
 end
 
@@ -81,13 +103,15 @@ end
 -- 
 -- @param #set roles
 --          a set of roles that are selected
+-- @param #list prioItems
+--          a list of itemIds of selected priority items
 -- 
-function RoleSelectionEvent.send(roles)
+function RoleSelectionEvent.send(roles, prioItems)
         -- only send request to raid/group leader
     if (roles and IsInGroup()) then
         local name = utils.getRaidLeader()
         if (name) then
-            Events.sent(RoleSelectionEvent.new(name, roles))
+            Events.sent(RoleSelectionEvent.new(name, roles, prioItems))
         end
     end
 end
@@ -126,9 +150,12 @@ ns.eventHandler[EVENT_ID] = function(message, sender)
                 local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
                 -- do not override the role check status if the player is already invited
                 if (instance and not (instance.players and instance.players[sender])) then
+                    -- TODO validate that the priority items
                     instance.rolecheck[sender] = {
+                        -- TODO extract this custom table into a separate class
                         roles = utils.copy(roles),
-                        trial = player.trial or false
+                        trial = player.trial or false,
+                        prioItems = event.prioItems or {}
                     }
                 end
             end

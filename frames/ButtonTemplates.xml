@@ -1,0 +1,52 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+    <Button name="PersonalLootButtonTopTemplate" virtual="true">
+        <Size x="32" y="32" />
+        <NormalTexture
+            file="Interface\CHATFRAME\UI-ChatIcon-ScrollUp-Up" />
+        <PushedTexture
+            file="Interface\CHATFRAME\UI-ChatIcon-ScrollUp-Down" />
+        <DisabledTexture
+            file="Interface\CHATFRAME\UI-ChatIcon-ScrollUp-Disabled" />
+    </Button>
+    
+    <Button name="PersonalLootButtonUpTemplate" virtual="true">
+        <Size x="32" y="32" />
+        <NormalTexture
+            file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Up" />
+        <PushedTexture
+            file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Down" />
+        <DisabledTexture
+            file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled" />
+       <!-- <HighlightTexture alphaMode="ADD"
+            file="Interface\MainMenuBar\UI-MainMenu-ScrollUpButton-Highlight" /> -->
+    </Button>
+
+    <Button name="PersonalLootButtonDownTemplate" virtual="true">
+        <Size x="32" y="32" />
+        <NormalTexture
+            file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up" />
+        <PushedTexture
+            file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Down" />
+        <DisabledTexture
+            file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled" />
+       <!-- <HighlightTexture alphaMode="ADD"
+            file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Highlight" /> -->
+    </Button>
+    
+    <Button name="PersonalLootButtonCancelTemplate" virtual="true">
+        <Size x="35" y="35" />
+        <NormalTexture
+            file="Interface\Buttons\CancelButton-Up" />
+        <PushedTexture
+            file="Interface\Buttons\CancelButton-Down" />
+        <DisabledTexture
+            file="Interface\Buttons\CancelButton-Disabled" />
+       <!-- <HighlightTexture alphaMode="ADD"
+            file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Highlight" /> -->
+    </Button>
+
+</Ui>

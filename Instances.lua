@@ -21,11 +21,13 @@ ns.Instances = Instances
 --          the name of the instance
 -- @param #string raid
 --          the name of the raid instance, e.g. Molten Core
+-- @param #number prio
+--          the custom priority level, defaults to 0
 --
 -- @return #Instance
 --          the new instance or nil
 --
-Instances.create = function(name, raid)
+Instances.create = function(name, raid, prio)
     name = name or ""
     if (strlen(name) < 1) then
         print("> Invalid instance name '"..name.."'.")
@@ -39,7 +41,7 @@ Instances.create = function(name, raid)
                 if (ns.DB.INSTANCE_LIST[name]) then
                     print("> An instance with the name '"..name.."' is already registered.")
                 else
-                    local instance = Instance.new(name, raid)
+                    local instance = Instance.new(name, raid, prio)
                     ns.DB.INSTANCE_LIST[name] = instance
                     print("> Created new instance '"..name.."'.")
                     return instance

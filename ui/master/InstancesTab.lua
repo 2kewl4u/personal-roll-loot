@@ -22,8 +22,22 @@ local SPACING = utilsUI.SPACING
 local instanceNameField
 local instanceRaidField
 local instanceCreatedField
+local instancePrioField
 local instancePlayersScrollList
 local rollItemField
+
+-- UI functions
+local function updateInstanceFields()
+   if (ns.DB.activeInstance) then
+        local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
+        if (instance) then
+            instanceNameField:SetText("Instance: "..instance.name)
+            instanceRaidField:SetText("Raid: "..instance.raid)
+            instancePrioField:SetText("Prio: "..tostring(instance.prio))
+            instanceCreatedField:SetText(instance.created)
+        end
+    end
+end
 
 local InstancesTab = {
     -- the list viewer showing the created instances
@@ -37,18 +51,16 @@ ns.InstancesTab = InstancesTab
 function InstancesTab.new(parentFrame)
     local tab = setmetatable({}, InstancesTab)
     
-    local instanceScrollList = ScrollList.new("PersonalRollLootInstanceListScrollFrame", parentFrame, 15)
+    local instanceScrollList = ScrollList.new("PersonalRollLootInstanceListScrollFrame", parentFrame, 14)
     instanceScrollList:SetPoint("TOPLEFT", parentFrame, "TOPLEFT", MARGIN, -MARGIN)
-    instanceScrollList:SetPoint("BOTTOMLEFT", parentFrame, "BOTTOMLEFT", MARGIN, MARGIN + 4 * (TEXT_FIELD_HEIGHT + SPACING) + 10)
+    instanceScrollList:SetPoint("BOTTOMLEFT", parentFrame, "BOTTOMLEFT", MARGIN, MARGIN + 5 * (TEXT_FIELD_HEIGHT + SPACING) + 10)
     instanceScrollList:SetWidth(COLUMN_WIDTH)
     instanceScrollList:SetButtonHeight(TEXT_FIELD_HEIGHT)
     instanceScrollList:SetLabelProvider(function(k, v) return k end)
     instanceScrollList:SetContentProvider(function() return ns.DB.INSTANCE_LIST end)
     instanceScrollList:SetButtonScript("OnClick", function(index, button, name, instance)
         if (Instances.activate(name)) then
-            instanceNameField:SetText("Instance: "..name)
-            instanceRaidField:SetText("Raid: "..instance.raid)
-            instanceCreatedField:SetText(instance.created)
+            updateInstanceFields()
             instancePlayersScrollList:Update()
         end
     end)
@@ -83,6 +95,26 @@ function InstancesTab.new(parentFrame)
         end
     end)
     
+    local prioSystemDropDown = CreateFrame("Frame", nil, parentFrame, "UIDropDownMenuTemplate")
+    prioSystemDropDown:SetPoint("TOPLEFT", newInstanceRaidDropDown, "BOTTOMLEFT", 0, 0)
+    prioSystemDropDown:SetHeight(25)
+    UIDropDownMenu_SetWidth(prioSystemDropDown, 145) -- Use in place :SetWidth
+    UIDropDownMenu_Initialize(prioSystemDropDown, function(self, level, menuList)
+        local menuItem = UIDropDownMenu_CreateInfo()
+        for i = 0, 3 do
+            local name = "prio-"..tostring(i)
+            menuItem.text = name
+            menuItem.func = function()
+                prioSystemDropDown.value = i
+                UIDropDownMenu_SetText(prioSystemDropDown, name)
+            end
+            UIDropDownMenu_AddButton(menuItem)
+        end
+    end)
+    -- default set to prio 0
+    prioSystemDropDown.value = 0
+    UIDropDownMenu_SetText(prioSystemDropDown, "prio-0")
+    
     local addInstanceButton = CreateFrame("Button", nil, parentFrame, "GameMenuButtonTemplate")
     addInstanceButton:SetPoint("BOTTOMLEFT", parentFrame, "BOTTOMLEFT", MARGIN, MARGIN)
     addInstanceButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
@@ -91,7 +123,7 @@ function InstancesTab.new(parentFrame)
         local name = newInstanceEditBox:GetText()
         local raid = newInstanceRaidDropDown.value
         if (name and raid) then
-            Instances.create(name, raid)
+            Instances.create(name, raid, prioSystemDropDown.value)
             instanceScrollList:Update()
             -- clear name
             newInstanceEditBox:SetText("")
@@ -111,22 +143,18 @@ function InstancesTab.new(parentFrame)
     instanceRaidField:SetText("Raid:")
     instanceRaidField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
     
+    instancePrioField = parentFrame:CreateFontString(nil, "OVERLAY")
+    instancePrioField:SetPoint("TOPLEFT", instanceRaidField, "BOTTOMLEFT", 0, 0)
+    instancePrioField:SetFontObject("GameFontHighlightLEFT")
+    instanceRaidField:SetText("Prio:")
+    instancePrioField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
+    
     instanceCreatedField = parentFrame:CreateFontString(nil, "OVERLAY")
-    instanceCreatedField:SetPoint("TOPLEFT", instanceRaidField, "BOTTOMLEFT", 0, 0)
+    instanceCreatedField:SetPoint("TOPLEFT", instancePrioField, "BOTTOMLEFT", 0, 0)
     instanceCreatedField:SetFontObject("GameFontHighlightLEFT")
-    --instanceCreatedField:SetText("Created:")
     instanceCreatedField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
     
-    parentFrame:SetScript("OnShow", function()
-        if (ns.DB.activeInstance) then
-            local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
-            if (instance) then
-                instanceNameField:SetText("Instance: "..instance.name)
-                instanceRaidField:SetText("Raid: "..instance.raid)
-                instanceCreatedField:SetText(instance.created)
-            end
-        end
-    end)
+    parentFrame:SetScript("OnShow", updateInstanceFields)
     
     local instancePlayersField = parentFrame:CreateFontString(nil, "OVERLAY")
     instancePlayersField:SetPoint("TOPLEFT", instanceCreatedField, "BOTTOMLEFT", 0, 0)
@@ -134,9 +162,9 @@ function InstancesTab.new(parentFrame)
     instancePlayersField:SetText("Players")
     instancePlayersField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
     
-    instancePlayersScrollList = ScrollList.new("PersonalRollLootInstancePlayerListScrollFrame", parentFrame, 7, "PersonalLootPlayerButtonTemplate")
+    instancePlayersScrollList = ScrollList.new("PersonalRollLootInstancePlayerListScrollFrame", parentFrame, 6, "PersonalLootPlayerButtonTemplate")
     instancePlayersScrollList:SetPoint("TOPLEFT", instancePlayersField, "BOTTOMLEFT", 0, -SPACING)
-    instancePlayersScrollList:SetPoint("BOTTOMLEFT", instancePlayersField, "BOTTOMLEFT", -6, -268)
+    instancePlayersScrollList:SetPoint("BOTTOMLEFT", instancePlayersField, "BOTTOMLEFT", -6, -238)
     instancePlayersScrollList:SetWidth(COLUMN_WIDTH)
     instancePlayersScrollList:SetButtonHeight(36)
     instancePlayersScrollList:SetLabelProvider(ns.InstancePlayerLabelProvider.display)

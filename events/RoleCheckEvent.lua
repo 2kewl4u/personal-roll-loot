@@ -21,7 +21,9 @@ local RoleCheckEvent = {
     -- the player to which this event will be sent
     player,
     -- the raid name of the currently active instance
-    raid
+    raid,
+    -- the custom priority level
+    prio
 }
 RoleCheckEvent.__index = RoleCheckEvent
 ns.RoleCheckEvent = RoleCheckEvent
@@ -34,15 +36,18 @@ ns.RoleCheckEvent = RoleCheckEvent
 --          the player to which the role check will be sent
 -- @param #string raid
 --          the name of the raid, e.g. Molten Core
+-- @param #number prio
+--          the custom priority level
 --          
 -- @return #RoleCheckEvent
 --          the new event
 -- 
-function RoleCheckEvent.new(player, raid)
+function RoleCheckEvent.new(player, raid, prio)
     local self = setmetatable({}, RoleCheckEvent)
     self.player = player
     self.receiver = player.name
     self.raid = raid
+    self.prio = prio or 0
     return self
 end
 
@@ -56,7 +61,7 @@ end
 --          
 function RoleCheckEvent:encode()
     local event = self
-    return event.raid..";"..event.player:encode()
+    return event.raid..";"..tostring(event.prio)..";"..event.player:encode()
 end
 
 ---
@@ -71,11 +76,12 @@ end
 -- 
 function RoleCheckEvent.decode(encoded)
     if (encoded) then
-        local raid, encodedPlayer = strsplit(";", encoded, 2)
+        local raid, prio, encodedPlayer = strsplit(";", encoded, 3)
+        prio = tonumber(prio) or 0
         if (encodedPlayer and ns.RAIDS[raid]) then
             local player = Player.decode(encodedPlayer)
             if (player) then
-                return RoleCheckEvent.new(player, raid)
+                return RoleCheckEvent.new(player, raid, prio)
             end
         end
     end
@@ -94,7 +100,7 @@ function RoleCheckEvent.broadcast()
                     if (not instance.players[playerName]) then
                         local player = ns.DB.PLAYER_LIST[playerName]
                         if (player) then
-                            Events.sent(RoleCheckEvent.new(player, instance.raid))
+                            Events.sent(RoleCheckEvent.new(player, instance.raid, instance.prio))
                         else
                             print("> Player '"..playerName.."' is not registered for Personal Roll Loot.")
                         end
@@ -121,7 +127,7 @@ function RoleCheckEvent.send(player)
     if (player and ns.DB.activeInstance) then
         local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
         if (instance) then
-            Events.sent(RoleCheckEvent.new(player, instance.raid))
+            Events.sent(RoleCheckEvent.new(player, instance.raid, instance.prio))
         end
     end
 end

@@ -13,6 +13,8 @@ local Instance = {
     name,
     -- the name of the raid, e.g. Molten Core
     raid,
+    -- the custom priority level
+    prio,
     -- the date and time this instance was created
     created,
     -- a map of player names pointing to their priority lists
@@ -32,14 +34,17 @@ ns.Instance = Instance
 --          the name of the instance
 -- @param #string raid
 --          the name of the raid, e.g. Molten Core
+-- @param #number prio
+--          the custom priority level, defaults to 0
 -- 
 -- @return #Instance
 --          the new Instance
 --          
-function Instance.new(name, raid)
+function Instance.new(name, raid, prio)
     local self = setmetatable({}, Instance)
     self.name = name
     self.raid = raid
+    self.prio = prio or 0
     self.created = date("%y-%m-%d %H:%M:%S")
     self.players = {}
     self.history = {}
@@ -60,6 +65,7 @@ function Instance.copy(instance)
     local copy = setmetatable({}, Instance)
     copy.name = instance.name
     copy.raid = instance.raid
+    copy.prio = instance.prio or 0
     copy.created = instance.created
     copy.history = utils.copy(instance.history) or {}
     copy.rolecheck = utils.copy(instance.rolecheck) or {}
@@ -85,28 +91,46 @@ end
 --          the list of items for the player
 -- 
 local function createLootList(instance, player)
-    -- the items per priority
     local itemsPerPriority = {}
+
+    -- get custom priority items
+    local customPrioItems = {}
+    local rolecheck = instance.rolecheck[player.name]
+    if (rolecheck and type(rolecheck) == "table") then
+        local items = {}
+        for index, itemId in ipairs(rolecheck.prioItems or {}) do
+            local item = ITEM_LIST[itemId]
+            if (item and item.raids[instance.raid] and player:needsItem(item)) then
+                table.insert(items, itemId)
+                customPrioItems[itemId] = true
+            end
+        end
+        -- consider custom priority as prio 0
+        itemsPerPriority[0] = items
+    end
+
     -- create a loot list
     for itemId, item in pairs(ITEM_LIST) do
         if (item.raids[instance.raid] and player:needsItem(item)) then
-            local priority = item:getPriority(player)
-            local items = itemsPerPriority[priority] or {}
-            table.insert(items, itemId)
-            itemsPerPriority[priority] = items
+            if (not customPrioItems[itemId]) then
+                local priority = item:getPriority(player)
+                local items = itemsPerPriority[priority] or {}
+                table.insert(items, itemId)
+                itemsPerPriority[priority] = items
+            end
         end
-    end
-    
-    -- shuffle the items
-    for prio, items in pairs(itemsPerPriority) do
-        itemsPerPriority[prio] = utils.shuffle(items)
     end
     
     -- concatenate the item lists
     local items = {}
-    for i = 1, 10, 1 do
+    for i = 0, 10, 1 do
         local prioItems = itemsPerPriority[i]
         if (prioItems) then
+            -- shuffle the items
+            if (i > 0) then
+                prioItems = utils.shuffle(prioItems)
+            end
+        
             for index, itemId in ipairs(prioItems) do
                 table.insert(items, itemId)
             end
@@ -166,6 +190,7 @@ function Instance:print()
     local instance = self
     print("> Instance '"..instance.name.."':")
     print("  Raid: '"..instance.raid.."'")
+    print("  Prio: '"..tostring(instance.prio).."'")
     print("  created: "..instance.created)
 end
 
