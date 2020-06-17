@@ -3712,10 +3712,22 @@ local ITEM_LIST = {
         replaceable = true,
         removable = true
     },
+    [19865] = {
+        itemId = 19865,
+        name = "Warblade of the Hakkari",
+        roles = { [ROLE_HUNTER] = 1, [ROLE_ROGUE] = 1, [ROLE_ARMS_WARRIOR] = 1 },
+        classes = { [CLASS_WARRIOR] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true },
+        raids = { [RAID_ZUL_GURUB] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 2,
+        tier = 1,
+        replaceable = true,
+        removable = true
+    },
     [19866] = {
         itemId = 19866,
         name = "Warblade of the Hakkari",
-        roles = { [ROLE_HUNTER] = 2, [ROLE_ROGUE] = 1, [ROLE_ARMS_WARRIOR] = 1 },
+        roles = { [ROLE_HUNTER] = 1, [ROLE_ROGUE] = 1, [ROLE_ARMS_WARRIOR] = 1 },
         classes = { [CLASS_WARRIOR] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true },
         raids = { [RAID_ZUL_GURUB] = true },
         slot = SLOT_OFF_HAND,
