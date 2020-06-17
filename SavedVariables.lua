@@ -11,6 +11,8 @@ local ITEM_LIST = ns.ITEM_LIST
 
 -- saved variables
 ns.DB = {
+    -- the version of the database
+    version,
     -- a map {playerName -> player} containing the player configuration
     PLAYER_LIST = {},
     -- a map {instanceName -> instance} containing the priority lists
@@ -31,6 +33,14 @@ ns.DB = {
 -- 
 local function upgradePlayerItems()
     for name, player in pairs(ns.DB.PLAYER_LIST or {}) do
+        -- pre-0.8.0 upgrades
+        if (not ns.DB.version) then
+            local item = ITEM_LIST[19865] -- add Warblade of the Hakkari
+            if (item:isForClass(player.class)) then
+                player.needlist[19865] = true
+            end
+        end
+    
         local raids = utils.copy(RAIDS)
         -- check if the player has at least one item in the need-list for the raid instance
         for itemId in pairs(player.needlist) do
@@ -81,6 +91,9 @@ ns.loadSavedVariables = function()
             ns.DB.INSTANCE_LIST[name] = Instance.copy(instance)
         end
         upgradePlayerItems()
+        
+        -- store database version
+        ns.DB.version = GetAddOnMetadata("PersonalRollLoot", "Version")
     else
         -- initialize the DB if it was not present
         PersonalRollLootDB = ns.DB
