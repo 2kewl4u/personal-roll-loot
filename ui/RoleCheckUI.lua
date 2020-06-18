@@ -152,6 +152,8 @@ itemScrollList:SetLabelProvider(function(index, item, button)
     
     if (index <= prio) then
         button.Name:SetFontObject("GameFontRed")
+        button.Priority:Hide()
+        button.PriorityBorder:Hide()
     end
 end)
 itemScrollList:SetButtonScript("OnEnter", function(index, button, itemListIndex, item)
