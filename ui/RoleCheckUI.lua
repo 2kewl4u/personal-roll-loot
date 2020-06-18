@@ -273,10 +273,18 @@ RoleCheckUI.setMemberInfo = function(memberInfo)
     end
 end
 
+local function enablePriorityButtons()
+    local enabled = prio and prio > 0
+    moveItemUpButton:SetEnabled(enabled)
+    moveItemDownButton:SetEnabled(enabled)
+    moveItemTopButton:SetEnabled(enabled)
+end
+
 RoleCheckUI.open = function(event)
     if (event) then
         raid = event.raid
         prio = event.prio
+        enablePriorityButtons()
         roleCheckFrame:Show()
         setMemberInfo(event.player)
     end
