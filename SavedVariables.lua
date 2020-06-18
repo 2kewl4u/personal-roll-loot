@@ -23,6 +23,15 @@ ns.DB = {
     options = Options.new()
 }
 
+local function addMissingItems(player, items)
+    for i, itemId in ipairs(items) do
+        local item = ITEM_LIST[itemId]
+        if (item and item:isForClass(player.class)) then
+            player.needlist[itemId] = true
+        end
+    end
+end
+
 ---
 -- This method is used to upgrade the player items in case that the ITEM_LIST
 -- got updated for new raid tiers and now the stored player need-lists do not
@@ -35,10 +44,10 @@ local function upgradePlayerItems()
     for name, player in pairs(ns.DB.PLAYER_LIST or {}) do
         -- pre-0.8.0 upgrades
         if (not ns.DB.version) then
-            local item = ITEM_LIST[19865] -- add Warblade of the Hakkari
-            if (item:isForClass(player.class)) then
-                player.needlist[19865] = true
-            end
+            addMissingItems(player, {
+                19865, -- add Warblade of the Hakkari
+                19861 -- Touch of Chaos
+            })
         end
     
         local raids = utils.copy(RAIDS)

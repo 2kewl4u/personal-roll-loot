@@ -3676,6 +3676,18 @@ local ITEM_LIST = {
         replaceable = true,
         removable = true
     },
+    [19861] = {
+        itemId = 19861,
+        name = "Touch of Chaos",
+        roles = { [ROLE_HOLY_PRIEST] = 2, [ROLE_SHADOW_PRIEST] = 1, [ROLE_WARLOCK] = 1, [ROLE_MAGE] = 1 },
+        classes = { [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+        raids = { [RAID_ZUL_GURUB] = true },
+        slot = SLOT_RANGED,
+        slotSize = 1,
+        tier = 1,
+        replaceable = true,
+        removable = true
+    },
     [19862] = {
         itemId = 19862,
         name = "Aegis of the Blood God",
