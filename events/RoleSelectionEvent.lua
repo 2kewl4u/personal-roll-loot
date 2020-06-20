@@ -150,7 +150,14 @@ ns.eventHandler[EVENT_ID] = function(message, sender)
                 local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
                 -- do not override the role check status if the player is already invited
                 if (instance and not (instance.players and instance.players[sender])) then
-                    -- TODO validate that the priority items
+                    
+                    -- validate the allowed number of priority items
+                    for index, itemId in pairs(event.prioItems) do
+                        if (index > instance.prio) then
+                            event.prioItems[index] = nil
+                        end
+                    end
+                    
                     instance.rolecheck[sender] = {
                         -- TODO extract this custom table into a separate class
                         roles = utils.copy(roles),
