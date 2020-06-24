@@ -111,6 +111,24 @@ utils.shuffle = function(list)
 end
 
 ---
+-- Returns a random element from the given list or nil if the list is empty or
+-- not an indexed based list.
+-- 
+-- @param #list
+--          list the list with the elements
+-- 
+-- @return #?
+--          an element from the given list
+-- 
+utils.randomElement = function(list)
+    local size = #list
+    if (size > 0) then
+        local pos = math.random(1, size)
+        return list[pos]
+    end
+end
+
+---
 -- Returns a comma-separated list string containing the elements of the given
 -- list. The elements are passed as key-value pairs to the encoding function to
 -- provide a string representation.

@@ -20,7 +20,9 @@ ns.DB = {
     -- the currently active instance name
     activeInstance = nil,
     -- additional options for the master looter
-    options = Options.new()
+    options = Options.new(),
+    -- the check lists to remember players that recently received loot
+    junkCheckList = {}
 }
 
 local function addMissingItems(player, items)
@@ -91,6 +93,10 @@ ns.loadSavedVariables = function()
         if (not ns.DB.options) then
             ns.DB.options = Options.new()
         end
+        if (not ns.DB.junkCheckList) then
+            ns.DB.junkCheckList = {}
+        end
+        
         -- create the Player instances, since functions are not stored in the DB
         for name, player in pairs(ns.DB.PLAYER_LIST or {}) do
             ns.DB.PLAYER_LIST[name] = Player.copy(player)

@@ -190,31 +190,3 @@ function RollSystem.rollCurrentItem()
         end
     end
 end
-
-function RollSystem.rollJunkItems()
-    -- check that master loot is enabled and the player is the master looter
-    if (ns.DB.options.rollJunkItems and
-        Raids.isInRaidInstance() and
-        utils.isMasterLooter(UnitName("player"))
-        ) then
-        
-        local lootCount = GetNumLootItems()
-        for slotIndex = 1, lootCount do
-            if (LootSlotHasItem(slotIndex)) then
-                local itemLink = GetLootSlotLink(slotIndex)
-                if (itemLink) then
-                    local itemId = GetItemInfoInstant(itemLink)
-                    -- filter junk items
-                    if (Items.isJunk(itemId)) then
-                        local lootIcon, lootName, lootQuantity, _, rarity, locked,
-                            isQuestItem, questId, isActive = GetLootSlotInfo(slotIndex)
-                        -- we roll out greens and blues only
-                        if (rarity == 2 or rarity == 3) then
-                            assignToRandomPlayer(slotIndex)
-                        end
-                    end
-                end
-            end
-        end
-    end
-end

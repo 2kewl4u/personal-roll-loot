@@ -5194,6 +5194,32 @@ Items.isJunk = function(itemId)
     return false
 end
 
+
+---
+-- Parses the given chat loot message to extract the item name.
+-- 
+-- The loot message text is the first argument passed with the "CHAT_MSG_LOOT"
+-- event.
+-- 
+-- @param #string msg
+--          the loot message text
+-- 
+-- @return #string
+--          the name of the item or nil
+-- 
+Items.getItemNameFromChat = function(msg)
+    if (msg) then
+        local firstPart, itemName, lastPart
+        firstPart, itemName = strsplit("[", msg, 2)
+        if (firstPart and itemName) then
+            itemName, lastPart = strsplit("]", itemName, 2)
+            if (itemName and lastPart) then
+                return itemName
+            end
+        end
+    end
+end
+
 ---
 -- Returns a map (itemId -> item) of Item's that are currently in the loot window.
 --

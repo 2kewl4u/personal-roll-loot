@@ -172,26 +172,13 @@ local function updateLootItems()
     end
 end
 
-local function getItemNameFromChat(msg)
-    if (msg) then
-        local firstPart, itemName, lastPart
-        firstPart, itemName = strsplit("[", msg, 2)
-        if (firstPart and itemName) then
-            itemName, lastPart = strsplit("]", itemName, 2)
-            if (itemName and lastPart) then
-                return itemName
-            end
-        end
-    end
-end
-
 local function parseLootMessage(msg, member)
     if (msg and member) then
         -- remove the realm part from the member
         local playerName = strsplit("-", member, 2)
         local player = ns.DB.PLAYER_LIST[playerName]
         if (player) then
-            local itemName = getItemNameFromChat(msg)
+            local itemName = Items.getItemNameFromChat(msg)
             if (itemName) then
                 local item = Items.forName(itemName)
                 Items.removeFromPlayer(player, item)
@@ -238,7 +225,6 @@ function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4, arg5, ...)
         ns.loadSavedVariables()
     elseif (event == "LOOT_OPENED" or event == "LOOT_SLOT_CLEARED") then
         updateLootItems()
-        RollSystem.rollJunkItems()
     elseif (event == "CHAT_MSG_LOOT") then
         -- arg5 "playerName2" - Name of player who received the loot
         parseLootMessage(arg1, arg5)
