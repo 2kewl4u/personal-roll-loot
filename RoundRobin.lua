@@ -356,12 +356,11 @@ end
 local function chatMsgLoot(msg, receiver)
     if (rollJunkEnabled() and not utils.tblempty(lootItems)) then
         receiver = strsplit("-", receiver, 2)
-        local itemName = Items.getItemNameFromChat(msg)
-        if (itemName) then
+        local itemId = Items.getItemIdsFromChat(msg)
+        if (itemId) then
             -- check if we find an item
             for slotIndex, loot in pairs(lootItems) do
-                local name = GetItemInfo(loot.itemId)
-                if (itemName == name) then
+                if (itemId == loot.itemId) then
                     lootSlotCleared(slotIndex)
                     break
                 end

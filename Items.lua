@@ -5194,30 +5194,42 @@ Items.isJunk = function(itemId)
     return false
 end
 
-
 ---
--- Parses the given chat loot message to extract the item name.
--- 
--- The loot message text is the first argument passed with the "CHAT_MSG_LOOT"
--- event.
+-- Parses the given chat messages and extracts all item links found, returning
+-- the itemIds of all items.
 -- 
 -- @param #string msg
---          the loot message text
+--          the chat message text
+-- @param #number count
+--          the number of items to return (optional)
 -- 
--- @return #string
---          the name of the item or nil
+-- @return #number
+--          an unpacked list of itemIds
 -- 
-Items.getItemNameFromChat = function(msg)
+Items.getItemIdsFromChat = function(msg, count)
+    count = count or 50
+    local found = 0
+    local itemIds = {}
     if (msg) then
-        local firstPart, itemName, lastPart
-        firstPart, itemName = strsplit("[", msg, 2)
-        if (firstPart and itemName) then
-            itemName, lastPart = strsplit("]", itemName, 2)
-            if (itemName and lastPart) then
-                return itemName
+        local itemLinkParts = { strsplit("|", msg) }
+        for _, part in ipairs(itemLinkParts) do
+            local itemString = strmatch(part, "Hitem:%d+:")
+            if (itemString) then
+                local _, itemIdPart = strsplit(":", itemString, 3)
+                if (itemIdPart) then
+                    local itemId = tonumber(itemIdPart)
+                    if (itemId) then
+                        table.insert(itemIds, itemId)
+                        found = found + 1
+                        if (found >= count) then
+                            break
+                        end
+                    end
+                end
             end
         end
     end
+    return unpack(itemIds)
 end
 
 ---

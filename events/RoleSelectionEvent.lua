@@ -3,6 +3,7 @@ local _, ns = ...;
 -- imports
 local Events = ns.Events
 local ITEM_LIST = ns.ITEM_LIST
+local Players = ns.Players
 local Roles = ns.Roles
 local utils = ns.utils
 
@@ -123,53 +124,6 @@ end
 -- roles within the event will be applied to the player.
 -- 
 ns.eventHandler[EVENT_ID] = function(message, sender)
-    local player = ns.DB.PLAYER_LIST[sender]
-    if (player) then
-        local event = RoleSelectionEvent.decode(message)
-        if (event) then
-            -- assign the new roles if changed
-            local roles = {}
-            if (not utils.tblequals(player.roles, event.roles)) then
-                for roleId in pairs(event.roles) do
-                    -- check that the roles are correct
-                    if (Roles.checkRoleId(roleId)) then
-                        roles[roleId] = true
-                    end
-                end
-                if (utils.tblsize(roles) > 0) then
-                    -- override the players roles
-                    player.roles = roles
-                    print("> Player '"..player.name.."' changed roles to '"..utils.toCSV(roles, tostring).."'.")
-                end
-            else
-                roles = player.roles
-            end
-            
-            -- mark the player in the active instance as ready
-            if (ns.DB.activeInstance) then
-                local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
-                -- do not override the role check status if the player is already invited
-                if (instance and not (instance.players and instance.players[sender])) then
-                    
-                    -- validate the allowed number of priority items
-                    for index, itemId in pairs(event.prioItems) do
-                        if (index > instance.prio) then
-                            event.prioItems[index] = nil
-                        end
-                    end
-                    
-                    instance.rolecheck[sender] = {
-                        -- TODO extract this custom table into a separate class
-                        roles = utils.copy(roles),
-                        trial = player.trial or false,
-                        prioItems = event.prioItems or {}
-                    }
-                end
-            end
-            -- update the UI
-            ns.MasterUI.Update()
-        end
-    else
-        print("> No player registered with the name '"..sender.."'.")
-    end
+    local event = RoleSelectionEvent.decode(message)
+    Players.selectRole(sender, event)
 end

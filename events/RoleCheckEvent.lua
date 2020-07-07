@@ -20,7 +20,7 @@ local RoleCheckEvent = {
     receiver,
     -- the player to which this event will be sent
     player,
-    -- the raid name of the currently active instance
+    -- the raid name of the currently active raid, e.g. Molten Core
     raid,
     -- the custom priority level
     prio
