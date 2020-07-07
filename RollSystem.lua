@@ -4,6 +4,7 @@ local _, ns = ...;
 local ConfirmDialog = ns.ConfirmDialog
 local Items = ns.Items
 local Raids = ns.Raids
+local RollTypes = ns.RollTypes
 local utils = ns.utils
 
 local ROLL_NEED = "need"
@@ -101,8 +102,7 @@ local function findWinnerByRollType(rollType)
 end
 
 local function announceWinner()
-    local rollTypes = { ROLL_NEED, ROLL_GREED, ROLL_PASS, ROLL_REMOVE }
-    for i, rollType in ipairs(rollTypes) do
+    for i, rollType in ipairs(RollTypes) do
         local winner = findWinnerByRollType(rollType)
         if (winner) then
             local currentRollOrder = RollSystem.currentRollOrder
@@ -116,8 +116,10 @@ end
 function RollSystem.evaluateResponse(event)
     local currentRollOrder = RollSystem.currentRollOrder
     if (currentRollOrder and event and
+        not RollSystem.responses[event.sender] and
         not utils.tblempty(currentRollOrder.rounds) and
         currentRollOrder.item.itemId == event.itemId) then
+        
         RollSystem.responses[event.sender] = event.rollType
 
         -- remove the unwanted item from the list

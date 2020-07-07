@@ -129,6 +129,30 @@ utils.randomElement = function(list)
 end
 
 ---
+-- Indicates whether the given string starts with the given start string.
+-- 
+-- @param #string string
+--          the string to check the starting characters
+-- @param #string start
+--          the start string to check the given string for
+-- 
+-- @return #boolean
+--          true if the given string starts with start, false otherwise
+-- 
+utils.strstarts = function(string, start)
+    if (string and start) then
+        local startlen = strlen(start)
+        if (strlen(string) >= startlen) then
+            return strsub(string, 1, startlen) == start
+        end
+        return false
+    else
+        -- one or both are nil
+        return string == start
+    end
+end
+
+---
 -- Returns a comma-separated list string containing the elements of the given
 -- list. The elements are passed as key-value pairs to the encoding function to
 -- provide a string representation.

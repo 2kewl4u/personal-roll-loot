@@ -1,7 +1,9 @@
 local _, ns = ...;
 -- imports
 local Events = ns.Events
+local Items = ns.Items
 local RollSystem = ns.RollSystem
+local RollTypes = ns.RollTypes
 local utils = ns.utils
 
 local EVENT_ID = "RollResponseEvent"
@@ -110,3 +112,46 @@ ns.eventHandler[EVENT_ID] = function(message, sender)
         RollSystem.evaluateResponse(event)
     end
 end
+
+---
+-- Parses the given chat message and extracts the roll type.
+-- 
+-- @param #string msg
+--          the chat message
+-- 
+-- @return #string
+--          the roll type or nil if the message did not start with a roll type
+-- 
+local function parseRollType(msg)
+    if (msg) then
+        -- trim leading and trailing spaces
+        msg = strtrim(msg)
+        
+        for i, rollType in ipairs(RollTypes) do
+            if (utils.strstarts(msg, rollType)) then
+                return rollType
+            end
+        end        
+    end
+end
+
+-- parse the group and raid chat to create roll response events
+local eventFrame = CreateFrame("Frame")
+eventFrame:RegisterEvent("CHAT_MSG_PARTY")
+eventFrame:RegisterEvent("CHAT_MSG_RAID")
+eventFrame:RegisterEvent("CHAT_MSG_RAID_LEADER")
+eventFrame:RegisterEvent("CHAT_MSG_PARTY_LEADER")
+eventFrame:SetScript("OnEvent", function(frame, event, arg1, arg2)
+    local msg = arg1
+    -- remove the realm part from the author
+    local author = strsplit("-", arg2, 2)
+    local rollType = parseRollType(msg)
+    if (rollType) then
+        local itemId = Items.getItemIdsFromChat(msg)
+        if (itemId) then
+            local event = RollResponseEvent.new(nil, itemId, rollType)
+            event.sender = author
+            RollSystem.evaluateResponse(event)
+        end
+    end
+end)

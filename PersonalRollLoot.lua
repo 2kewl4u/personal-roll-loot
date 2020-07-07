@@ -223,10 +223,6 @@ eventFrame:RegisterEvent("CHAT_MSG_LOOT")
 eventFrame:RegisterEvent("LOOT_OPENED")
 eventFrame:RegisterEvent("LOOT_SLOT_CLEARED")
 
---eventFrame:RegisterEvent("CHAT_MSG_PARTY")
---eventFrame:RegisterEvent("CHAT_MSG_RAID")
---eventFrame:RegisterEvent("CHAT_MSG_RAID_LEADER")
---eventFrame:RegisterEvent("CHAT_MSG_PARTY_LEADER")
 
 function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4, arg5, ...)
     if (event == "VARIABLES_LOADED") then
@@ -238,13 +234,6 @@ function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4, arg5, ...)
         parseLootMessage(arg1, arg5)
     elseif (event == "INSPECT_READY") then
         inspectTarget()
---    elseif (event == "CHAT_MSG_PARTY" or event == "CHAT_MSG_RAID" or
---        event == "CHAT_MSG_RAID_LEADER" or event == "CHAT_MSG_PARTY_LEADER") then
---        
---        local itemIds = { Items.getItemIdsFromChat(arg1) }
---        for _, itemId in ipairs(itemIds) do
---            print(itemId)
---        end
     end
 end
 eventFrame:SetScript("OnEvent", eventFrame.OnEvent)
