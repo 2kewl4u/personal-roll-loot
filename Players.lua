@@ -147,12 +147,16 @@ Players.selectRole = function(playerName, event)
                     roles[roleId] = true
                 end
             end
-            if (utils.tblsize(roles) > 0) then
+            if (not utils.tblempty(roles)) then
                 -- override the players roles
                 player.roles = roles
                 print("> Player '"..player.name.."' changed roles to '"..utils.toCSV(roles, tostring).."'.")
+            else
+                -- no roles selected, keep current player roles
+                roles = player.roles
             end
         else
+            -- roles did not change
             roles = player.roles
         end
         
