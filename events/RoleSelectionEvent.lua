@@ -144,12 +144,30 @@ local function selectRoles(msg, player)
     end
     
     if (not utils.tblempty(roles)) then
+        local rolesText = utils.toCSV(roles, tostring)
         if (not utils.tblequals(player.roles, roles)) then
             -- override the players roles
             player.roles = roles
-            local rolesText = utils.toCSV(roles, tostring)
             print("> Player '"..player.name.."' changed roles to '"..rolesText.."'.")
-            SendChatMessage("Changed roles to '"..rolesText.."'.", "WHISPER", nil, player.name)
+        end
+        -- inform the player about its current roles
+        SendChatMessage("Your current roles are: "..rolesText..".", "WHISPER", nil, player.name)
+        
+        -- create a RoleSelectionEvent if the instance is prio0
+        if (ns.DB.activeInstance) then
+            local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
+            if (instance) then
+                if (instance.prio == 0) then
+                    local event = RoleSelectionEvent.new(nil, roles, {})
+                    Players.selectRole(player.name, event)
+                else
+                    local response = "To specify the prio items, use !prl prio "
+                    for i=1,instance.prio do
+                        response = response.."[ItemLink"..tostring(i).."]"
+                    end
+                    SendChatMessage(response, "WHISPER", nil, player.name)
+                end
+            end
         end
     else
         local response = "Invalid roles. Possible roles: "..utils.toCSV(possibleRoles, function(roleId, role)
@@ -175,6 +193,7 @@ local function selectPrioItems(msg, player)
     
     local event = RoleSelectionEvent.new(nil, {}, prioItems)
     Players.selectRole(player.name, event)
+    SendChatMessage("Prio items successfully specified.", "WHISPER", nil, player.name)
 end
 
 -- parse the whisper chat to create role selection events

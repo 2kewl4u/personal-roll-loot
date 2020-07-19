@@ -82,7 +82,9 @@ function RollOrderEvent.broadcast(rollOrder)
     local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
     if (instance) then
         ns.RollSystem.setRollOrder(rollOrder)
-        utils.sendGroupMessage(rollOrder.item:getLink())
+        local itemLink = rollOrder.item:getLink()
+        utils.sendGroupMessage("Loot: "..itemLink..", respond with")
+        utils.sendGroupMessage("(need/greed/pass/remove) - [ItemLink]")
 
         utils.forEachRaidMember(function(name)
             local player = ns.DB.PLAYER_LIST[name]
