@@ -181,7 +181,9 @@ local function parseLootMessage(msg, member)
             local itemName = Items.getItemNameFromChat(msg)
             if (itemName) then
                 local item = Items.forName(itemName)
-                Items.removeFromPlayer(player, item)
+                if (item and not item.repeatable) then
+                    Items.removeFromPlayer(player, item)
+                end
             end
         end
     end
