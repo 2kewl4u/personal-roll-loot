@@ -6266,7 +6266,8 @@ local ITEM_LIST = {
         slotSize = 1,
         tier = 2.5,
         replaceable = true,
-        removable = false
+        removable = false,
+        restricted = true
     },
     [21621] = {
         itemId = 21621,
@@ -6278,7 +6279,8 @@ local ITEM_LIST = {
         slotSize = 1,
         tier = 2.5,
         replaceable = true,
-        removable = false
+        removable = false,
+        restricted = true
     },
     [21627] = {
         itemId = 21627,
@@ -6757,7 +6759,8 @@ local ITEM_LIST = {
         slotSize = 1,
         tier = 2.5,
         replaceable = true,
-        removable = false
+        removable = false,
+        restricted = true
     },
     [21669] = {
         itemId = 21669,
@@ -6893,7 +6896,8 @@ local ITEM_LIST = {
         slotSize = 1,
         tier = 2.5,
         replaceable = true,
-        removable = true
+        removable = true,
+        restricted = true
     },
     [21622] = {
         itemId = 21622,
@@ -6905,7 +6909,8 @@ local ITEM_LIST = {
         slotSize = 1,
         tier = 2.5,
         replaceable = true,
-        removable = true
+        removable = true,
+        restricted = true
     },
     [21673] = {
         itemId = 21673,
@@ -7026,7 +7031,8 @@ local ITEM_LIST = {
         slotSize = 2,
         tier = 2.5,
         replaceable = true,
-        removable = true
+        removable = true,
+        restricted = true
     },
     [21650] = {
         itemId = 21650,
@@ -7122,7 +7128,8 @@ local ITEM_LIST = {
         slotSize = 1,
         tier = 2.5,
         replaceable = true,
-        removable = true
+        removable = true,
+        restricted = true
     },
     [21639] = {
         itemId = 21639,
@@ -7258,7 +7265,8 @@ local ITEM_LIST = {
         slotSize = 2,
         tier = 2.5,
         replaceable = true,
-        removable = true
+        removable = true,
+        restricted = true
     },
     [21625] = {
         itemId = 21625,
@@ -7287,7 +7295,8 @@ local ITEM_LIST = {
         slotSize = 2,
         tier = 2.5,
         replaceable = true,
-        removable = true
+        removable = true,
+        restricted = true
     },
     [21670] = {
         itemId = 21670,
@@ -7302,7 +7311,8 @@ local ITEM_LIST = {
         slotSize = 2,
         tier = 2.5,
         replaceable = true,
-        removable = true
+        removable = true,
+        restricted = true
     },
     [21685] = {
         itemId = 21685,
@@ -7330,7 +7340,8 @@ local ITEM_LIST = {
         slotSize = 1,
         tier = 2.5,
         replaceable = true,
-        removable = true
+        removable = true,
+        restricted = true
     },
     [21679] = {
         itemId = 21679,
@@ -7354,7 +7365,8 @@ local ITEM_LIST = {
         slotSize = 1,
         tier = 2.5,
         replaceable = true,
-        removable = true
+        removable = true,
+        restricted = true
     },
     [21128] = {
         itemId = 21128,
