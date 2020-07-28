@@ -4673,6 +4673,24 @@ local ITEM_LIST = {
         replaceable = true,
         removable = false
     },
+    [22637] = {
+        itemId = 22637,
+        name = "Primal Hakkari Idol",
+        roles = { [ROLE_PROT_PALADIN] = 1, [ROLE_PROT_WARRIOR] = 1, [ROLE_GUARDIAN_DRUID] = 2, [ROLE_HUNTER] = 1,
+            [ROLE_HOLY_PRIEST] = 1, [ROLE_RESTO_DRUID] = 1, [ROLE_HOLY_PALADIN] = 1, [ROLE_RESTO_SHAMAN] = 1,
+            [ROLE_ROGUE] = 1, [ROLE_FERAL_DRUID] = 2, [ROLE_ENHANCEMENT_SHAMAN] = 2, [ROLE_RETRI_PALADIN] = 2,
+            [ROLE_ELEMENTAL_SHAMAN] = 1, [ROLE_BALANCE_DRUID] = 1, [ROLE_SHADOW_PRIEST] = 1, [ROLE_MAGE] = 1,
+            [ROLE_WARLOCK] = 1, [ROLE_ARMS_WARRIOR] = 2 },
+        classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true,
+            [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true,
+            [CLASS_MAGE] = true },
+        raids = { [RAID_ZUL_GURUB] = true },
+        slotSize = 1,
+        tier = 1,
+        replaceable = false,
+        removable = true,
+        repeatable = true
+    },
     [22711] = {
         itemId = 22711,
         name = "Cloak of the Hakkari Worshipers",
