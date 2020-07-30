@@ -181,7 +181,7 @@ local function parseLootMessage(msg, member)
             local itemId = Items.getItemIdsFromChat(msg)
             if (itemId) then
                 local item = ITEM_LIST[itemId]
-                if (item) then
+                if (item and not item.repeatable) then
                     Items.removeFromPlayer(player, item)
                 end
             end
@@ -222,8 +222,6 @@ eventFrame:RegisterEvent("INSPECT_READY")
 eventFrame:RegisterEvent("CHAT_MSG_LOOT")
 eventFrame:RegisterEvent("LOOT_OPENED")
 eventFrame:RegisterEvent("LOOT_SLOT_CLEARED")
-
-
 function eventFrame:OnEvent(event, arg1, arg2, arg3, arg4, arg5, ...)
     if (event == "VARIABLES_LOADED") then
         ns.loadSavedVariables()

@@ -46,7 +46,7 @@ local function load(item)
             item.color = ITEM_QUALITY_COLORS[itemRarity]
         else
             item.texture = select(5, GetItemInfoInstant(item.itemId)) or 134400
-            item.color = { r = 1, g = 1, b = 1}
+            item.color = { r = 1, g = 1, b = 1 }
         end
     end
 end

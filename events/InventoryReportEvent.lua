@@ -134,7 +134,9 @@ local function removeItems(event, player)
     -- remove the reported items
     for itemId in pairs(event.items) do
         local item = ITEM_LIST[itemId]
-        Items.removeFromPlayer(player, item)
+        if (item and not item.repeatable) then
+            Items.removeFromPlayer(player, item)
+        end
     end
     -- resent the role check
     ns.RoleCheckEvent.send(player)
