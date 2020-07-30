@@ -5,4 +5,3 @@
 
 - sound effect during role check
 - low prio items may be always removed
-- some items may be looted several times, like zg enchants

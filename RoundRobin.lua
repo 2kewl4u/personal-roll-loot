@@ -118,6 +118,32 @@ local function isHakkariCoin(itemId)
 end
 
 ---
+-- Indicates whether the item with the given itemId is a Scarab from Ahn'Qiraj.
+-- 
+-- @param #number itemId
+--          the itemId of the item to be checked
+-- 
+-- @return #boolean
+--          true if the item is a scarab, false otherwise
+-- 
+local function isAhnQirajScarab(itemId)
+    return itemId and itemId >= 20858 and itemId <= 20865
+end
+
+---
+-- Indicates whether the item with the given itemId is an Idol from Ahn'Qiraj.
+-- 
+-- @param #number itemId
+--          the itemId of the item to be checked
+-- 
+-- @return #boolean
+--          true if the item is an idol, false otherwise
+-- 
+local function isAhnQirajIdol(itemId)
+    return itemId and itemId >= 20866 and itemId <= 20879
+end
+
+---
 -- Returns an item classification string for the item with the given itemId.
 -- Items that are within the same category will have a separate checklist.
 -- 
@@ -133,6 +159,12 @@ local function getItemCategory(itemId)
     end
     if (isHakkariCoin(itemId)) then
         return "coin"
+    end
+    if (isAhnQirajScarab(itemId)) then
+        return "scarab"
+    end
+    if (isAhnQirajIdol(itemId)) then
+        return "idol"
     end
     
     local itemName, itemLink, itemRarity = GetItemInfo(itemId)
