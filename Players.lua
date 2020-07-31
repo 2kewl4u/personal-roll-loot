@@ -126,6 +126,32 @@ Players.get = function(arg)
     end
 end
 
+local function applyRoleCheck(playerName, apply)
+    local player = ns.DB.PLAYER_LIST[playerName]
+    if (player) then
+        -- mark the player in the active instance
+        if (ns.DB.activeInstance) then
+            local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
+            -- do not override the role check status if the player is already invited
+            if (instance and not (instance.players and instance.players[playerName])) then
+            
+                -- TODO extract this custom table into a separate class
+                local rolecheck = instance.rolecheck[playerName]
+                if (not rolecheck) then
+                    rolecheck = {}
+                    instance.rolecheck[playerName] = rolecheck
+                end
+            
+                apply(player, instance, rolecheck)
+            end
+            -- update the UI
+            ns.MasterUI.Update()
+        end
+    else
+        print("> No player registered with the name '"..playerName.."'.")
+    end
+end
+
 ---
 -- Applies the roles from the given RoleSelectionEvent to the player with the
 -- given name.
@@ -136,8 +162,7 @@ end
 --          the event containing the selected roles
 -- 
 Players.selectRole = function(playerName, event)
-    local player = ns.DB.PLAYER_LIST[playerName]
-    if (player and event) then
+    applyRoleCheck(playerName, function(player, instance, rolecheck)
         -- assign the new roles if changed
         local roles = {}
         if (not utils.tblequals(player.roles, event.roles)) then
@@ -160,32 +185,30 @@ Players.selectRole = function(playerName, event)
             roles = player.roles
         end
         
-        -- mark the player in the active instance as ready
-        if (ns.DB.activeInstance) then
-            local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
-            -- do not override the role check status if the player is already invited
-            if (instance and not (instance.players and instance.players[playerName])) then
-                
-                -- validate the allowed number of priority items
-                for index, itemId in pairs(event.prioItems) do
-                    if (index > instance.prio) then
-                        event.prioItems[index] = nil
-                    end
-                end
-                
-                instance.rolecheck[playerName] = {
-                    -- TODO extract this custom table into a separate class
-                    roles = utils.copy(roles),
-                    trial = player.trial or false,
-                    prioItems = event.prioItems or {}
-                }
+        rolecheck.roles = utils.copy(roles)
+        rolecheck.trial = player.trial or false
+    end)
+end
+
+---
+-- Applies the priority items from the given PrioSelectionEvent to the player
+-- with the given name.
+-- 
+-- @param #string playerName
+--          the name of the player to apply the items
+-- @param #PrioSelectionEvent event
+--          the event containing the selected items
+-- 
+Players.selectPrioItems = function(playerName, event)
+    applyRoleCheck(playerName, function(player, instance, rolecheck)
+        -- validate the allowed number of priority items
+        for index, itemId in pairs(event.prioItems) do
+            if (index > instance.prio) then
+                event.prioItems[index] = nil
             end
         end
-        -- update the UI
-        ns.MasterUI.Update()
-    else
-        print("> No player registered with the name '"..playerName.."'.")
-    end
+        rolecheck.prioItems = event.prioItems or {}
+    end)
 end
 
 ---

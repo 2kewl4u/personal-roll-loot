@@ -1,6 +1,11 @@
 -- namespace
 local _, ns = ...;
 
+-- imports
+local Items = ns.Items
+local ITEM_LIST = ns.ITEM_LIST
+local utils = ns.utils
+
 ---
 -- The InstancePlayerLabelProvider is a function that can be added to the
 -- ScrollList to provide a visual representation for a set of player names
@@ -25,6 +30,7 @@ ns.InstancePlayerLabelProvider = InstancePlayerLabelProvider
 function InstancePlayerLabelProvider.display(name, arg2, button)
     local invited = false
     local roles = {}
+    local prioItems = {}
     local trial = false
     if (ns.DB.activeInstance) then
         local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
@@ -38,7 +44,8 @@ function InstancePlayerLabelProvider.display(name, arg2, button)
                 local rolecheck = instance.rolecheck[name]
                 if (rolecheck and type(rolecheck) == "table") then
                     roles = rolecheck.roles or {}
-                    trial = rolecheck.trial
+                    trial = rolecheck.trial or false
+                    prioItems = rolecheck.prioItems or {}
                 end
             end
         end
@@ -57,4 +64,18 @@ function InstancePlayerLabelProvider.display(name, arg2, button)
     memberInfo.trial = trial
     
     ns.PlayerLabelProvider.display(name, memberInfo, button)
+    
+    -- append the prio items to the info field
+    local prioText = utils.toCSV(prioItems, function(k, itemId)
+        local item = ITEM_LIST[itemId]
+        if (item) then
+            return Items.getSymbol(item:getName())
+        else
+            return "-"
+        end
+    end)
+    
+    button.Info:SetText(prioText)
+    button.Info:Show()
+    
 end

@@ -233,6 +233,9 @@ okButton:SetText("Ok")
 okButton:SetScript("OnClick", function()
     if (player) then
         ns.RoleSelectionEvent.send(player.roles, getPrioItems())
+        if (prio > 0) then
+            ns.PrioSelectionEvent.send(getPrioItems())
+        end
     end
     roleCheckFrame:Hide()
 end)

@@ -8313,6 +8313,27 @@ Items.forName = function(name)
 end
 
 ---
+-- Returns a short version of the given item name as symbol.
+-- 
+-- @param #string itemName
+--          the name of the item
+-- 
+-- @return #string
+--          a symbol representing the item name
+-- 
+Items.getSymbol = function(itemName)
+    if (itemName) then
+        local parts = { strsplit(" ", itemName) }
+        local symbol = ""
+        for _, part in ipairs(parts) do
+            symbol = symbol..strsub(part, 1, 1)
+        end
+        return symbol
+    end
+    return ""
+end
+
+---
 -- Returns whether the item with the given itemId is considered a 'junk' or 'trash' item.
 --
 -- @param #number itemId

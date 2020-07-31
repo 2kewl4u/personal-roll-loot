@@ -32,8 +32,8 @@
                         <Anchor point="TOPLEFT" x="2" y="-6" />
                     </Anchors>
                 </FontString>
-                <FontString parentKey="Trial"
-                    text="TRIAL"
+                <FontString parentKey="Info"
+                    text=""
                     inherits="GameFontDisableSmallLeft"
                     hidden="true">
                     <Size x="0" y="15" />

@@ -1,6 +1,6 @@
 ## Interface: 11304
 ## Title: Personal Roll Loot
-## Version: 0.9.0
+## Version: 0.9.1
 ## Author: Ben
 ## SavedVariables: PersonalRollLootDB
 
@@ -25,6 +25,7 @@ AddonMessage.lua
 events\Events.lua
 events\RoleCheckEvent.lua
 events\RoleSelectionEvent.lua
+events\PrioSelectionEvent.lua
 events\InventoryReportEvent.lua
 events\MemberInfoEvent.lua
 events\MemberInfoRequestEvent.lua
@@ -35,6 +36,7 @@ events\RollOrderEvent.lua
 events\RollRequestEvent.lua
 events\RollResponseEvent.lua
 
+ChatInteractor.lua
 SavedVariables.lua
 
 frames\ButtonTemplates.xml
