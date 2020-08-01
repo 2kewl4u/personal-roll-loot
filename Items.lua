@@ -4825,6 +4825,16 @@ local ITEM_LIST = {
         replaceable = true,
         removable = false
     },
+    [22739] = {
+        itemId = 22739,
+        name = "Tome of Polymorph: Turtle",
+        roles = { [ROLE_MAGE] = 2 },
+        classes = { [CLASS_MAGE] = true },
+        raids = { [RAID_ZUL_GURUB] = true },
+        tier = 0.5,
+        replaceable = false,
+        removable = true
+    },
 
     -- QUEST ITEMS
     [19822] = {

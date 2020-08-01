@@ -143,11 +143,15 @@ local function upgradeDatabase()
             19861 -- Touch of Chaos
         })
     end
-    -- pre-0.9.0 upgrades
     if (dbVersion < 900) then
-        upgradePlayerItems()
         addMissingItems({
             22637 -- Primal Hakkari Idol
+        })
+    end
+    if (dbVersion < 901) then
+        upgradePlayerItems()
+        addMissingItems({
+            22739 -- Tome of Polymorph: Turtle
         })
     end
 end
