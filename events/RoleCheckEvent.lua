@@ -99,6 +99,7 @@ function RoleCheckEvent.broadcast()
                 utils.sendGroupMessage("PRL Role Check - Whisper chat commands:")
                 utils.sendGroupMessage("change role: !prl role 1,2,...")
                 utils.sendGroupMessage("specify prio: !prl prio [ItemLink1]...")
+                utils.sendGroupMessage("see need-list: !prl list <slotnumber>")
                 
                 utils.forEachRaidMember(function(playerName)
                     if (not instance.players[playerName]) then

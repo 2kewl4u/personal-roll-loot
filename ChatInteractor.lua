@@ -76,6 +76,49 @@ commandHandlers["prio"] = function(msg, player)
     SendChatMessage("Prio items successfully specified.", "WHISPER", nil, player.name)
 end
 
+commandHandlers["list"] = function(msg, player)
+    local slot = tonumber(msg)
+    if (slot) then
+        if (ns.DB.activeInstance) then
+            local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
+            if (instance) then
+                local itemcount = 0
+                local msg = ""
+                for itemId in pairs(player.needlist) do
+                    local item = ITEM_LIST[itemId]
+                    if (item
+                        and (slot == item.slot or slot == 0 and not item.slot)
+                        and item.raids[instance.raid]
+                        and player:needsItem(item)
+                        ) then
+                        
+                        local link = item:getLink()
+                        if (link) then
+                            msg = msg..link.." "
+                            itemcount = itemcount + 1
+                            
+                            if (itemcount >= 3) then
+                                SendChatMessage(msg, "WHISPER", nil, player.name)
+                                itemcount = 0
+                                msg = ""
+                            end
+                        else
+                            SendChatMessage("Not all items loaded yet. Please try again...", "WHISPER", nil, player.name)
+                            break
+                        end
+                    end
+                end
+                
+                if (itemcount > 0) then
+                    SendChatMessage(msg, "WHISPER", nil, player.name)
+                end
+            end
+        end
+    else
+        SendChatMessage("Invalid slot number. 0:Misc, 1:Head, 2:Neck, 3:Shoulder, 5:Chest, 6:Belt, 7:Legs, 8:Feet, 9:Wrist, 10:Hands, 11:Ring, 13:Trinket, 15:Back, 16:Mainhand, 17:Offhand, 18:Ranged.", "WHISPER", nil, player.name)
+    end
+end
+
 -- parse the whisper chat
 local whisperEventFrame = CreateFrame("Frame")
 whisperEventFrame:RegisterEvent("CHAT_MSG_WHISPER")
