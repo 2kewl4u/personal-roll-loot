@@ -1,4 +1,4 @@
-## Interface: 11304
+## Interface: 11305
 ## Title: Personal Roll Loot
 ## Version: 0.9.1
 ## Author: Ben
