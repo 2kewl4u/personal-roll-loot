@@ -66,16 +66,14 @@ function InstancePlayerLabelProvider.display(name, arg2, button)
     ns.PlayerLabelProvider.display(name, memberInfo, button)
     
     -- append the prio items to the info field
-    local prioText = utils.toCSV(prioItems, function(k, itemId)
-        local item = ITEM_LIST[itemId]
-        if (item) then
-            return Items.getSymbol(item:getName())
-        else
-            return "-"
-        end
-    end)
+    local prioCount = #prioItems
+    if (prioCount > 0) then
+        local prioText = "Prio: "..tostring(prioCount)
+        button.Info:SetText(prioText)
+        button.Info:Show()
+    else
+        button.Info:Hide()
+    end
     
-    button.Info:SetText(prioText)
-    button.Info:Show()
     
 end
