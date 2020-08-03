@@ -83,8 +83,10 @@ function RollOrderEvent.broadcast(rollOrder)
     if (instance) then
         ns.RollSystem.setRollOrder(rollOrder)
         local itemLink = rollOrder.item:getLink()
-        utils.sendGroupMessage("Loot: "..itemLink..", respond with")
-        utils.sendGroupMessage("(need/greed/pass/remove) - [ItemLink]")
+        utils.sendGroupMessage("Loot: "..itemLink)
+        if (ns.DB.options.chatInteraction) then
+            utils.sendGroupMessage("Respond with: (need/greed/pass/remove) + [ItemLink]")
+        end
 
         utils.forEachRaidMember(function(name)
             local player = ns.DB.PLAYER_LIST[name]

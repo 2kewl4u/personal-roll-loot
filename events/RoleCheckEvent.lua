@@ -96,10 +96,12 @@ function RoleCheckEvent.broadcast()
         if (ns.DB.activeInstance) then
             local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
             if (instance) then
-                utils.sendGroupMessage("PRL Role Check - Whisper chat commands:")
-                utils.sendGroupMessage("change role: !prl role 1,2,...")
-                utils.sendGroupMessage("specify prio: !prl prio [ItemLink1]...")
-                utils.sendGroupMessage("see need-list: !prl list <slotnumber>")
+                if (ns.DB.options.chatInteraction) then
+                    utils.sendGroupMessage("PRL Role Check - Whisper chat commands:")
+                    utils.sendGroupMessage("change role: !prl role 1,2,...")
+                    utils.sendGroupMessage("specify prio: !prl prio [ItemLink1]...")
+                    utils.sendGroupMessage("see need-list: !prl list <slotnumber>")
+                end
                 
                 utils.forEachRaidMember(function(playerName)
                     if (not instance.players[playerName]) then

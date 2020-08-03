@@ -23,7 +23,7 @@ commandHandlers["role"] = function(msg, player)
             end
         end
     end
-    
+
     if (not utils.tblempty(roles)) then
         local rolesText = utils.toCSV(roles, tostring)
         if (not utils.tblequals(player.roles, roles)) then
@@ -33,11 +33,11 @@ commandHandlers["role"] = function(msg, player)
         end
         -- inform the player about its current roles
         SendChatMessage("Your current roles are: "..rolesText..".", "WHISPER", nil, player.name)
-        
+
         -- create a RoleSelectionEvent
         local event = RoleSelectionEvent.new(nil, roles)
         Players.selectRole(player.name, event)
-        
+
         -- if the instance is prio, respond with a description
         if (ns.DB.activeInstance) then
             local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
@@ -70,7 +70,7 @@ commandHandlers["prio"] = function(msg, player)
             return
         end
     end
-    
+
     local event = PrioSelectionEvent.new(nil, prioItems)
     Players.selectPrioItems(player.name, event)
     SendChatMessage("Prio items successfully specified.", "WHISPER", nil, player.name)
@@ -91,12 +91,12 @@ commandHandlers["list"] = function(msg, player)
                         and item.raids[instance.raid]
                         and player:needsItem(item)
                         ) then
-                        
+
                         local link = item:getLink()
                         if (link) then
                             msg = msg..link.." "
                             itemcount = itemcount + 1
-                            
+
                             if (itemcount >= 3) then
                                 SendChatMessage(msg, "WHISPER", nil, player.name)
                                 itemcount = 0
@@ -108,7 +108,7 @@ commandHandlers["list"] = function(msg, player)
                         end
                     end
                 end
-                
+
                 if (itemcount > 0) then
                     SendChatMessage(msg, "WHISPER", nil, player.name)
                 end
@@ -124,23 +124,27 @@ local whisperEventFrame = CreateFrame("Frame")
 whisperEventFrame:RegisterEvent("CHAT_MSG_WHISPER")
 whisperEventFrame:SetScript("OnEvent", function(frame, event, arg1, arg2)
     local msg = arg1
-    -- remove the realm part from the author
-    local author = strsplit("-", arg2, 2)
     -- detect a prl command
     if (utils.strstarts(msg, "!prl ")) then
-        local player = ns.DB.PLAYER_LIST[author]
-        if (player) then
-            msg = strsub(msg, 6)
-            local cmd, rest = strsplit(" ", msg, 2)
-            local handler = commandHandlers[cmd]
-            if (handler) then
-                handler(rest, player)
+        -- remove the realm part from the author
+        local author = strsplit("-", arg2, 2)
+        if (ns.DB.options.chatInteraction) then
+            local player = ns.DB.PLAYER_LIST[author]
+            if (player) then
+                msg = strsub(msg, 6)
+                local cmd, rest = strsplit(" ", msg, 2)
+                local handler = commandHandlers[cmd]
+                if (handler) then
+                    handler(rest, player)
+                else
+                    SendChatMessage("Unknown command.", "WHISPER", nil, author)
+                end
             else
-                SendChatMessage("Unknown command.", "WHISPER", nil, author)
+                print("> Player '"..author.."' is not registered for Personal Roll Loot.")
+                SendChatMessage("You are not registered for Personal Roll Loot.", "WHISPER", nil, author)
             end
         else
-            print("> Player '"..author.."' is not registered for Personal Roll Loot.")
-            SendChatMessage("You are not registered for Personal Roll Loot.", "WHISPER", nil, author)
+            SendChatMessage("Chat interaction disabled.", "WHISPER", nil, author)
         end
     end
 end)

@@ -40,7 +40,18 @@ function OptionsTab.new(parentFrame)
     end)
     junkRollOptionButton:SetScript("OnClick", function()
         ns.DB.options.rollJunkItems =  junkRollOptionButton:GetChecked()
-    end)  
+    end)
+    
+    local chatInteractionOptionButton = CreateFrame("CheckButton", nil, parentFrame, "UICheckButtonTemplate")
+    chatInteractionOptionButton:SetPoint("TOPLEFT", junkRollOptionButton, "BOTTOMLEFT", 0, 0)
+    chatInteractionOptionButton.text:SetFontObject("GameFontNormal")
+    chatInteractionOptionButton.text:SetText("enable chat interaction for users without the addon")
+    chatInteractionOptionButton:SetScript("OnShow", function()
+        chatInteractionOptionButton:SetChecked(ns.DB.options.chatInteraction or false)
+    end)
+    chatInteractionOptionButton:SetScript("OnClick", function()
+        ns.DB.options.chatInteraction =  chatInteractionOptionButton:GetChecked()
+    end)
     
     return tab
 end

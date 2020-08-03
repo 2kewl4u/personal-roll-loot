@@ -142,16 +142,18 @@ eventFrame:RegisterEvent("CHAT_MSG_RAID")
 eventFrame:RegisterEvent("CHAT_MSG_RAID_LEADER")
 eventFrame:RegisterEvent("CHAT_MSG_PARTY_LEADER")
 eventFrame:SetScript("OnEvent", function(frame, event, arg1, arg2)
-    local msg = arg1
-    -- remove the realm part from the author
-    local author = strsplit("-", arg2, 2)
-    local rollType = parseRollType(msg)
-    if (rollType) then
-        local itemId = Items.getItemIdsFromChat(msg)
-        if (itemId) then
-            local event = RollResponseEvent.new(nil, itemId, rollType)
-            event.sender = author
-            RollSystem.evaluateResponse(event)
+    if (ns.DB.options.chatInteraction) then
+        local msg = arg1
+        -- remove the realm part from the author
+        local author = strsplit("-", arg2, 2)
+        local rollType = parseRollType(msg)
+        if (rollType) then
+            local itemId = Items.getItemIdsFromChat(msg)
+            if (itemId) then
+                local event = RollResponseEvent.new(nil, itemId, rollType)
+                event.sender = author
+                RollSystem.evaluateResponse(event)
+            end
         end
     end
 end)
