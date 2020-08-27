@@ -138,8 +138,6 @@ local function removeItems(event, player)
             Items.removeFromPlayer(player, item)
         end
     end
-    -- resent the role check
-    ns.RoleCheckEvent.send(player)
 end
 
 ---

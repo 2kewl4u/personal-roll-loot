@@ -8504,7 +8504,7 @@ end
 Items.checkInventoryItems = function(player)
     local items = Items.getInventoryItems()
     for itemId, item in pairs(items) do
-        if (not player.needlist[itemId]) then
+        if (not player.needlist[itemId] or item.repeatable) then
             -- the item was already removed from the list
             items[itemId] = nil
         end
