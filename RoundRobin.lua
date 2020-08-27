@@ -72,14 +72,12 @@ local function isJunk(itemId)
             (itemClassID == 1 and itemSubClassID == 0) or
             -- green reagent
             (itemClassID == 5 and itemSubClassID == 0 and itemRarity == 2) or
-            -- books
-            (itemClassID == 9 and itemSubClassID == 0) or
             -- not bound quest items
             (itemClassID == 12 and bindType == 0)
             ) then
             return true
         end
-        -- exclude recipes
+        -- exclude recipes and books
         if (itemClassID == 9) then
             return false
         end
