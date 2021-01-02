@@ -101,8 +101,10 @@ ns.eventHandler[EVENT_ID] = function(message, sender)
     if (message and IsInGroup() and utils.isGroupLeader(sender)) then
         local event = MemberInfoEvent.decode(message)
         if (event) then
-            ns.MemberUI.setMemberInfo(event.player)
-            ns.RoleCheckUI.setMemberInfo(event.player)
+            local player = event.player
+            ns.DB.currentPlayer = player
+            ns.MemberUI.setMemberInfo(player)
+            ns.RoleCheckUI.setMemberInfo(player)
         end
     end
 end

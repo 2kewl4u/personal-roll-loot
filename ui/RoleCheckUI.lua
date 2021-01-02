@@ -3,6 +3,7 @@ local _, ns = ...;
 -- imports
 local ConfirmDialog = ns.ConfirmDialog
 local Items = ns.Items
+local Players = ns.Players
 local Roles = ns.Roles
 local ScrollList = ns.ScrollList
 local utils = ns.utils
@@ -289,6 +290,6 @@ RoleCheckUI.open = function(event)
         prio = event.prio
         enablePriorityButtons()
         roleCheckFrame:Show()
-        setMemberInfo(event.player)
+        setMemberInfo(Players.getCurrentPlayer())
     end
 end

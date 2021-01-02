@@ -16,10 +16,6 @@ local EVENT_ID = "RoleCheckEvent"
 local RoleCheckEvent = {
     -- the eventId to identify the event type
     eventId = EVENT_ID,
-    -- the receiver of the event message
-    receiver,
-    -- the player to which this event will be sent
-    player,
     -- the raid name of the currently active raid, e.g. Molten Core
     raid,
     -- the custom priority level
@@ -27,7 +23,6 @@ local RoleCheckEvent = {
 }
 RoleCheckEvent.__index = RoleCheckEvent
 ns.RoleCheckEvent = RoleCheckEvent
-
 
 ---
 -- Creates a new RoleCheckEvent with the given player and raid name.
@@ -42,10 +37,8 @@ ns.RoleCheckEvent = RoleCheckEvent
 -- @return #RoleCheckEvent
 --          the new event
 -- 
-function RoleCheckEvent.new(player, raid, prio)
+function RoleCheckEvent.new(raid, prio)
     local self = setmetatable({}, RoleCheckEvent)
-    self.player = player
-    self.receiver = player.name
     self.raid = raid
     self.prio = prio or 0
     return self
@@ -61,7 +54,7 @@ end
 --          
 function RoleCheckEvent:encode()
     local event = self
-    return event.raid..";"..tostring(event.prio)..";"..event.player:encode()
+    return event.raid..";"..tostring(event.prio)
 end
 
 ---
@@ -76,13 +69,10 @@ end
 -- 
 function RoleCheckEvent.decode(encoded)
     if (encoded) then
-        local raid, prio, encodedPlayer = strsplit(";", encoded, 3)
+        local raid, prio = strsplit(";", encoded, 2)
         prio = tonumber(prio) or 0
-        if (encodedPlayer and ns.RAIDS[raid]) then
-            local player = Player.decode(encodedPlayer)
-            if (player) then
-                return RoleCheckEvent.new(player, raid, prio)
-            end
+        if (ns.RAIDS[raid]) then
+            return RoleCheckEvent.new(raid, prio)
         end
     end
 end
@@ -100,19 +90,9 @@ function RoleCheckEvent.broadcast()
                     utils.sendGroupMessage("PRL Role Check - Whisper chat commands:")
                     utils.sendGroupMessage("change role: !prl role 1,2,...")
                     utils.sendGroupMessage("specify prio: !prl prio [ItemLink1]...")
-                    utils.sendGroupMessage("see need-list: !prl list <slotnumber>")
                 end
                 
-                utils.forEachRaidMember(function(playerName)
-                    if (not instance.players[playerName]) then
-                        local player = ns.DB.PLAYER_LIST[playerName]
-                        if (player) then
-                            Events.sent(RoleCheckEvent.new(player, instance.raid, instance.prio))
-                        else
-                            print("> Player '"..playerName.."' is not registered for Personal Roll Loot.")
-                        end
-                    end
-                end)
+                Events.broadcast(RoleCheckEvent.new(instance.raid, instance.prio))
             else
                 print("> Unknown instance '"..ns.DB.activeInstance.."'.")
             end
@@ -121,21 +101,6 @@ function RoleCheckEvent.broadcast()
         end
     else
         print("> You must be the group or raid leader to send a role check.")
-    end    
-end
-
----
--- Sends a single RoleCheckEvent to the given player.
--- 
--- @param #Player player
---          the player to send the event to
--- 
-function RoleCheckEvent.send(player)
-    if (player and ns.DB.activeInstance) then
-        local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
-        if (instance) then
-            Events.sent(RoleCheckEvent.new(player, instance.raid, instance.prio))
-        end
     end
 end
 
@@ -149,14 +114,7 @@ ns.eventHandler[EVENT_ID] = function(message, sender)
     if (message and IsInGroup() and utils.isGroupLeader(sender)) then
         local event = RoleCheckEvent.decode(message)
         if (event) then
-            -- check the inventory for items already present in the need-list
-            local items = Items.checkInventoryItems(event.player)
-            if (utils.tblempty(items)) then
-                ns.RoleCheckUI.open(event)
-            else
-                -- delay the role check and report the already present items
-                ns.InventoryReportEvent.send(sender, items)
-            end
+            ns.RoleCheckUI.open(event)
         end
     end
 end

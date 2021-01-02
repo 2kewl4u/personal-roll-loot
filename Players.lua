@@ -1,6 +1,7 @@
 -- namespace
 local _, ns = ...;
 --imports
+local Items = ns.Items
 local Player = ns.Player
 local Roles = ns.Roles
 local utils = ns.utils
@@ -236,4 +237,26 @@ Players.checkGroupStatus = function()
         raidMembers = raidMembers + 1
     end)
     return playerCount, missing, raidMembers
+end
+
+---
+-- Returns the current local player information.
+-- 
+-- @return #Player
+--          the current player
+-- 
+Players.getCurrentPlayer = function()
+    local player = ns.DB.currentPlayer
+    if (not player) then
+        local name, realm = UnitName("player")
+        local _, class = UnitClass("player")
+        player = Player.new(name, realm, class, false)
+        -- remove inventory items
+        local items = Items.getInventoryItems()
+        for itemId, item in pairs(items) do
+            Items.removeFromPlayer(player, item)
+        end
+        ns.DB.currentPlayer = player
+    end
+    return player
 end

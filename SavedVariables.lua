@@ -19,6 +19,8 @@ ns.DB = {
     INSTANCE_LIST = {},
     -- the currently active instance name
     activeInstance = nil,
+    -- the current player information
+    currentPlayer = nil,
     -- additional options for the master looter
     options = Options.new(),
     -- the check lists to remember players that recently received loot
@@ -177,6 +179,10 @@ ns.loadSavedVariables = function()
         -- create the Player instances, since functions are not stored in the DB
         for name, player in pairs(ns.DB.PLAYER_LIST or {}) do
             ns.DB.PLAYER_LIST[name] = Player.copy(player)
+        end
+        local currentPlayer = ns.DB.currentPlayer
+        if (currentPlayer) then
+            ns.DB.currentPlayer = Player.copy(currentPlayer)
         end
         -- create the Instance instances
         for name, instance in pairs(ns.DB.INSTANCE_LIST or {}) do

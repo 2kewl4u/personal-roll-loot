@@ -23,6 +23,19 @@ Events.sent = function(event)
     AddonMessage.Send(EVENT_MESSAGE, event.eventId.."#"..message, "WHISPER", event.receiver)
 end
 
+---
+-- Sends the given event to the raid or party channel.
+-- 
+-- @param #Event event
+--          the event to be sent
+--
+Events.broadcast = function(event)
+    local message = event:encode()
+    local chatType = "PARTY"
+    if (IsInRaid()) then chatType = "RAID" end
+    AddonMessage.Send(EVENT_MESSAGE, event.eventId.."#"..message, chatType)
+end
+
 -- the event handlers that will be called to handle the event message
 ns.eventHandler = {}
 
