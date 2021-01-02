@@ -4,6 +4,7 @@ local _, ns = ...;
 local ConfirmDialog = ns.ConfirmDialog
 local Items = ns.Items
 local Player = ns.Player
+local Players = ns.Players
 local Roles = ns.Roles
 local ScrollList = ns.ScrollList
 local utils = ns.utils
@@ -28,11 +29,8 @@ local memberRollOrder
 local updateMemberInfo
 local createMemberInfo = function()
     if (not memberInfo) then
-        local name, realm = UnitName("player")
-        local _, class = UnitClass("player")
-        memberInfo = Player.new(name,realm,class,false)
-        memberInfo.roles = {}
-        memberInfo.needlist = {}
+        memberInfo = Players.getCurrentPlayer()
+        ns.MemberInfoRequestEvent.send()
     end
 end
 
@@ -55,7 +53,6 @@ memberTabFrame:SetPoint("TOPLEFT", PersonalRollLootMemberDialogBG, "TOPLEFT", 0,
 memberTabFrame:SetPoint("BOTTOMRIGHT", PersonalRollLootMemberDialogBG, "BOTTOMRIGHT", 0, 0)
 memberTabFrame:SetScript("OnShow", function()
     updateMemberInfo()
-    ns.MemberInfoRequestEvent.send()
 end)
 
 local memberNameField = memberTabFrame:CreateFontString(nil, "OVERLAY")

@@ -2,6 +2,7 @@
 local _, ns = ...;
 -- imports
 local Events = ns.Events
+local ItemRemovalResponseEvent = ns.ItemRemovalResponseEvent
 local Items = ns.Items
 local utils = ns.utils
 
@@ -108,8 +109,8 @@ ns.eventHandler[EVENT_ID] = function(message, sender)
                 local player = ns.DB.PLAYER_LIST[sender]
                 if (player and Items.canRemove(item, player)) then
                     Items.removeFromPlayer(player, item)
-                    -- respond back with an update of the player info
-                    ns.MemberInfoEvent.send(sender)
+                    -- respond back with the confirmation of the removal
+                    Events.sent(ItemRemovalResponseEvent.new(sender, item.itemId))
                 end
             end
         end

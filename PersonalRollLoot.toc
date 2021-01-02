@@ -32,6 +32,7 @@ events\MemberInfoRequestEvent.lua
 events\SyncRequestEvent.lua
 events\SyncInfoEvent.lua
 events\ItemRemovalRequestEvent.lua
+events\ItemRemovalResponseEvent.lua
 events\RollOrderEvent.lua
 events\RollRequestEvent.lua
 events\RollResponseEvent.lua
