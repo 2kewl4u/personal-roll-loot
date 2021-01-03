@@ -58,7 +58,7 @@ function PlayersTab.new(parentFrame)
     syncButton:SetPoint("BOTTOMLEFT", addPlayerButton, "TOPLEFT", 0, SPACING)
     syncButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
     syncButton:SetText("Synchronize")
-    syncButton:SetScript("OnClick", ns.SyncRequestEvent.send)
+    syncButton:SetScript("OnClick", ns.SyncInfoEvent.broadcast)
     
     local playerNameField = parentFrame:CreateFontString(nil, "OVERLAY")
     playerNameField:SetPoint("TOPLEFT", parentFrame, "TOPLEFT", WINDOW_WIDTH / 2 + SPACING, -MARGIN)

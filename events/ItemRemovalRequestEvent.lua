@@ -110,7 +110,7 @@ ns.eventHandler[EVENT_ID] = function(message, sender)
                 if (player and Items.canRemove(item, player)) then
                     Items.removeFromPlayer(player, item)
                     -- respond back with the confirmation of the removal
-                    Events.sent(ItemRemovalResponseEvent.new(sender, item.itemId))
+                    Events.sent(ns.ItemRemovalResponseEvent.new(sender, item.itemId))
                 end
             end
         end

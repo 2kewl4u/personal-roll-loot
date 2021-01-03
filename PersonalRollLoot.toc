@@ -1,6 +1,6 @@
 ## Interface: 11305
 ## Title: Personal Roll Loot
-## Version: 0.9.3
+## Version: 1.0.1
 ## Author: Ben
 ## SavedVariables: PersonalRollLootDB
 
@@ -29,7 +29,6 @@ events\PrioSelectionEvent.lua
 events\InventoryReportEvent.lua
 events\MemberInfoEvent.lua
 events\MemberInfoRequestEvent.lua
-events\SyncRequestEvent.lua
 events\SyncInfoEvent.lua
 events\ItemRemovalRequestEvent.lua
 events\ItemRemovalResponseEvent.lua
