@@ -2,6 +2,7 @@
 local _, ns = ...;
 -- imports
 local Events = ns.Events
+local Items = ns.Items
 local Player = ns.Player
 local utils = ns.utils
 
@@ -103,6 +104,14 @@ ns.eventHandler[EVENT_ID] = function(message, sender)
         if (event) then
             local player = event.player
             ns.DB.currentPlayer = player
+            
+            -- check the inventory for items already present in the need-list
+            local items = Items.checkInventoryItems(player)
+            if (not utils.tblempty(items)) then
+                -- delay the role check and report the already present items
+                ns.InventoryReportEvent.send(sender, items)
+            end
+            
             ns.MemberUI.setMemberInfo(player)
             ns.RoleCheckUI.setMemberInfo(player)
         end
