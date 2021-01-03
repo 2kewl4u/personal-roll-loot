@@ -14,8 +14,6 @@ local EVENT_ID = "RollOrderEvent"
 local RollOrderEvent = {
     -- the eventId to identify the event type
     eventId = EVENT_ID,
-    -- the receiver of the event message
-    receiver,
     -- the roll order to be sent
     rollOrder
 }
@@ -33,9 +31,8 @@ ns.RollOrderEvent = RollOrderEvent
 -- @return #RollOrderEvent
 --          the new event
 -- 
-function RollOrderEvent.new(receiver, rollOrder)
+function RollOrderEvent.new(rollOrder)
     local self = setmetatable({}, RollOrderEvent)
-    self.receiver = receiver
     self.rollOrder = rollOrder
     return self
 end
@@ -67,7 +64,7 @@ function RollOrderEvent.decode(encoded)
     if (encoded) then
         local rollOrder = RollOrder.decode(encoded)
         if (rollOrder) then
-            return RollOrderEvent.new(nil, rollOrder)
+            return RollOrderEvent.new(rollOrder)
         end
     end
 end
@@ -88,18 +85,7 @@ function RollOrderEvent.broadcast(rollOrder)
             utils.sendGroupMessage("Respond with: (need/greed/pass/remove) + [ItemLink]")
         end
 
-        utils.forEachRaidMember(function(name)
-            local player = ns.DB.PLAYER_LIST[name]
-            if (player) then
-                if (instance.players[name]) then
-                    Events.sent(RollOrderEvent.new(name, rollOrder))
-                else
-                    print("> Player '"..name.."' is not invited to the currently active instance.")
-                end
-            else
-                print("> Player '"..name.."' is not registered for Personal Roll Loot.")
-            end
-        end)
+        Events.broadcast(RollOrderEvent.new(rollOrder))
     else
         print("> No active instance.")
     end
