@@ -246,7 +246,7 @@ end
 --          the current player
 -- 
 Players.getCurrentPlayer = function()
-    local player = ns.DB.currentPlayer
+    local player = ns.CDB.currentPlayer
     if (not player) then
         local name, realm = UnitName("player")
         local _, class = UnitClass("player")
@@ -256,7 +256,7 @@ Players.getCurrentPlayer = function()
         for itemId, item in pairs(items) do
             Items.removeFromPlayer(player, item)
         end
-        ns.DB.currentPlayer = player
+        ns.CDB.currentPlayer = player
     end
     return player
 end

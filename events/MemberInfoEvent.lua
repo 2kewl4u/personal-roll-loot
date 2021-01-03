@@ -103,7 +103,7 @@ ns.eventHandler[EVENT_ID] = function(message, sender)
         local event = MemberInfoEvent.decode(message)
         if (event) then
             local player = event.player
-            ns.DB.currentPlayer = player
+            ns.CDB.currentPlayer = player
             
             -- check the inventory for items already present in the need-list
             local items = Items.checkInventoryItems(player)

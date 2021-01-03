@@ -19,12 +19,15 @@ ns.DB = {
     INSTANCE_LIST = {},
     -- the currently active instance name
     activeInstance = nil,
-    -- the current player information
-    currentPlayer = nil,
     -- additional options for the master looter
     options = Options.new(),
     -- the check lists to remember players that recently received loot
     junkCheckList = {}
+}
+-- saved variables for the character
+ns.CDB = {
+    -- the current player information
+    currentPlayer = nil    
 }
 
 ---
@@ -180,10 +183,6 @@ ns.loadSavedVariables = function()
         for name, player in pairs(ns.DB.PLAYER_LIST or {}) do
             ns.DB.PLAYER_LIST[name] = Player.copy(player)
         end
-        local currentPlayer = ns.DB.currentPlayer
-        if (currentPlayer) then
-            ns.DB.currentPlayer = Player.copy(currentPlayer)
-        end
         -- create the Instance instances
         for name, instance in pairs(ns.DB.INSTANCE_LIST or {}) do
             ns.DB.INSTANCE_LIST[name] = Instance.copy(instance)
@@ -195,5 +194,18 @@ ns.loadSavedVariables = function()
     else
         -- initialize the DB if it was not present
         PersonalRollLootDB = ns.DB
+    end
+    
+    if (PersonalRollLootCharacterDB) then
+        -- assign the DB so that the variables are modified directly
+        ns.CDB = PersonalRollLootCharacterDB
+        
+        local currentPlayer = ns.CDB.currentPlayer
+        if (currentPlayer) then
+            ns.CDB.currentPlayer = Player.copy(currentPlayer)
+        end
+    else
+        -- initialize the DB if it was not present
+        PersonalRollLootCharacterDB = ns.CDB
     end
 end

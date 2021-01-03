@@ -3,6 +3,7 @@
 ## Version: 1.0.1
 ## Author: Ben
 ## SavedVariables: PersonalRollLootDB
+## SavedVariablesPerCharacter: PersonalRollLootCharacterDB
 
 Utils.lua
 Raids.lua
