@@ -15,10 +15,6 @@ local ROLL_REMOVE = "remove"
 local RollSystem = {
     -- the roll order for the current item distribution
     currentRollOrder,
-    -- the current round of the role request
-    currentRound,
-    -- the index in the roll order that was already sent to the members
-    sentIndex,
     -- a map[playerName -> rollType] of the received answers to roll requests
     responses
 }
@@ -102,15 +98,22 @@ local function findWinnerByRollType(rollType)
 end
 
 local function announceWinner()
+    local currentRollOrder = RollSystem.currentRollOrder
+    local item = currentRollOrder.item
     for i, rollType in ipairs(RollTypes) do
         local winner = findWinnerByRollType(rollType)
         if (winner) then
-            local currentRollOrder = RollSystem.currentRollOrder
-            utils.sendGroupMessage(winner.." wins "..currentRollOrder.item:getLink())
-            assign(currentRollOrder.item, winner)
-            break
+            utils.sendGroupMessage(winner.." wins "..item:getLink())
+            assign(item, winner)
+            return
         end
     end
+    
+    ns.ConfirmDialog.open("No candidates on the priority list are active. Assign '"..item:getLink().."' randomly?", function(result)
+        if (result) then
+            RollSystem.rollCurrentItem()
+        end
+    end)
 end
 
 function RollSystem.evaluateResponse(event)
@@ -133,35 +136,30 @@ function RollSystem.evaluateResponse(event)
         -- evaluate the response
         local missingResponse = false
         local need = false
-        local currentRound = RollSystem.currentRound
+        local currentRound
         for index, entry in ipairs(currentRollOrder.rounds) do
             local round = entry[1]
-            if (round == currentRound) then
-                local playerName = entry[2]
-                local response = RollSystem.responses[playerName]
-                local player = ns.DB.PLAYER_LIST[playerName]
-                if (not response and player and
-                    player.needlist[currentRollOrder.item.itemId] and
-                    utils.isInRaid(playerName)) then
-                    missingResponse = true
-                    break
-                elseif (response == ROLL_NEED) then
-                    need = true
-                end
-            elseif (round > currentRound) then
+            -- break with the first need
+            if (need and currentRound and round > currentRound) then
                 break
+            end
+            currentRound = round
+            
+            local playerName = entry[2]
+            local response = RollSystem.responses[playerName]
+            local player = ns.DB.PLAYER_LIST[playerName]
+            if (not response and player and
+                player.needlist[currentRollOrder.item.itemId] and
+                utils.isInRaid(playerName)) then
+                missingResponse = true
+                break
+            elseif (response == ROLL_NEED) then
+                need = true
             end
         end
 
-        -- trigger the next rolling
         if (not missingResponse) then
-            local sentEvent
-            if (not need) then
-                sentEvent = ns.RollRequestEvent.send()
-            end
-            if (need or not sentEvent) then
-                announceWinner()
-            end
+            announceWinner()
         end
     end
 end

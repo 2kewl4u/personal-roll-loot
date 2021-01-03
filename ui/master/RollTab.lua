@@ -6,7 +6,6 @@ local ConfirmDialog = ns.ConfirmDialog
 local Instances = ns.Instances
 local ITEM_LIST = ns.ITEM_LIST
 local Players = ns.Players
-local RollSystem = ns.RollSystem
 local ScrollList = ns.ScrollList
 local utilsUI = ns.utilsUI
 
@@ -79,19 +78,8 @@ local function performItemRoll(index, button, itemId, item)
             local itemName = rollOrder.item:getName()
             rollItemField:SetText("Item: "..itemName)
             rollOrderScrollList:Update()
-            -- announce roll order
+            -- announce roll order and send the request to roll for the item
             ns.RollOrderEvent.broadcast(rollOrder)
-            -- send the request to roll for the item
-            local sentEvent = ns.RollRequestEvent.send()
-            if (not sentEvent) then
-                ns.ConfirmDialog.open("No candidates on the priority list are active. Assign '"..rollOrder.item:getLink().."' randomly?", function(result)
-                    if (result) then
-                        RollSystem.rollCurrentItem()
-                    end
-                end)
-                -- leaves the previous dialog open
-                return true
-            end
         end
     else
         print("> No active instance.")

@@ -9,8 +9,8 @@ local utils = ns.utils
 local EVENT_ID = "RollResponseEvent"
 
 ---
--- The RollResponseEvent is sent as a response to the RollRequestEvent containing the decision of
--- the player if he or she needs the item or not.
+-- The RollResponseEvent is sent by a player during roll selection containing
+-- the decision of the player if he or she needs the item or not.
 --
 local RollResponseEvent = {
     -- the eventId to identify the event type
@@ -100,10 +100,11 @@ end
 ---
 -- The event handler is called when a RollResponseEvent is received.
 --
--- If a player chooses need and all responses for that round were received, the roll process stops.
--- Otherwise a new RollRequestEvent wave is sent to all players of the next round.
+-- If a player chooses need and all responses for that round were received,
+-- the roll process stops.
 --
--- Additionally, when a player chooses remove, the item will be removed from his or her need-list.
+-- Additionally, when a player chooses remove, the item will be removed from
+-- his or her need-list.
 --
 ns.eventHandler[EVENT_ID] = function(message, sender)
     local event = RollResponseEvent.decode(message)

@@ -7,7 +7,6 @@ local Items = ns.Items
 local Players = ns.Players
 local Raids = ns.Raids
 local Roles = ns.Roles
-local RollSystem = ns.RollSystem
 local utils = ns.utils
 
 local MasterUI = ns.MasterUI

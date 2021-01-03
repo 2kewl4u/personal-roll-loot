@@ -84,7 +84,6 @@ function RollOrderEvent.broadcast(rollOrder)
         if (ns.DB.options.chatInteraction) then
             utils.sendGroupMessage("Respond with: (need/greed/pass/remove) + [ItemLink]")
         end
-
         Events.broadcast(RollOrderEvent.new(rollOrder))
     else
         print("> No active instance.")
@@ -101,7 +100,14 @@ ns.eventHandler[EVENT_ID] = function(message, sender)
         -- local playerName = UnitName("player")
         local event = RollOrderEvent.decode(message)
         if (event) then
-            ns.MemberUI.setRollOrder(event.rollOrder)
+            local rollOrder = event.rollOrder
+            ns.MemberUI.setRollOrder(rollOrder)
+            -- message contains the item to roll
+            local item = rollOrder.item
+            local playerName = UnitName("player")
+            if (item and rollOrder:contains(playerName)) then
+                ns.LootButton.setItem(item)
+            end
         end
     end
 end
