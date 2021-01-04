@@ -16,15 +16,16 @@ local RollSystem = {
     -- the roll order for the current item distribution
     currentRollOrder,
     -- a map[playerName -> rollType] of the received answers to roll requests
-    responses
+    responses,
+    -- if the item has been assigned
+    assigned = false
 }
 ns.RollSystem = RollSystem
 
 function RollSystem.setRollOrder(rollOrder)
     RollSystem.currentRollOrder = rollOrder
-    -- prepare protocol
-    RollSystem.sentIndex = 1
     RollSystem.responses = {}
+    RollSystem.assigned = false
 end
 
 local function getLootSlotIndex(item)
@@ -120,7 +121,6 @@ function RollSystem.evaluateResponse(event)
     local currentRollOrder = RollSystem.currentRollOrder
     if (currentRollOrder and event and
         not RollSystem.responses[event.sender] and
-        not utils.tblempty(currentRollOrder.rounds) and
         currentRollOrder.item.itemId == event.itemId) then
         
         RollSystem.responses[event.sender] = event.rollType
@@ -157,11 +157,19 @@ function RollSystem.evaluateResponse(event)
                 need = true
             end
         end
-
-        if (not missingResponse) then
+        
+        if (not missingResponse and not RollSystem.assigned) then
+            RollSystem.assigned = true
             announceWinner()
         end
     end
+end
+
+function RollSystem.initEvaluation()
+    local itemId = RollSystem.currentRollOrder.item.itemId
+    local event = ns.RollResponseEvent.new("", itemId, "pass")
+    event.sender = ""
+    RollSystem.evaluateResponse(event)
 end
 
 local function assignToRandomPlayer(slotIndex)

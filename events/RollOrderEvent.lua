@@ -85,6 +85,7 @@ function RollOrderEvent.broadcast(rollOrder)
             utils.sendGroupMessage("Respond with: (need/greed/pass/remove) + [ItemLink]")
         end
         Events.broadcast(RollOrderEvent.new(rollOrder))
+        ns.RollSystem.initEvaluation()
     else
         print("> No active instance.")
     end
