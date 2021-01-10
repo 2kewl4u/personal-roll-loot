@@ -8,13 +8,15 @@ local RAID_BLACKWING_LAIR = "Blackwing Lair"
 local RAID_ZUL_GURUB = "Zul'Gurub"
 local RAID_RUINS_AHN_QIRAJ = "Ruins of Ahn'Qiraj"
 local RAID_AHN_QIRAJ_TEMPLE = "Ahn'Qiraj Temple"
+local RAID_NAXXRAMAS = "Naxxramas"
 local RAIDS = {
     [RAID_MOLTEN_CORE] = 409,
     [RAID_ONYXIA] = 249,
     [RAID_BLACKWING_LAIR] = 469,
     [RAID_ZUL_GURUB] = 309,
     [RAID_RUINS_AHN_QIRAJ] = 509,
-    [RAID_AHN_QIRAJ_TEMPLE] = 531
+    [RAID_AHN_QIRAJ_TEMPLE] = 531,
+    [RAID_NAXXRAMAS] = 533
 }
 
 ---
