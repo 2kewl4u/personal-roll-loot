@@ -154,10 +154,12 @@ local function upgradeDatabase()
         })
     end
     if (dbVersion < 901) then
-        upgradePlayerItems()
         addMissingItems({
             22739 -- Tome of Polymorph: Turtle
         })
+    end
+    if (dbVersion < 10003) then
+        upgradePlayerItems()
     end
 end
 
