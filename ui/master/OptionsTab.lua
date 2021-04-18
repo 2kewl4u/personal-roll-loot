@@ -53,5 +53,16 @@ function OptionsTab.new(parentFrame)
         ns.DB.options.chatInteraction =  chatInteractionOptionButton:GetChecked()
     end)
     
+    local excludeLegendariesOptionButton = CreateFrame("CheckButton", nil, parentFrame, "UICheckButtonTemplate")
+    excludeLegendariesOptionButton:SetPoint("TOPLEFT", chatInteractionOptionButton, "BOTTOMLEFT", 0, 0)
+    excludeLegendariesOptionButton.text:SetFontObject("GameFontNormal")
+    excludeLegendariesOptionButton.text:SetText("exclude legendaries from the priority lists")
+    excludeLegendariesOptionButton:SetScript("OnShow", function()
+        excludeLegendariesOptionButton:SetChecked(ns.DB.options.excludeLegendaries or false)
+    end)
+    excludeLegendariesOptionButton:SetScript("OnClick", function()
+        ns.DB.options.excludeLegendaries =  excludeLegendariesOptionButton:GetChecked()
+    end)
+    
     return tab
 end

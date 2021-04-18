@@ -1199,7 +1199,8 @@ local ITEM_LIST = {
         tier = 1.5,
         replaceable = true,
         removable = true,
-        restricted = true
+        restricted = true,
+        legendary = true
     },
     [18203] = {
         itemId = 18203,
@@ -1224,7 +1225,8 @@ local ITEM_LIST = {
         tier = 1.5,
         replaceable = true,
         removable = true,
-        restricted = true
+        restricted = true,
+        legendary = true
     },
     [18646] = {
         itemId = 18646,
@@ -8559,7 +8561,8 @@ local ITEM_LIST = {
         tier = 3.5,
         replaceable = true,
         removable = true,
-        repeatable = true
+        repeatable = true,
+        legendary = true
     },
     [22798] = {
         itemId = 22798,

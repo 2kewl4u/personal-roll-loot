@@ -7,7 +7,9 @@ local Options = {
     -- if junk items should be automatically rolled between raid or party members 
     rollJunkItems,
     -- if chat interaction via whisper and party chat should be enabled
-    chatInteraction
+    chatInteraction,
+    -- if legendaries should be excluded from the priority lists
+    excludeLegendaries
 }
 ns.Options = Options
 
@@ -16,5 +18,6 @@ function Options.new()
     self.markNewPlayersAsTrial = true
     self.rollJunkItems = false
     self.chatInteraction = false
+    self.excludeLegendaries = false
     return self
 end

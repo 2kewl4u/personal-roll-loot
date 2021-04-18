@@ -6,3 +6,4 @@
 - sound effect during role check
 - low prio items may be always removed
 - consider class specific junk items
+- add search / filter for lists

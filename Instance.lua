@@ -111,7 +111,10 @@ local function createLootList(instance, player)
 
     -- create a loot list
     for itemId, item in pairs(ITEM_LIST) do
-        if (item.raids[instance.raid] and player:needsItem(item)) then
+        -- check exclusion filter
+        if (not(ns.DB.options.excludeLegendaries and item.legendary) and
+            item.raids[instance.raid] and player:needsItem(item)) then
+            
             if (not customPrioItems[itemId]) then
                 local priority = item:getPriority(player)
                 local items = itemsPerPriority[priority] or {}
