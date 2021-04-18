@@ -4,6 +4,9 @@ local _, ns = ...;
 -- imports
 local utils = ns.utils
 
+-- for testing purposes
+local DUNGEON_RAGE_FIRE = "Ragefire Chasm"
+
 -- raids
 local RAID_MOLTEN_CORE = "Molten Core"
 local RAID_ONYXIA = "Onyxia's Lair"
@@ -19,7 +22,8 @@ local RAIDS = {
     [RAID_ZUL_GURUB] = 309,
     [RAID_RUINS_AHN_QIRAJ] = 509,
     [RAID_AHN_QIRAJ_TEMPLE] = 531,
-    [RAID_NAXXRAMAS] = 533
+    [RAID_NAXXRAMAS] = 533,
+    [DUNGEON_RAGE_FIRE] = 389
 }
 
 local shortNames = {
@@ -50,7 +54,7 @@ local Raids = {}
 Raids.getCurrentInstance = function()
     local name, type, difficultyIndex, difficultyName, maxPlayers,
         dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo()
-    if (instanceMapId and (maxPlayers == 20 or maxPlayers == 40)) then
+    if (instanceMapId and (maxPlayers == 20 or maxPlayers == 40 or maxPlayers == 5)) then
         for raid, raidId in pairs(RAIDS) do
             if (instanceMapId == raidId) then
                 return raid

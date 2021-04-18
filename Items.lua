@@ -58,8 +58,99 @@ local RAID_RUINS_AHN_QIRAJ = "Ruins of Ahn'Qiraj"
 local RAID_AHN_QIRAJ_TEMPLE = "Ahn'Qiraj Temple"
 local RAID_NAXXRAMAS = "Naxxramas"
 
+-- for testing purposes
+local DUNGEON_RAGE_FIRE = "Ragefire Chasm"
+
 -- the item list
 local ITEM_LIST = {
+    -- RAGE FIRE - for testing
+    [14145] = {
+        itemId = 14145,
+        name = "Cursed Felblade",
+        roles = { [ROLE_PROT_PALADIN] = 1, [ROLE_PROT_WARRIOR] = 1, [ROLE_HUNTER] = 2, [ROLE_ROGUE] = 1,
+            [ROLE_RETRI_PALADIN] = 3, [ROLE_ARMS_WARRIOR] = 1 },
+        classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true },
+        raids = { [DUNGEON_RAGE_FIRE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 2,
+        tier = 0,
+        replaceable = true,
+        removable = true
+    },
+    [14147] = {
+        itemId = 14147,
+        name = "Cavedweller Bracers",
+        roles = { [ROLE_PROT_PALADIN] = 1, [ROLE_PROT_WARRIOR] = 1, [ROLE_HOLY_PALADIN] = 2, [ROLE_RETRI_PALADIN] = 1,
+            [ROLE_ARMS_WARRIOR] = 1 },
+        classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true },
+        raids = { [DUNGEON_RAGE_FIRE] = true },
+        slot = SLOT_WRIST,
+        slotSize = 1,
+        tier = 0,
+        replaceable = true,
+        removable = false
+    },
+    [14148] = {
+        itemId = 14148,
+        name = "Crystalline Cuffs",
+        roles = { [ROLE_HOLY_PRIEST] = 1, [ROLE_RESTO_DRUID] = 2, [ROLE_HOLY_PALADIN] = 2, [ROLE_RESTO_SHAMAN] = 2,
+            [ROLE_ELEMENTAL_SHAMAN] = 2, [ROLE_BALANCE_DRUID] = 2, [ROLE_SHADOW_PRIEST] = 1, [ROLE_MAGE] = 1,
+            [ROLE_WARLOCK] = 1 },
+        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true,
+            [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+        raids = { [DUNGEON_RAGE_FIRE] = true },
+        slot = SLOT_WRIST,
+        slotSize = 1,
+        tier = 0,
+        replaceable = true,
+        removable = false
+    },
+    [14149] = {
+        itemId = 14149,
+        name = "Subterranean Cape",
+        roles = { [ROLE_PROT_PALADIN] = 1, [ROLE_PROT_WARRIOR] = 1, [ROLE_GUARDIAN_DRUID] = 1, [ROLE_HUNTER] = 1,
+            [ROLE_ROGUE] = 1, [ROLE_FERAL_DRUID] = 1, [ROLE_ENHANCEMENT_SHAMAN] = 1, [ROLE_RETRI_PALADIN] = 1,
+            [ROLE_ARMS_WARRIOR] = 1 },
+        classes = { [CLASS_WARRIOR] = true, [CLASS_PALADIN] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true,
+            [CLASS_SHAMAN] = true, [CLASS_DRUID] = true },
+        raids = { [DUNGEON_RAGE_FIRE] = true },
+        slot = SLOT_BACK,
+        slotSize = 1,
+        tier = 0,
+        replaceable = true,
+        removable = false
+    },
+    [14150] = {
+        itemId = 14150,
+        name = "Robe of Evocation",
+        roles = { [ROLE_HOLY_PRIEST] = 1, [ROLE_RESTO_DRUID] = 2, [ROLE_HOLY_PALADIN] = 2, [ROLE_RESTO_SHAMAN] = 2,
+            [ROLE_ELEMENTAL_SHAMAN] = 2, [ROLE_BALANCE_DRUID] = 2, [ROLE_SHADOW_PRIEST] = 1, [ROLE_MAGE] = 1,
+            [ROLE_WARLOCK] = 1 },
+        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true,
+            [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
+        raids = { [DUNGEON_RAGE_FIRE] = true },
+        slot = SLOT_CHEST,
+        slotSize = 1,
+        tier = 0,
+        replaceable = true,
+        removable = false
+    },
+    [14151] = {
+        itemId = 14151,
+        name = "Chanting Blade",
+        roles = { [ROLE_PROT_PALADIN] = 2, [ROLE_PROT_WARRIOR] = 2, [ROLE_GUARDIAN_DRUID] = 1, [ROLE_HUNTER] = 2,
+            [ROLE_RESTO_SHAMAN] = 3, [ROLE_ROGUE] = 1, [ROLE_FERAL_DRUID] = 1, [ROLE_ENHANCEMENT_SHAMAN] = 1,
+            [ROLE_ARMS_WARRIOR] = 1 },
+        classes = { [CLASS_WARRIOR] = true, [CLASS_HUNTER] = true, [CLASS_ROGUE] = true, [CLASS_SHAMAN] = true,
+            [CLASS_DRUID] = true },
+        raids = { [DUNGEON_RAGE_FIRE] = true },
+        slot = SLOT_MAIN_HAND,
+        slotSize = 1,
+        tier = 0,
+        replaceable = true,
+        removable = true
+    },
+
     -- MOLTEN CORE
     [16795] = {
         itemId = 16795,
@@ -10657,24 +10748,6 @@ local ITEM_LIST = {
 --        removable = true
 --    },
     
-
--- for testing purposes
-
---    [2589] = {
---        itemId = 2589,
---        name = "Linen Cloth",
---        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
---        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
---        raids = { [RAID_MOLTEN_CORE] = true },
---        swallows = { 2592 }
---    },
---    [2592] = {
---        itemId = 2592,
---        name = "Wool Cloth",
---        roles = { [ROLE_HEALER] = true, [ROLE_CASTER_DPS] = true },
---        classes = { [CLASS_PALADIN] = true, [CLASS_SHAMAN] = true, [CLASS_DRUID] = true, [CLASS_PRIEST] = true, [CLASS_WARLOCK] = true, [CLASS_MAGE] = true },
---        raids = { [RAID_MOLTEN_CORE] = true }
---    }
 
 }
 
