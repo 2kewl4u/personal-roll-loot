@@ -112,7 +112,7 @@ function RollTab.new(parentFrame)
         if (ns.DB.activeInstance) then
             local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
             if (instance) then
-                return item:dropsIn(instance.raid) and instance.history[item.itemId]
+                return item:dropsIn(instance.raids) and instance.history[item.itemId]
             end
         end
     end)

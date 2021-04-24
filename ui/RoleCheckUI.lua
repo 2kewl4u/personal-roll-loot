@@ -21,7 +21,7 @@ local ITEM_LIST = ns.ITEM_LIST
 
 -- the player info
 local player
-local raid
+local raids
 local itemList = {}
 local prio = 0
 
@@ -30,7 +30,7 @@ local function updateItemList()
     local itemsToBeAdded = {}
     if (player) then
         for itemId, item in pairs(ITEM_LIST) do
-            if (item:dropsIn(raid) and player:needsItem(item)) then
+            if (item:dropsIn(raids) and player:needsItem(item)) then
                 itemsToBeAdded[itemId] = item
             end
         end
@@ -289,7 +289,7 @@ end
 
 RoleCheckUI.open = function(event)
     if (event) then
-        raid = event.raid
+        raids = event.raids
         prio = event.prio
         enablePriorityButtons()
         roleCheckFrame:Show()

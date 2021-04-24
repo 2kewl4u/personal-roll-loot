@@ -122,11 +122,8 @@ local function upgradePlayerItems()
         -- if the need-list for the raid is empty, we fill all class items
         if (not utils.tblempty(raids)) then
             for itemId, item in pairs(ITEM_LIST) do
-                for raid in pairs(raids) do
-                    if (item:dropsIn(raid) and item:isForClass(player.class)) then
-                        player.needlist[itemId] = true
-                        break
-                    end
+                if (item:dropsIn(raids) and item:isForClass(player.class)) then
+                    player.needlist[itemId] = true
                 end
             end
         end

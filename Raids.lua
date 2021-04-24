@@ -1,6 +1,9 @@
 -- namespace
 local _, ns = ...;
 
+-- imports
+local utils = ns.utils
+
 -- raids
 local RAID_MOLTEN_CORE = "Molten Core"
 local RAID_ONYXIA = "Onyxia's Lair"
@@ -17,6 +20,16 @@ local RAIDS = {
     [RAID_RUINS_AHN_QIRAJ] = 509,
     [RAID_AHN_QIRAJ_TEMPLE] = 531,
     [RAID_NAXXRAMAS] = 533
+}
+
+local shortNames = {
+    [RAID_MOLTEN_CORE] = "mc",
+    [RAID_ONYXIA] = "ony",
+    [RAID_BLACKWING_LAIR] = "bwl",
+    [RAID_ZUL_GURUB] = "zg",
+    [RAID_RUINS_AHN_QIRAJ] = "aq20",
+    [RAID_AHN_QIRAJ_TEMPLE] = "aq40",
+    [RAID_NAXXRAMAS] = "naxx"
 }
 
 ---
@@ -58,6 +71,36 @@ Raids.isInRaidInstance = function()
         return true
     else
         return false
+    end
+end
+
+---
+-- Returns a short name for the given raid name.
+-- 
+-- @param #string raid
+--          the name of the raid instance, e.g. Molten Core
+-- 
+-- @return #string
+--          a short name for the raid, e.g. mc
+-- 
+Raids.getShortName = function(raid)
+    return shortNames[raid] or raid
+end
+
+---
+-- Returns a text representation of the given raids.
+-- 
+-- @param #set raids
+--          a set of raid names
+-- 
+-- @return #string
+--          a text representation of the raids
+-- 
+Raids.toString = function(raids)
+    if (utils.tblsize(raids) < 2) then
+        return select(1, next(raids))
+    else
+        return utils.toCSV(raids, Raids.getShortName, ", ")
     end
 end
 

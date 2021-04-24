@@ -94,7 +94,7 @@ local COMMANDS = {
     ["create-instance"] = function(arg)
         arg = arg or ""
         local name, raidName = strsplit(" ", arg, 2)
-        Instances.create(name, raidName)
+        Instances.create(name, { [raidName] = true })
     end,
     ["delete-instance"] = Instances.delete,
 

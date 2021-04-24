@@ -2,6 +2,7 @@
 local _, ns = ...;
 -- imports
 local ITEM_LIST = ns.ITEM_LIST
+local Raids = ns.Raids
 local utils = ns.utils
 
 ---
@@ -11,8 +12,8 @@ local utils = ns.utils
 local Instance = {
     -- the name of the instance
     name,
-    -- the name of the raid, e.g. Molten Core
-    raid,
+    -- a set of raid names, e.g. Molten Core
+    raids,
     -- the custom priority level
     prio,
     -- the date and time this instance was created
@@ -32,18 +33,18 @@ ns.Instance = Instance
 -- 
 -- @param #string name
 --          the name of the instance
--- @param #string raid
---          the name of the raid, e.g. Molten Core
+-- @param #string raids
+--          a set of raid names, e.g. Molten Core
 -- @param #number prio
 --          the custom priority level, defaults to 0
 -- 
 -- @return #Instance
 --          the new Instance
 --          
-function Instance.new(name, raid, prio)
+function Instance.new(name, raids, prio)
     local self = setmetatable({}, Instance)
     self.name = name
-    self.raid = raid
+    self.raids = raids
     self.prio = prio or 0
     self.created = date("%y-%m-%d %H:%M:%S")
     self.players = {}
@@ -64,7 +65,6 @@ end
 function Instance.copy(instance)
     local copy = setmetatable({}, Instance)
     copy.name = instance.name
-    copy.raid = instance.raid
     copy.prio = instance.prio or 0
     copy.created = instance.created
     copy.history = utils.copy(instance.history) or {}
@@ -72,6 +72,12 @@ function Instance.copy(instance)
     copy.players = {}
     for name, list in pairs(instance.players) do
         copy.players[name] = utils.copy(list)
+    end
+    if (instance.raid) then
+        -- backwards compatibility since raid was a single raid string before
+        copy.raids = { [instance.raid] = true }
+    else
+        copy.raids = instance.raids
     end
     return copy
 end
@@ -100,7 +106,7 @@ local function createLootList(instance, player)
         local items = {}
         for index, itemId in ipairs(rolecheck.prioItems or {}) do
             local item = ITEM_LIST[itemId]
-            if (item and item.raids[instance.raid] and player:needsItem(item)) then
+            if (item and item:dropsIn(instance.raids) and player:needsItem(item)) then
                 table.insert(items, itemId)
                 customPrioItems[itemId] = true
             end
@@ -113,7 +119,7 @@ local function createLootList(instance, player)
     for itemId, item in pairs(ITEM_LIST) do
         -- check exclusion filter
         if (not(ns.DB.options.excludeLegendaries and item.legendary) and
-            item.raids[instance.raid] and player:needsItem(item)) then
+            item:dropsIn(instance.raids) and player:needsItem(item)) then
             
             if (not customPrioItems[itemId]) then
                 local priority = item:getPriority(player)
@@ -192,7 +198,7 @@ end
 function Instance:print()
     local instance = self
     print("> Instance '"..instance.name.."':")
-    print("  Raid: '"..instance.raid.."'")
+    print("  Raid: '"..Raids.toString(instance.raids).."'")
     print("  Prio: '"..tostring(instance.prio).."'")
     print("  created: "..instance.created)
 end

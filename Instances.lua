@@ -15,37 +15,41 @@ local Instances = {}
 ns.Instances = Instances
 
 ---
--- Creates a new instance for the given raid with the given name.
+-- Creates a new instance for the given raids with the given name.
 --
 -- @param #string name
 --          the name of the instance
--- @param #string raid
---          the name of the raid instance, e.g. Molten Core
+-- @param #string raids
+--          a set of raids for the instance, e.g. Molten Core
 -- @param #number prio
 --          the custom priority level, defaults to 0
 --
 -- @return #Instance
 --          the new instance or nil
 --
-Instances.create = function(name, raid, prio)
+Instances.create = function(name, raids, prio)
     name = name or ""
     if (strlen(name) < 1) then
         print("> Invalid instance name '"..name.."'.")
     else
-        if (not raid) then
+        if (utils.tblempty(raids)) then
             print("> No raid name specified.")
         else
-            if (not RAIDS[raid]) then
-                print("> No raid with the name '"..raid.."' found.")
-            else
-                if (ns.DB.INSTANCE_LIST[name]) then
-                    print("> An instance with the name '"..name.."' is already registered.")
-                else
-                    local instance = Instance.new(name, raid, prio)
-                    ns.DB.INSTANCE_LIST[name] = instance
-                    print("> Created new instance '"..name.."'.")
-                    return instance
+            for raid in pairs(raids) do
+                if (not RAIDS[raid]) then
+                    print("> No raid with the name '"..raid.."' found.")
+                    -- abort the process
+                    return
                 end
+            end
+            
+            if (ns.DB.INSTANCE_LIST[name]) then
+                print("> An instance with the name '"..name.."' is already registered.")
+            else
+                local instance = Instance.new(name, raids, prio)
+                ns.DB.INSTANCE_LIST[name] = instance
+                print("> Created new instance '"..name.."'.")
+                return instance
             end
         end
     end

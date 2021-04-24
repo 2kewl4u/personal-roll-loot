@@ -151,7 +151,7 @@ end
 -- 
 -- @param #widget owner
 --          the button or widget to append the tooltip to
--- @param #string text
+-- @param #(string or function) text
 --          the text to be displayed in the tooltip
 -- @param #string anchor
 --          the anchor point at the widget (optional)
@@ -159,8 +159,14 @@ end
 utilsUI.addTooltipText = function(owner, text, anchor)
     anchor = anchor or "ANCHOR_BOTTOMRIGHT"
     owner:SetScript("OnEnter", function()
+        local tooltiptext
+        if (type(text) == "string") then
+            tooltiptext = text
+        else
+            tooltiptext = text() or ""
+        end
         GameTooltip:SetOwner(owner, anchor)
-        GameTooltip:SetText(text, 0.8, 0.6, 0)
+        GameTooltip:SetText(tooltiptext, 0.8, 0.6, 0)
     end)
     owner:SetScript("OnLeave", utilsUI.hideTooltip)
 end

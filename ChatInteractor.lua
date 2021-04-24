@@ -88,7 +88,7 @@ commandHandlers["list"] = function(msg, player)
                     local item = ITEM_LIST[itemId]
                     if (item
                         and (slot == item.slot or slot == 0 and not item.slot)
-                        and item.raids[instance.raid]
+                        and item:dropsIn(instance.raids)
                         and player:needsItem(item)
                         ) then
 

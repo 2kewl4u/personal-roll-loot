@@ -6,7 +6,9 @@ local ConfirmDialog = ns.ConfirmDialog
 local Instances = ns.Instances
 local Players = ns.Players
 local RAIDS = ns.RAIDS
+local Raids = ns.Raids
 local ScrollList = ns.ScrollList
+local utils = ns.utils
 local utilsUI = ns.utilsUI
 
 local COLUMN_WIDTH = utilsUI.COLUMN_WIDTH
@@ -21,6 +23,7 @@ local SPACING = utilsUI.SPACING
 -- UI components
 local instanceNameField
 local instanceRaidField
+local instanceRaidFieldButton
 local instanceCreatedField
 local instancePrioField
 local instancePlayersScrollList
@@ -32,7 +35,7 @@ local function updateInstanceFields()
         local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
         if (instance) then
             instanceNameField:SetText("Instance: "..instance.name)
-            instanceRaidField:SetText("Raid: "..instance.raid)
+            instanceRaidField:SetText("Raid: "..Raids.toString(instance.raids))
             instancePrioField:SetText("Prio: "..tostring(instance.prio))
             instanceCreatedField:SetText(instance.created)
         end
@@ -82,14 +85,21 @@ function InstancesTab.new(parentFrame)
     local newInstanceRaidDropDown = CreateFrame("Frame", nil, parentFrame, "UIDropDownMenuTemplate")
     newInstanceRaidDropDown:SetPoint("TOPLEFT", newInstanceEditBox, "BOTTOMLEFT", -23, -SPACING)
     newInstanceRaidDropDown:SetHeight(25)
+    newInstanceRaidDropDown.value = {}
     UIDropDownMenu_SetWidth(newInstanceRaidDropDown, 145) -- Use in place :SetWidth
     UIDropDownMenu_Initialize(newInstanceRaidDropDown, function(self, level, menuList)
-        local menuItem = UIDropDownMenu_CreateInfo()
         for raid in pairs(RAIDS) do
+            local menuItem = UIDropDownMenu_CreateInfo()
             menuItem.text = raid
+            menuItem.isNotRadio = true
+            menuItem.checked = function()
+                return newInstanceRaidDropDown.value[raid] == true
+            end
             menuItem.func = function()
-                newInstanceRaidDropDown.value = raid
-                UIDropDownMenu_SetText(newInstanceRaidDropDown, raid)
+                local raids = newInstanceRaidDropDown.value
+                -- toggle: nil -> true or true -> nil
+                raids[raid] = raids[raid] == nil or nil
+                UIDropDownMenu_SetText(newInstanceRaidDropDown, Raids.toString(raids))
             end
             UIDropDownMenu_AddButton(menuItem)
         end
@@ -100,10 +110,13 @@ function InstancesTab.new(parentFrame)
     prioSystemDropDown:SetHeight(25)
     UIDropDownMenu_SetWidth(prioSystemDropDown, 145) -- Use in place :SetWidth
     UIDropDownMenu_Initialize(prioSystemDropDown, function(self, level, menuList)
-        local menuItem = UIDropDownMenu_CreateInfo()
         for i = 0, 3 do
+            local menuItem = UIDropDownMenu_CreateInfo()
             local name = "prio-"..tostring(i)
             menuItem.text = name
+            menuItem.checked = function()
+                return prioSystemDropDown.value == i
+            end
             menuItem.func = function()
                 prioSystemDropDown.value = i
                 UIDropDownMenu_SetText(prioSystemDropDown, name)
@@ -121,9 +134,9 @@ function InstancesTab.new(parentFrame)
     addInstanceButton:SetText("Add Instance")
     addInstanceButton:SetScript("OnClick", function()
         local name = newInstanceEditBox:GetText()
-        local raid = newInstanceRaidDropDown.value
-        if (name and raid) then
-            Instances.create(name, raid, prioSystemDropDown.value)
+        local raids = newInstanceRaidDropDown.value
+        if (name and not utils.tblempty(raids)) then
+            Instances.create(name, raids, prioSystemDropDown.value)
             instanceScrollList:Update()
             -- clear name
             newInstanceEditBox:SetText("")
@@ -142,11 +155,20 @@ function InstancesTab.new(parentFrame)
     instanceRaidField:SetFontObject("GameFontHighlightLEFT")
     instanceRaidField:SetText("Raid:")
     instanceRaidField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
+    local instanceRaidFieldButton = CreateFrame("Button", nil, parentFrame)
+    instanceRaidFieldButton:SetPoint("TOPLEFT", instanceNameField, "BOTTOMLEFT", 0, 0)
+    instanceRaidFieldButton:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
+    utilsUI.addTooltipText(instanceRaidFieldButton, function()
+        local instance = ns.DB.INSTANCE_LIST[ns.DB.activeInstance]
+        if (instance) then
+            return utils.toCSV(instance.raids, tostring, "\n")
+        end
+    end)
     
     instancePrioField = parentFrame:CreateFontString(nil, "OVERLAY")
     instancePrioField:SetPoint("TOPLEFT", instanceRaidField, "BOTTOMLEFT", 0, 0)
     instancePrioField:SetFontObject("GameFontHighlightLEFT")
-    instanceRaidField:SetText("Prio:")
+    instancePrioField:SetText("Prio:")
     instancePrioField:SetSize(COLUMN_WIDTH, TEXT_FIELD_HEIGHT)
     
     instanceCreatedField = parentFrame:CreateFontString(nil, "OVERLAY")

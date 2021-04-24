@@ -16,8 +16,8 @@ local EVENT_ID = "RoleCheckEvent"
 local RoleCheckEvent = {
     -- the eventId to identify the event type
     eventId = EVENT_ID,
-    -- the raid name of the currently active raid, e.g. Molten Core
-    raid,
+    -- a set of currently active raids, e.g. Molten Core
+    raids,
     -- the custom priority level
     prio
 }
@@ -25,21 +25,21 @@ RoleCheckEvent.__index = RoleCheckEvent
 ns.RoleCheckEvent = RoleCheckEvent
 
 ---
--- Creates a new RoleCheckEvent with the given player and raid name.
+-- Creates a new RoleCheckEvent with the given player and raid names.
 -- 
 -- @param #Player player
 --          the player to which the role check will be sent
--- @param #string raid
---          the name of the raid, e.g. Molten Core
+-- @param #set raids
+--          a set of raid names, e.g. Molten Core
 -- @param #number prio
 --          the custom priority level
 --          
 -- @return #RoleCheckEvent
 --          the new event
 -- 
-function RoleCheckEvent.new(raid, prio)
+function RoleCheckEvent.new(raids, prio)
     local self = setmetatable({}, RoleCheckEvent)
-    self.raid = raid
+    self.raids = raids
     self.prio = prio or 0
     return self
 end
@@ -54,7 +54,8 @@ end
 --          
 function RoleCheckEvent:encode()
     local event = self
-    return event.raid..";"..tostring(event.prio)
+    local raids = utils.toCSV(event.raids, tostring, ",")
+    return raids..";"..tostring(event.prio)
 end
 
 ---
@@ -69,10 +70,21 @@ end
 -- 
 function RoleCheckEvent.decode(encoded)
     if (encoded) then
-        local raid, prio = strsplit(";", encoded, 2)
+        local raidsEncoded, prio = strsplit(";", encoded, 2)
+        local raids = utils.fromCSV(raidsEncoded, function(list, element)
+            list[element] = true
+        end, ",")
         prio = tonumber(prio) or 0
-        if (ns.RAIDS[raid]) then
-            return RoleCheckEvent.new(raid, prio)
+        
+        -- check raid validity
+        for raid in pairs(raids) do
+            if (not ns.RAIDS[raid]) then
+                raids[raid] = nil -- invalid input
+            end
+        end
+        
+        if (not utils.tblempty(raids)) then
+            return RoleCheckEvent.new(raids, prio)
         end
     end
 end
@@ -92,7 +104,7 @@ function RoleCheckEvent.broadcast()
                     utils.sendGroupMessage("specify prio: !prl prio [ItemLink1]...")
                 end
                 
-                Events.broadcast(RoleCheckEvent.new(instance.raid, instance.prio))
+                Events.broadcast(RoleCheckEvent.new(instance.raids, instance.prio))
             else
                 print("> Unknown instance '"..ns.DB.activeInstance.."'.")
             end
