@@ -1,6 +1,7 @@
 -- namespace
 local _, ns = ...;
 -- imports
+local DelayTimer = ns.DelayTimer
 local Events = ns.Events
 local Player = ns.Player
 local utils = ns.utils
@@ -71,28 +72,7 @@ function SyncInfoEvent.decode(encoded)
 end
 
 -- set a delay in seconds until sending again a sync request or info
-local SYNC_DELAY = 90
-local syncRequestTimes
-
----
--- Checks whether the given sender or receiver of the event is allowed to receive another event.
--- The delay is necessary since a lot of data will be transfered.
--- 
--- @param #string sender
---          the sender or receiver of the event
--- 
--- @return #boolean
---          true if the sender is blocked, false if the sender is allowed to receive an event
---
-local function isSyncDelay()
-    local lastSent = syncRequestTimes
-    local now = time()
-    local delay = lastSent and ((now - lastSent) < SYNC_DELAY)
-    if (not delay) then
-        syncRequestTimes = now
-    end
-    return delay
-end
+local syncDelay = DelayTimer.new(90)
 
 ---
 -- Sends a SyncInfoEvent containing the current player configuration to the
@@ -100,8 +80,8 @@ end
 -- 
 function SyncInfoEvent.broadcast()
     if (IsInGroup() and UnitIsGroupLeader("player")) then
-        if (isSyncDelay()) then
-            print("> Cannot send to many synchronize events. Please wait "..SYNC_DELAY.." seconds.")
+        if (syncDelay:isDelay()) then
+            print("> Cannot send to many synchronize events. Please wait "..syncDelay.delay.." seconds.")
         else
             print("> Sending synchronize event to party.")
             Events.broadcast(SyncInfoEvent.new(ns.DB.PLAYER_LIST))
@@ -118,13 +98,10 @@ end
 -- 
 ns.eventHandler[EVENT_ID] = function(message, sender)
         -- only accept sync info from raid/group leader
-    print("received event from "..sender)
     local playerName = UnitName("player")
     if (IsInGroup() and utils.isGroupLeader(sender) and playerName ~= sender) then
-        print("decoding event")
         local event = SyncInfoEvent.decode(message)
         if (event) then
-            print("open confirm")
             ns.ConfirmDialog.open("Got synchronize info from party leader '"..sender.."'. Would you like to merge the configuration?", function(result)
                 if (result) then
                     local syncCount = 0

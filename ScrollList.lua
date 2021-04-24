@@ -21,6 +21,7 @@ ns.ScrollList = {
 local ScrollList = ns.ScrollList
 ScrollList.__index = ScrollList
 
+
 ---
 -- Returns the items to be displayed in the ScrollList obtained from the content
 -- provider, filtered and then sorted accordingly.
@@ -34,9 +35,13 @@ ScrollList.__index = ScrollList
 local function getItems(self)
     local items = self.contentProvider()
     -- filter the items
+    local searchText = ""
+    if (self.searchBar) then
+        searchText = self.searchBar:GetText()
+    end
     local filteredItems = {}
     for key, value in pairs(items) do
-        if (self.filter(key, value) == true) then
+        if (self.filter(key, value, searchText) == true) then
             filteredItems[key] = value
         end
     end
@@ -73,36 +78,34 @@ local function updateScrollFrame(self)
     for index, entry in ipairs(items) do
         local key = entry[1]
         local value = entry[2]
-        if (self.filter(key, value) == true) then
-            local lineminusoffset = line - offset
-            if (lineminusoffset >= numToDisplay) then break end
-            if (line >= offset and lineminusoffset <= numToDisplay) then
+        local lineminusoffset = line - offset
+        if (lineminusoffset >= numToDisplay) then break end
+        if (line >= offset and lineminusoffset <= numToDisplay) then
+            local button = self.buttons[lineminusoffset + 1]
+            if (button) then
+                local text, disabled = self.labelProvider(key, value, button)
+                button:SetText(tostring(text or ""))
+                if (disabled) then
+                    button:SetNormalFontObject("GameFontDisableLeft")
+                else
+                    button:SetNormalFontObject("GameFontHighlightLeft")
+                end
+                button:Show()
+                button.item = { key = key, value = value }
+                -- notify that the button got visible
+                local script = self.buttonScript["OnUpdate"]
+                if (script) then script(button.index, button, key, value) end
+            end
+        else
+            if (lineminusoffset >= 0 and lineminusoffset < numToDisplay) then
                 local button = self.buttons[lineminusoffset + 1]
                 if (button) then
-                    local text, disabled = self.labelProvider(key, value, button)
-                    button:SetText(tostring(text or ""))
-                    if (disabled) then
-                        button:SetNormalFontObject("GameFontDisableLeft")
-                    else
-                        button:SetNormalFontObject("GameFontHighlightLeft")
-                    end
-                    button:Show()
-                    button.item = { key = key, value = value }
-                    -- notify that the button got visible
-                    local script = self.buttonScript["OnUpdate"]
-                    if (script) then script(button.index, button, key, value) end
-                end
-            else
-                if (lineminusoffset >= 0 and lineminusoffset < numToDisplay) then
-                    local button = self.buttons[lineminusoffset + 1]
-                    if (button) then
-                        button:Hide()
-                        button.item = nil
-                    end
+                    button:Hide()
+                    button.item = nil
                 end
             end
-            line = line + 1
         end
+        line = line + 1
     end
 
     -- hide unused items
@@ -130,8 +133,10 @@ end
 --          the number of buttons to be displayed
 -- @param #string buttonTemplate
 --          a template used for the buttons
+-- @param #boolean showSearchBar
+--          if a search bar should appear on top of the list
 -- 
-function ScrollList.new(globalName, parentFrame, numToDisplay, buttonTemplate)
+function ScrollList.new(globalName, parentFrame, numToDisplay, buttonTemplate, showSearchBar)
     local self = setmetatable({}, ScrollList)
     local list = self
     self.numToDisplay = numToDisplay
@@ -146,6 +151,19 @@ function ScrollList.new(globalName, parentFrame, numToDisplay, buttonTemplate)
 
     frame.list = self
     self.frame = frame
+    
+    if (showSearchBar) then
+        local searchBar = CreateFrame("EditBox", nil, parentFrame, "SearchBoxTemplate")
+        searchBar:SetPoint("TOP", frame, "TOP", 0, 22)
+        searchBar:SetPoint("LEFT", frame, "LEFT", 5, 0)
+        searchBar:SetPoint("RIGHT", frame, "RIGHT", 0, 0)
+        searchBar:SetPoint("BOTTOM", frame, "TOP", 0, 0)
+        searchBar:SetScript("OnTextChanged", function()
+            updateScrollFrame(self)
+            SearchBoxTemplate_OnTextChanged(searchBar)
+        end)
+        self.searchBar = searchBar
+    end
 
     -- create the buttons within the frame
     local buttons = {}

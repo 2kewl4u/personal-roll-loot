@@ -70,7 +70,7 @@ function PlayersTab.new(parentFrame)
     -- role buttons
     for roleIndex = 1, 4, 1 do
         local roleButton = CreateFrame("CheckButton", nil, parentFrame, "PersonalLootRoleButton")
-        roleButton:SetPoint("TOPLEFT", playerNameField, "BOTTOMLEFT", 0, (-SPACING - TEXT_FIELD_HEIGHT * (roleIndex - 1)))
+        roleButton:SetPoint("TOPLEFT", playerNameField, "BOTTOMLEFT", 0, (-TEXT_FIELD_HEIGHT * (roleIndex - 1)))
         roleButton.text:SetFontObject("GameFontNormal")
         roleButton:SetScript("OnClick", function()
             local player = tab.player
@@ -93,7 +93,7 @@ function PlayersTab.new(parentFrame)
     tab:updateRoleButtons()
     
     local trialButton = CreateFrame("CheckButton", nil, parentFrame, "UICheckButtonTemplate")
-    trialButton:SetPoint("TOPLEFT", playerNameField, "BOTTOMLEFT", 0, (-MARGIN - TEXT_FIELD_HEIGHT * 4))
+    trialButton:SetPoint("TOPLEFT", playerNameField, "BOTTOMLEFT", 0, (-TEXT_FIELD_HEIGHT * 4))
     trialButton.text:SetFontObject("GameFontNormal")
     trialButton.text:SetText("Trial")
     trialButton:SetScript("OnClick", function()
@@ -109,7 +109,7 @@ function PlayersTab.new(parentFrame)
     
     
     -- item list
-    local playerItemScrollList = ScrollList.new("PersonalRollLootPlayerItemListScrollFrame", parentFrame, 6, "PersonalLootItemButtonTemplate")
+    local playerItemScrollList = ScrollList.new("PersonalRollLootPlayerItemListScrollFrame", parentFrame, 6, "PersonalLootItemButtonTemplate", true)
     playerItemScrollList:SetPoint("BOTTOMLEFT", parentFrame, "BOTTOMLEFT", WINDOW_WIDTH / 2 + SPACING, TEXT_FIELD_HEIGHT + MARGIN + SPACING)
     playerItemScrollList:SetSize(COLUMN_WIDTH, 6 * ITEM_BUTTON_HEIGHT + SPACING)
     playerItemScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
@@ -134,10 +134,10 @@ function PlayersTab.new(parentFrame)
             playerItemScrollList:Update()
         end
     end)
-    playerItemScrollList:SetFilter(function(itemId, item)
+    playerItemScrollList:SetFilter(function(itemId, item, searchText)
         local player = tab.player
         if (player) then
-            return item:isForClass(player.class)
+            return item:isForClass(player.class) and utils.strContainsIgnoreCase(item:getName(), searchText)
         end
         return true
     end)

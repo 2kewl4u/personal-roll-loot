@@ -2,6 +2,7 @@
 local _, ns = ...;
 -- imports
 local ConfirmDialog = ns.ConfirmDialog
+local DelayTimer = ns.DelayTimer
 local Items = ns.Items
 local Player = ns.Player
 local Players = ns.Players
@@ -25,11 +26,16 @@ local memberInfo
 local lootItems = {}
 local memberRollOrder
 
+-- set a delay in seconds until sending again a sync request or info
+local infoRequestDelay = DelayTimer.new(60)
+
 -- menu functions
 local updateMemberInfo
 local createMemberInfo = function()
     if (not memberInfo) then
         memberInfo = Players.getCurrentPlayer()
+    end
+    if (not infoRequestDelay:isDelay()) then
         ns.MemberInfoRequestEvent.send()
     end
 end
@@ -70,7 +76,7 @@ local roles = Roles.forClass(class)
 if (utils.tblsize(roles) > 1) then
     for roleId, role in pairs(roles) do
         local roleButton = CreateFrame("CheckButton", nil, memberTabFrame, "PersonalLootRoleButton")
-        roleButton:SetPoint("TOPLEFT", memberNameField, "BOTTOMLEFT", 0, -(SPACING + TEXT_FIELD_HEIGHT * roleIndex))
+        roleButton:SetPoint("TOPLEFT", memberNameField, "BOTTOMLEFT", 0, -(TEXT_FIELD_HEIGHT * roleIndex))
         roleButton.text:SetText(role.name)
         roleButton.text:SetFontObject("GameFontDisable")
         roleButton.icon:SetTexture(role.texture)
@@ -82,14 +88,14 @@ if (utils.tblsize(roles) > 1) then
 end
 
 local trialField = memberTabFrame:CreateFontString(nil, "OVERLAY")
-trialField:SetPoint("TOPLEFT", memberNameField, "BOTTOMLEFT", 0, -(MARGIN + SPACING + TEXT_FIELD_HEIGHT * 4))
+trialField:SetPoint("TOPLEFT", memberNameField, "BOTTOMLEFT", 0, -(MARGIN + TEXT_FIELD_HEIGHT * 4))
 trialField:SetFontObject("GameFontNormalLEFT")
 trialField:SetText("You are marked as trial.")
 trialField:Hide()
 
 
 -- item list
-local memberItemScrollList = ScrollList.new("PersonalRollLootMemberItemListScrollFrame", memberTabFrame, 6, "PersonalLootItemButtonTemplate")
+local memberItemScrollList = ScrollList.new("PersonalRollLootMemberItemListScrollFrame", memberTabFrame, 6, "PersonalLootItemButtonTemplate", true)
 memberItemScrollList:SetPoint("BOTTOMLEFT", memberTabFrame, "BOTTOMLEFT", MARGIN, TEXT_FIELD_HEIGHT + MARGIN + SPACING)
 memberItemScrollList:SetSize(COLUMN_WIDTH, 6 * ITEM_BUTTON_HEIGHT + SPACING)
 memberItemScrollList:SetButtonHeight(ITEM_BUTTON_HEIGHT)
@@ -103,10 +109,10 @@ end)
 memberItemScrollList:SetLabelProvider(function(itemId, item, button)
     ns.ItemLabelProvider.display(itemId, item, button, memberInfo)
 end)
-memberItemScrollList:SetFilter(function(itemId, item)
+memberItemScrollList:SetFilter(function(itemId, item, searchText)
     local player = memberInfo
     if (player) then
-        return item:isForClass(player.class)
+        return item:isForClass(player.class) and utils.strContainsIgnoreCase(item:getName(), searchText)
     end
     return true
 end)

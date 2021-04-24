@@ -153,6 +153,29 @@ utils.strstarts = function(string, start)
 end
 
 ---
+-- Indicates whether the given text contains the given search text
+-- (case insensitive).
+-- 
+-- Note that the empty search text is always inside the text.
+-- 
+-- @param #string text
+--          the text to inside search for the text
+-- @param #string searchText
+--          the text that should be contained in the text
+-- 
+-- @return #boolean
+--          true if the searchText is inside the text, false otherwise
+-- 
+utils.strContainsIgnoreCase = function(text, searchText)
+    if (not searchText or strlen(searchText) < 1) then
+        -- the text always contains the empty text
+        return true
+    else
+        return string.find(strlower(text), strlower(searchText)) ~= nil
+    end
+end
+
+---
 -- Returns a comma-separated list string containing the elements of the given
 -- list. The elements are passed as key-value pairs to the encoding function to
 -- provide a string representation.
