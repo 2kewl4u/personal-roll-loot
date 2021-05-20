@@ -131,6 +131,17 @@ local function upgradePlayerItems()
 end
 
 ---
+-- Deletes all need-lists items that are not part of the ITEM_LIST. This is
+-- necessary for the first version upgrading from Classic to TBC.
+-- 
+local function clearPlayerItems()
+    for name, player in pairs(ns.DB.PLAYER_LIST or {}) do
+        local playerCopy = Player.new(player.name, player.realm, player.class, player.trial)
+        ns.DB.PLAYER_LIST[name] = playerCopy
+    end
+end
+
+---
 -- Upgrades the current database to be compatible with the current version.
 -- 
 -- In most cases, this will just add some missing items in the need-list of some
@@ -138,25 +149,8 @@ end
 -- 
 local function upgradeDatabase()
     local dbVersion = getDatabaseVersion()
-    -- pre-0.8.0 upgrades
-    if (dbVersion < 800) then
-        addMissingItems({
-            19865, -- add Warblade of the Hakkari
-            19861 -- Touch of Chaos
-        })
-    end
-    if (dbVersion < 900) then
-        addMissingItems({
-            22637 -- Primal Hakkari Idol
-        })
-    end
-    if (dbVersion < 901) then
-        addMissingItems({
-            22739 -- Tome of Polymorph: Turtle
-        })
-    end
-    if (dbVersion < 10003) then
-        upgradePlayerItems()
+    if (dbVersion < 20000) then
+        clearPlayerItems()
     end
 end
 

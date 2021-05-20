@@ -5,31 +5,19 @@ local _, ns = ...;
 local utils = ns.utils
 
 -- raids
-local RAID_MOLTEN_CORE = "Molten Core"
-local RAID_ONYXIA = "Onyxia's Lair"
-local RAID_BLACKWING_LAIR = "Blackwing Lair"
-local RAID_ZUL_GURUB = "Zul'Gurub"
-local RAID_RUINS_AHN_QIRAJ = "Ruins of Ahn'Qiraj"
-local RAID_AHN_QIRAJ_TEMPLE = "Ahn'Qiraj Temple"
-local RAID_NAXXRAMAS = "Naxxramas"
+local RAID_KARAZHAN = "Karazhan"
+local RAID_GRUUL = "Gruul's Lair"
+local RAID_MAGTHERIDON = "Magtheridon's Lair"
 local RAIDS = {
-    [RAID_MOLTEN_CORE] = 409,
-    [RAID_ONYXIA] = 249,
-    [RAID_BLACKWING_LAIR] = 469,
-    [RAID_ZUL_GURUB] = 309,
-    [RAID_RUINS_AHN_QIRAJ] = 509,
-    [RAID_AHN_QIRAJ_TEMPLE] = 531,
-    [RAID_NAXXRAMAS] = 533
+    [RAID_KARAZHAN] = 532,
+    [RAID_GRUUL] = 565,
+    [RAID_MAGTHERIDON] = 544
 }
 
 local shortNames = {
-    [RAID_MOLTEN_CORE] = "mc",
-    [RAID_ONYXIA] = "ony",
-    [RAID_BLACKWING_LAIR] = "bwl",
-    [RAID_ZUL_GURUB] = "zg",
-    [RAID_RUINS_AHN_QIRAJ] = "aq20",
-    [RAID_AHN_QIRAJ_TEMPLE] = "aq40",
-    [RAID_NAXXRAMAS] = "naxx"
+    [RAID_KARAZHAN] = "kara",
+    [RAID_GRUUL] = "gruul",
+    [RAID_MAGTHERIDON] = "mag"
 }
 
 ---
